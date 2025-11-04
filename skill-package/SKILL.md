@@ -23,33 +23,259 @@
 
 ---
 
-## ⚠️ CRITICAL: Storage Configuration
+## ⚠️ Storage Backend System
 
-**DO NOT USE**:
-- ❌ Notion API
-- ❌ Google Drive MCP
-- ❌ Any external storage APIs
-- ❌ Database connections
+This skill uses a flexible **multi-backend storage system** that supports 5 different storage options. Choose the backend that best fits your needs.
 
-**ALWAYS USE**:
-- ✅ MCP Filesystem tools for all user data
-- ✅ Paths from `config/paths.py`
-- ✅ Local YAML/JSON for data storage
+### Supported Backends
 
-### File Access Rules
+1. **Local Filesystem** (Recommended) - Uses MCP filesystem tools
+2. **GitHub Repository** - Multi-device sync via GitHub
+3. **Checkpoint System** - Session-only, perfect for testing
+4. **Email Storage** - Store data as emails
+5. **Notion Database** - Structured storage in Notion
 
-1. **Skill modules** (read-only): Use `file_read("modules/name.md")`
-2. **User data** (read-write): Use filesystem MCP with absolute paths from paths.py
-3. **NEVER mix these access methods**
+### Quick Start
 
-### Path Configuration
+#### Step 1: Choose Your Backend
 
-All filesystem paths are configured in `skill-package/config/paths.py`:
-```python
-USER_DATA_BASE = "/Users/username/MyDrive/my-skill/user-data"
+Edit `user-data/config/storage-config.yaml` (copy from template first):
+
+```yaml
+storage:
+  backend: local  # or: github, checkpoint, email, notion
+  
+  # Local Filesystem (Recommended)
+  local:
+    base_path: /Users/yourname/MyDrive/your-skill/user-data
+  
+  # GitHub (Optional - for multi-device)
+  # github:
+  #   repo: "username/skill-data"
+  #   token: "ghp_your_token_here"
+  #   branch: "main"
+  
+  # Checkpoint (Session-only - no config needed)
+  
+  # Email (Optional)
+  # email:
+  #   imap_server: "imap.gmail.com"
+  #   smtp_server: "smtp.gmail.com"
+  #   email: "your.email@gmail.com"
+  #   password: "your_app_password"
+  #   folder: "Claude/SkillData"
+  
+  # Notion (Optional)
+  # notion:
+  #   token: "secret_your_token_here"
+  #   database_id: "your_database_id"
 ```
 
-**IMPORTANT**: Users must update this path to match their local setup.
+#### Step 2: Initialize Storage
+
+```python
+from scripts.storage import init_storage, save_data, load_data
+
+# Initialize with config file
+init_storage("user-data/config/storage-config.yaml")
+
+# Or initialize manually
+from scripts.storage import StorageManager
+storage = StorageManager()
+storage.use_local_filesystem("/path/to/user-data")
+```
+
+#### Step 3: Use Storage
+
+```python
+# Save data
+save_data("config/settings.yaml", yaml_content)
+save_data("db/entities/company-acme.yaml", company_data)
+save_data("logs/2025-11-04.log", log_message)
+
+# Load data
+settings = load_data("config/settings.yaml")
+company = load_data("db/entities/company-acme.yaml")
+
+# Check if exists
+if data_exists("config/settings.yaml"):
+    settings = load_data("config/settings.yaml")
+
+# List files
+all_companies = list_data("db/entities/")
+all_logs = list_data("logs/")
+
+# Delete
+delete_data("logs/old-log.log")
+```
+
+### Backend Comparison
+
+| Backend | Setup | Persistence | Multi-Device | Best For |
+|---------|-------|-------------|--------------|----------|
+| **Local** | Easy | ✅ | ❌ | Single device, simplicity |
+| **GitHub** | Medium | ✅ | ✅ | Multi-device, version control |
+| **Checkpoint** | None | ❌ | ❌ | Testing, temporary work |
+| **Email** | Medium | ✅ | ✅ | Email-based workflows |
+| **Notion** | Medium | ✅ | ✅ | Structured data, visualization |
+
+### Dependencies
+
+See [DEPENDENCIES.md](../../DEPENDENCIES.md) for detailed installation instructions.
+
+- **Local**: No extra dependencies (uses MCP)
+- **GitHub**: `pip install PyGithub`
+- **Checkpoint**: No extra dependencies
+- **Email**: No extra dependencies (built-in)
+- **Notion**: `pip install notion-client`
+
+### Advanced Usage
+
+#### Backend-Specific Features
+
+**GitHub Backend - Version History:**
+```python
+from scripts.storage import get_storage
+
+storage = get_storage()
+if hasattr(storage.backend, 'get_history'):
+    history = storage.backend.get_history("config/settings.yaml", limit=10)
+    for commit in history:
+        print(f"{commit['date']}: {commit['message']}")
+```
+
+**Checkpoint Backend - Export/Import:**
+```python
+from scripts.storage import get_storage
+
+storage = get_storage()
+if hasattr(storage.backend, 'export_checkpoint'):
+    # Export before session ends
+    checkpoint = storage.backend.export_checkpoint()
+    save_data("checkpoint-2025-11-04.json", json.dumps(checkpoint))
+    
+    # Import in new session
+    checkpoint = json.loads(load_data("checkpoint-2025-11-04.json"))
+    storage.backend.import_checkpoint(checkpoint)
+```
+
+#### Switching Backends
+
+```python
+from scripts.storage import get_storage
+
+storage = get_storage()
+
+# Switch to GitHub
+storage.use_github("username/repo", "ghp_token", "main")
+
+# Switch to Local
+storage.use_local_filesystem("/path/to/data")
+
+# Switch to Checkpoint
+storage.use_checkpoint()
+```
+
+### File Access Rules (Important!)
+
+**For Skill Modules (Read-Only):**
+```python
+# ✅ CORRECT: Use file_read() tool
+module_content = file_read("modules/analysis.md")
+reference = file_read("references/detailed-scoring.md")
+```
+
+**For User Data (Read-Write):**
+```python
+# ✅ CORRECT: Use storage backend
+save_data("db/analysis-result.yaml", result)
+data = load_data("config/settings.yaml")
+
+# ❌ WRONG: Don't use file_read() for user data
+# This won't work with non-local backends!
+```
+
+**NEVER mix these access methods!**
+
+### Migration Between Backends
+
+To migrate data from one backend to another:
+
+```python
+from scripts.storage import StorageManager
+
+# Load from old backend
+old_storage = StorageManager()
+old_storage.use_local_filesystem("/old/path")
+
+# Get all keys
+all_keys = old_storage.list_keys()
+
+# Setup new backend
+new_storage = StorageManager()
+new_storage.use_github("username/repo", "token")
+
+# Copy all data
+for key in all_keys:
+    data = old_storage.load(key)
+    if data:
+        new_storage.save(key, data)
+        print(f"✓ Migrated: {key}")
+```
+
+### Security Best Practices
+
+1. **Never commit credentials:**
+   - Use `.gitignore` for `storage-config.yaml`
+   - Store tokens in environment variables
+   - Use `.env` files (also in `.gitignore`)
+
+2. **Use app-specific passwords:**
+   - GitHub: Personal Access Tokens (not main password)
+   - Email: App Passwords (not account password)
+   - Notion: Integration tokens (not personal login)
+
+3. **Encrypt sensitive data:**
+   ```python
+   from cryptography.fernet import Fernet
+   
+   # Generate key (do once, store securely)
+   key = Fernet.generate_key()
+   cipher = Fernet(key)
+   
+   # Encrypt before saving
+   encrypted = cipher.encrypt(sensitive_data.encode())
+   save_data("secure/credentials.enc", encrypted)
+   
+   # Decrypt when loading
+   encrypted = load_data("secure/credentials.enc")
+   decrypted = cipher.decrypt(encrypted).decode()
+   ```
+
+### Troubleshooting Storage
+
+**"Storage not initialized" error:**
+```python
+# Make sure to call init_storage() first
+from scripts.storage import init_storage
+init_storage("user-data/config/storage-config.yaml")
+```
+
+**"PyYAML required" error:**
+```bash
+pip install PyYAML
+```
+
+**"PyGithub not installed" error:**
+```bash
+pip install PyGithub
+```
+
+**Backend not working:**
+- Check configuration file syntax
+- Verify credentials are correct
+- Test connection manually
+- Check backend-specific setup (see DEPENDENCIES.md)
 
 ---
 
@@ -162,19 +388,24 @@ feature_enabled = config['feature_settings']['feature_1']['enabled']
 
 ---
 
-## Data Storage
+## Data Storage Structure
 
-### Structure
+### Directory Layout
+
 ```
 user-data/
-├── config/           # User configuration files
-│   ├── user-config.yaml
+├── config/           # Configuration files
+│   ├── storage-config.yaml      # Storage backend config (CRITICAL)
+│   ├── user-config.yaml         # User preferences
 │   └── [domain-specific configs]
 ├── db/              # Dynamic data storage
 │   ├── entities/    # Entity data (YAML)
 │   └── cache/       # Cached research
 └── logs/            # Operation logs
+    └── YYYY-MM-DD.log
 ```
+
+**Note:** With non-local backends (GitHub, Email, Notion), this structure exists virtually in the backend storage, not as local directories.
 
 ### YAML Schema Guidelines
 

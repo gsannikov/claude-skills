@@ -5,6 +5,11 @@
 # USER DATA - NEVER COMMIT PERSONAL INFORMATION
 # ============================================================================
 
+# Safety net: Ignore entire user-data directory
+# (Templates are in user-data-templates and ARE committed)
+user-data/
+!user-data/.gitkeep
+
 # User configuration (contains personal info)
 user-data/config/user-config.yaml
 user-data/config/cv-variants/

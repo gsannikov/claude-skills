@@ -8,6 +8,28 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 import json
 
+# Optional dependencies with graceful degradation
+try:
+    import yaml
+    HAS_YAML = True
+except ImportError:
+    HAS_YAML = False
+    print("Warning: PyYAML not installed. Config file loading will fail.")
+
+try:
+    from github import Github
+    HAS_GITHUB = True
+except ImportError:
+    HAS_GITHUB = False
+    # Only warn if actually trying to use GitHub backend
+
+try:
+    from notion_client import Client as NotionClient
+    HAS_NOTION = True
+except ImportError:
+    HAS_NOTION = False
+    # Only warn if actually trying to use Notion backend
+
 
 class StorageBackend(ABC):
     """Base class for all storage backends"""
@@ -113,8 +135,12 @@ class GitHubBackend(StorageBackend):
     """GitHub repository storage"""
     
     def __init__(self, repo_name: str, token: str, branch: str = "main"):
+        if not HAS_GITHUB:
+            print("Error: PyGithub not installed. Run: pip install PyGithub")
+            self._initialized = False
+            return
+        
         try:
-            from github import Github
             self.g = Github(token)
             self.repo = self.g.get_repo(repo_name)
             self.branch = branch
@@ -374,9 +400,13 @@ class NotionBackend(StorageBackend):
     """Notion database storage"""
     
     def __init__(self, token: str, database_id: str):
+        if not HAS_NOTION:
+            print("Error: notion-client not installed. Run: pip install notion-client")
+            self._initialized = False
+            return
+        
         try:
-            from notion_client import Client
-            self.client = Client(auth=token)
+            self.client = NotionClient(auth=token)
             self.database_id = database_id
             self._initialized = True
         except Exception as e:
@@ -491,11 +521,15 @@ class StorageManager:
     
     def _load_config(self, config_path: str) -> Dict:
         """Load storage configuration"""
+        if not HAS_YAML:
+            print("Error: PyYAML required for config file loading")
+            return {}
+        
         try:
-            import yaml
             with open(config_path, 'r') as f:
                 return yaml.safe_load(f)
-        except:
+        except Exception as e:
+            print(f"Config load error: {e}")
             return {}
     
     def _initialize_from_config(self):
