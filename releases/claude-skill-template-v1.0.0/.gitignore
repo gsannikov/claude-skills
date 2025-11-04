@@ -11,15 +11,6 @@ user-data/config/cv-variants/
 user-data/config/candidate-profile.md
 user-data/config/*.yaml
 !user-data/config/user-config-template.yaml
-!user-data/config/*-template.yaml
-
-# Storage credentials (CRITICAL - CONTAINS TOKENS/PASSWORDS)
-**/storage-config.yaml
-user-data-templates/config/storage-config.yaml
-*.secret
-*.key
-*-token.txt
-*-credentials.*
 
 # User database (contains personal/business data)
 user-data/db/
@@ -224,7 +215,6 @@ site/
 
 # Keep template files
 !user-data/config/user-config-template.yaml
-!user-data-templates/config/*-template.yaml
 !skill-package/templates/
 
 # Keep example files

@@ -1,0 +1,11 @@
+# Core dependencies
+PyYAML>=6.0
+
+# Optional backends (install as needed)
+# For GitHub backend:
+# PyGithub>=2.1.1
+
+# For Notion backend:
+# notion-client>=2.0.0
+
+# Note: Local filesystem, checkpoint, and email backends use built-in libraries only
