@@ -5,13 +5,12 @@
 # USER DATA - NEVER COMMIT PERSONAL INFORMATION
 # ============================================================================
 
-# Safety net: Ignore entire user-data directory
-# (Templates are in user-data-templates and ARE committed)
-user-data/
-!user-data/.gitkeep
+# User Data - Selective Ignore
+# Allow documentation and templates, but ignore actual user data
 
 # User configuration (contains personal info)
 user-data/config/user-config.yaml
+user-data/config/storage-config.yaml
 user-data/config/cv-variants/
 user-data/config/candidate-profile.md
 user-data/config/*.yaml
@@ -175,9 +174,12 @@ $RECYCLE.BIN/
 # LOGS AND TEMPORARY FILES
 # ============================================================================
 
-# Logs
+# Logs (but allow template logs directory with README)
 logs/
 *.log
+!user-data-templates/logs/
+!user-data-templates/logs/README.md
+!user-data-templates/logs/.gitkeep
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
