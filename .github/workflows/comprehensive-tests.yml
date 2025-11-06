@@ -106,7 +106,7 @@ jobs:
         import yaml
         from pathlib import Path
 
-        config_dir = Path("user-data-templates/config")
+        config_dir = Path("skill-package/user-data-templates/config")
         valid_backends = ["local", "github", "checkpoint", "email", "notion"]
 
         for config_file in config_dir.glob("*-template.yaml"):
@@ -368,7 +368,7 @@ jobs:
 
         # Test storage config creation
         echo "Testing storage configuration..."
-        cp -r user-data-templates user-data-test
+        cp -r skill-package/user-data-templates user-data-test
         cd user-data-test/config
         cp storage-config-template.yaml storage-config.yaml
 
@@ -382,7 +382,7 @@ jobs:
 
         # Test integrate script (if curl works)
         echo "Testing skill-creator integration..."
-        if bash scripts/integrate-skill-creator.sh 2>/dev/null; then
+        if bash host_scripts/integrate-skill-creator.sh 2>/dev/null; then
           test -f skill-package/examples/skill-creator/SKILL.md || exit 1
           echo "  ✓ skill-creator integrated successfully"
         else
