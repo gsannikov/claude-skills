@@ -1,0 +1,177 @@
+# The "Second Brain" Architecture: A Deep Dive into 8 Custom AI Skills
+
+![Skills Architecture Hero](images/skills-architecture-hero.png)
+
+*Part 2 of the "AI-Augmented Homosapiens" series. [Read Part 1 here](LINK_TO_PART_1).*
+
+---
+
+In the [first article](LINK_TO_PINNED_POST), I outlined the high-level architecture of my local-first AI system. Today, we're opening the hood.
+
+I don't use generic AI tools. I use **8 specialized skills**—modular, versioned code containers that run locally and connect my LLM to my digital life.
+
+Here is the technical breakdown of each one: 5 in production, 3 in development.
+
+---
+
+## 🏗️ The Core Pattern: What is a "Skill"?
+
+Before diving in, let's define the architecture. A "Skill" in my monorepo isn't just a prompt. It's a structured package:
+
+```python
+# The Anatomy of a Skill
+class Skill:
+    def __init__(self):
+        self.system_prompt = load_prompt("system.md") # The "Brain"
+        self.tools = load_tools("tools.py")           # The "Hands"
+        self.memory = load_memory("context.md")       # The "Memory"
+        self.config = load_config("config.yaml")      # The "Settings"
+```
+
+All skills share a common **MCP (Model Context Protocol)** layer for file access, web scraping, and Apple Notes integration.
+
+---
+
+## 🟢 Production Skills (Live & Daily Use)
+
+### 1. Career Consultant 💼
+**Purpose**: Systematically analyze job postings and optimize applications.
+
+**The Problem**: Applying to jobs is a black box. You forget what you applied to, and tailoring CVs is slow.
+**The Solution**: A skill that maintains a structured database of my career profile and matches it against scraped job descriptions.
+
+**Architecture**:
+```mermaid
+graph LR
+    Job[LinkedIn Job] -->|Scrape| Text
+    Text -->|Analyze| Scorer
+    Profile[CV Variants] --> Scorer
+    Scorer -->|Score| Result
+    Result -->|Strategy| Output
+```
+*   **Input**: LinkedIn URL (via Bright Data MCP)
+*   **Data**: `profile.yaml` (3 CV variants: EM, TPM, AI Engineer)
+*   **Logic**: Scoring algorithm (0-100) based on Keywords, Seniority, and Tech Stack.
+*   **Output**: Match Score + Tailored Cover Letter Strategy.
+
+**Code Snippet (Scoring Logic)**:
+```python
+def score_job(job_desc, user_profile):
+    # Vector similarity for semantic match
+    semantic_score = rag.similarity(job_desc, user_profile.experience)
+    
+    # Hard constraints check
+    hard_skills_score = check_constraints(job_desc, ["Python", "LLM", "System Design"])
+    
+    return (semantic_score * 0.7) + (hard_skills_score * 0.3)
+```
+
+### 2. Local RAG (Memory) 🧠
+**Purpose**: Semantic search over my entire personal knowledge base.
+
+**The Stack**:
+*   **Vector DB**: ChromaDB (running locally)
+*   **Embeddings**: `all-MiniLM-L6-v2` (fast, runs on CPU)
+*   **Storage**: Markdown files in `~/brain`
+
+**Workflow**:
+```mermaid
+graph TD
+    File[Markdown File] -->|Watcher| Change{Changed?}
+    Change -- Yes --> Chunk[Chunker]
+    Chunk --> Embed[Embedding Model]
+    Embed --> Vector[ChromaDB]
+    Vector -->|Query| Claude
+```
+1.  **Ingest**: Watcher script detects file changes.
+2.  **Chunk**: Split by H2 headers (semantic chunking).
+3.  **Embed**: Generate vectors.
+4.  **Retrieve**: Claude calls `query_rag(query)` tool.
+
+**Performance**: 2-second retrieval for 1000+ documents.
+
+### 3. Reading List Manager 📚
+**Purpose**: Triage the firehose of information.
+
+**The "Inbox" Pattern**:
+1.  **Capture**: I paste URLs into a specific Apple Note ("Reading Inbox").
+2.  **Process**: The skill reads the note via Apple Notes MCP.
+3.  **Scrape**: Uses Firecrawl to get full text.
+4.  **Synthesize**: Summarizes (150 words) + Categorizes + Prioritizes.
+5.  **Archive**: Moves processed links to `archive.md`.
+
+**Result**: I only read what matters. The rest is indexed for later search.
+
+### 4. Voice Memos Intelligence 🎙️
+**Purpose**: Capture fleeting thoughts and turn them into action.
+
+**The Challenge**: Voice memos usually die in the app.
+**The Fix**:
+*   **Input**: Audio files (m4a) from iCloud Drive.
+*   **Process**: Whisper (local) or API for transcription.
+*   **Intelligence**: Claude analyzes the text.
+    *   *Hebrew/English mixed support*
+    *   *Action Item Extraction*
+    *   *Topic Categorization*
+
+### 5. Ideas Capture 💡
+**Purpose**: Structured thinking partner.
+
+**Workflow**:
+*   I dump a raw idea (chat or voice).
+*   Skill asks clarifying questions (Socratic method).
+*   Skill formats it into a structured **One-Pager**:
+    *   Problem Statement
+    *   Proposed Solution
+    *   Risks
+    *   Next Steps
+*   Saves to `ideas/` directory as Markdown.
+
+---
+
+## 🟡 In Development (Coming Soon)
+
+### 6. Desktop Transcripts 🖥️
+**Goal**: "Rewind" for my meetings.
+**Tech**: System-wide audio capture (BlackHole driver) + Real-time Whisper stream.
+**Use Case**: "What did we agree on in the standup?" -> System queries the transcript database.
+
+### 7. Bilingual Copywriter ✍️
+**Goal**: High-quality content generation in Hebrew and English.
+**Innovation**:
+*   **Style Transfer**: Loads my previous best posts as "few-shot" examples.
+*   **Tone Analyzer**: Adjusts formality based on platform (LinkedIn vs. Twitter).
+*   **Translation Layer**: Preserves idiom and nuance, not just literal translation.
+
+### 8. Eisenhower Matrix Agent ⚡
+**Goal**: Ruthless prioritization.
+**Logic**:
+*   Reads all "Open" tasks from `tasks.md`.
+*   Classifies into the 4 quadrants (Urgent/Important).
+*   **Agentic Action**:
+    *   *Delete* Q4 (Not Urgent/Not Important).
+    *   *Delegate* Q3 (Urgent/Not Important) -> Drafts email/message.
+    *   *Schedule* Q2 (Important/Not Urgent).
+    *   *Do* Q1 (Urgent/Important).
+
+---
+
+## 🛠️ How It All Fits Together
+
+This isn't a collection of scripts. It's a **System**.
+
+*   **Shared Library**: All skills use `shared/utils` for logging, config, and MCP clients.
+*   **Unified Context**: The RAG skill is available to *all* other skills. The Career Consultant can ask RAG "What projects did I do with Python?" to tailor a CV.
+*   **Single Interface**: I interact with everything through one Claude Desktop window.
+
+## 🚀 Next Up: The Monorepo
+
+Managing 8 skills can be a nightmare. In the next article, I'll show you the **Monorepo Architecture** that keeps this maintainable: CI/CD, shared dependencies, and standardized testing.
+
+**Follow to catch Part 3 next week.**
+
+---
+
+*Questions about a specific skill? Ask in the comments and I'll share the prompt structure.* 👇
+
+#AI #Engineering #LocalFirst #Python #LLM
