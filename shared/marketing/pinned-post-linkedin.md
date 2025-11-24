@@ -185,4 +185,4 @@ Let's build the future of work, locally. 🚀
 **What's your approach to AI augmentation?**
 Are you building a second brain, or just using chatbots? Let's discuss. 👇
 
-#AI #LocalFirst #RAG #MCP #FutureOfWork #SoftwareEngineering
+#AI #LocalFirst #RAG #MCP #FutureOfWork #SoftwareEngineering #ClaudeSkills
