@@ -170,7 +170,7 @@ While I use "Claude Skills" (a genius name by Anthropic), the concept is univers
 
 Over the next 5 weeks, I'm open-sourcing the code and architecture:
 
-1.  **Production-Grade Skills**: Architecture & MCP setup.
+1.  [**Production-Grade Skills**: Architecture & MCP setup](LINK_PLACEHOLDER)
 2.  **The Skills Deep-Dive**: RAG, Career Consultant, Voice Memos.
 3.  **Monorepo Patterns**: Managing the codebase.
 4.  **Lessons Learned**: Failures & optimizations.
