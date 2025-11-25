@@ -1,4 +1,4 @@
-# The "Second Brain" Architecture: A Deep Dive into 8 Custom AI Skills
+# The "Second Brain" Architecture: A Deep Dive into 5 Custom AI Skills
 
 ![Skills Architecture Hero](images/skills-architecture-hero.png)
 
@@ -8,9 +8,9 @@
 
 In the [first article](LINK_TO_PINNED_POST), I outlined the high-level architecture of my local-first AI system. Today, we're opening the hood.
 
-I don't use generic AI tools. I use **8 specialized skills**—modular, versioned code containers that run locally and connect my LLM to my digital life.
+I don't use generic AI tools. I use **5 specialized skills**—modular, versioned code containers that run locally and connect my LLM to my digital life.
 
-Here is the technical breakdown of each one: 5 in production, 3 in development.
+Here is the technical breakdown of each production skill and the patterns that power them.
 
 ---
 
@@ -129,30 +129,17 @@ graph TD
 
 ---
 
-## 🟡 In Development (Coming Soon)
+## 🟡 Bonus: Meeting Recorder
 
-### 6. Desktop Transcripts 🖥️
-**Goal**: "Rewind" for my meetings.
-**Tech**: System-wide audio capture (BlackHole driver) + Real-time Whisper stream.
-**Use Case**: "What did we agree on in the standup?" -> System queries the transcript database.
+The Voice Memos skill includes a **Meeting Recorder** component—a lightweight macOS menu bar app that captures audio from meeting applications (Zoom, Google Meet, Teams).
 
-### 7. Bilingual Copywriter ✍️
-**Goal**: High-quality content generation in Hebrew and English.
-**Innovation**:
-*   **Style Transfer**: Loads my previous best posts as "few-shot" examples.
-*   **Tone Analyzer**: Adjusts formality based on platform (LinkedIn vs. Twitter).
-*   **Translation Layer**: Preserves idiom and nuance, not just literal translation.
+**Features**:
+- **ScreenCaptureKit**: Uses Apple's modern API (no BlackHole needed)
+- **Auto-Detection**: Detects when meeting apps start
+- **Smart Compression**: 64kbps AAC optimized for speech (~30MB/hour)
+- **Auto-Chunking**: Long meetings split into processable chunks
 
-### 8. Eisenhower Matrix Agent ⚡
-**Goal**: Ruthless prioritization.
-**Logic**:
-*   Reads all "Open" tasks from `tasks.md`.
-*   Classifies into the 4 quadrants (Urgent/Important).
-*   **Agentic Action**:
-    *   *Delete* Q4 (Not Urgent/Not Important).
-    *   *Delegate* Q3 (Urgent/Not Important) -> Drafts email/message.
-    *   *Schedule* Q2 (Important/Not Urgent).
-    *   *Do* Q1 (Urgent/Important).
+**Use Case**: "What did we agree on in the standup?" → Process meeting recordings → Query transcripts via RAG.
 
 ---
 
@@ -189,7 +176,7 @@ Because this is an **edge design** (local code, local data), it solves the bigge
 
 ## 🚀 Next Up: The Monorepo
 
-Managing 8 skills can be a nightmare. In the next article, I'll show you the **Monorepo Architecture** that keeps this maintainable: CI/CD, shared dependencies, and standardized testing.
+Managing 5+ skills can be a nightmare. In the next article, I'll show you the **Monorepo Architecture** that keeps this maintainable: CI/CD, shared dependencies, and standardized testing.
 
 **Follow to catch Part 3 next week.**
 
