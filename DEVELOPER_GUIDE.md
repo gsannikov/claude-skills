@@ -29,6 +29,7 @@ claude-skills/
 │   ├── scripts/                   # Release, generator utilities
 │   │   ├── release.py
 │   │   ├── skill_generator.py
+│   │   ├── dependency_tracker.py
 │   │   ├── yaml_utils.py
 │   │   ├── slug_utils.py
 │   │   └── token_estimator.py
@@ -230,6 +231,15 @@ tiers:
 ### Shared Utilities
 
 Located in `shared/scripts/`:
+
+**dependency_tracker.py**
+```python
+# CLI tool for managing file dependencies
+python shared/scripts/dependency_tracker.py status        # Show all file statuses
+python shared/scripts/dependency_tracker.py graph         # Display dependency tree
+python shared/scripts/dependency_tracker.py rebuild-order # Get rebuild order
+python shared/scripts/dependency_tracker.py affected FILE # Show dependents of a file
+```
 
 **yaml_utils.py**
 ```python
@@ -506,6 +516,8 @@ git push origin main --tags
 | `conftest.py` | Test fixtures |
 | `release.py` | Release automation |
 | `skill_generator.py` | Skill scaffolding |
+| `dependency_tracker.py` | File dependency management |
+| `dependencies.yaml` | Dependency graph definition |
 
 ---
 
