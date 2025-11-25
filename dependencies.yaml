@@ -47,11 +47,11 @@ nodes:
       3. Sync supported formats
       4. Update usage examples
 
-  - path: packages/voice-memos/modules/meeting-recorder/README.md
+  - path: packages/voice-memos/meeting-recorder/README.md
     type: derived
     description: Meeting recorder submodule documentation
     depends_on:
-      - packages/voice-memos/modules/meeting-recorder/Sources/
+      - packages/voice-memos/meeting-recorder/MeetingRecorder/Sources/
     rebuild_instructions: |
       Update based on Swift source changes:
       1. Sync API documentation
@@ -282,7 +282,7 @@ groups:
     members:
       - packages/voice-memos/SKILL.md
       - packages/voice-memos/README.md
-      - packages/voice-memos/modules/meeting-recorder/README.md
+      - packages/voice-memos/meeting-recorder/README.md
 
   career-consultant:
     description: All career consultant related files
