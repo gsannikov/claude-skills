@@ -17,17 +17,18 @@ Hybrid semantic + keyword search over your local documents using embeddings, BM2
 
 ### Index a folder
 ```bash
-python scripts/indexer.py ~/Documents/research --user-data-dir ~/rag-data
+cd packages/local-rag/scripts
+python3 indexer.py ~/Documents/research --user-data-dir ~/rag-data
 ```
 
 ### Query the database
 ```bash
-python scripts/query.py "neural network training" --user-data-dir ~/rag-data
+python3 query.py "neural network training" --user-data-dir ~/rag-data
 ```
 
 ### Hybrid search with options
 ```bash
-python scripts/query.py "machine learning" --user-data-dir ~/rag-data \
+python3 query.py "machine learning" --user-data-dir ~/rag-data \
   --method hybrid \
   --vector-weight 0.7 \
   --bm25-weight 0.3 \
@@ -36,7 +37,7 @@ python scripts/query.py "machine learning" --user-data-dir ~/rag-data \
 
 ### Visualize chunking
 ```bash
-python scripts/visualize.py document.md --strategy template --compare
+python3 visualize.py document.md --strategy template --compare
 ```
 
 ## Chunking Strategies
@@ -128,7 +129,7 @@ Uses `sentence-transformers/all-MiniLM-L6-v2`:
 ### 1. Python Dependencies
 ```bash
 cd packages/local-rag
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 Core packages installed:
