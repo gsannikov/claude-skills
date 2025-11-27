@@ -93,7 +93,7 @@ class BM25Index:
         """Get common English stopwords."""
         return {
             'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from',
-            'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on', 'that', 'the',
+            'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on', 'over', 'that', 'the',
             'to', 'was', 'were', 'will', 'with', 'the', 'this', 'but', 'they',
             'have', 'had', 'what', 'when', 'where', 'who', 'which', 'why', 'how'
         }

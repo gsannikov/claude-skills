@@ -119,12 +119,24 @@ class ChromaVectorStore(BaseVectorStore):
 
             if self.persist_dir:
                 Path(self.persist_dir).mkdir(parents=True, exist_ok=True)
-                self._client = chromadb.PersistentClient(
-                    path=str(self.persist_dir),
-                    settings=Settings(allow_reset=True, anonymized_telemetry=False)
+                settings = Settings(
+                    allow_reset=True,
+                    anonymized_telemetry=False,
+                    chroma_db_impl="duckdb+parquet",
+                    persist_directory=str(self.persist_dir),
                 )
+                if hasattr(chromadb, "PersistentClient"):
+                    self._client = chromadb.PersistentClient(
+                        path=str(self.persist_dir),
+                        settings=settings
+                    )
+                else:
+                    # Older/newer chromadb builds expose only Client; pass settings directly.
+                    self._client = chromadb.Client(settings=settings)
             else:
-                self._client = chromadb.Client()
+                self._client = chromadb.Client(
+                    Settings(anonymized_telemetry=False)
+                )
         return self._client
 
     @property
