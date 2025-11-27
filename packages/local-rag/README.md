@@ -111,6 +111,8 @@ The indexer automatically skips:
 | `BM25_WEIGHT` | `0.3` | BM25 search weight |
 | `USE_RERANKER` | `false` | Enable cross-encoder |
 | `OCR_ENABLED` | `true` | Enable OCR |
+| `OCR_ENGINE` | `paddle` | OCR engine (paddle, surya, deepseek) |
+| `OCR_LANG` | `en,he` | OCR language(s) |
 | `OCR_MAX_PAGES` | `120` | Max pages to OCR |
 | `OCR_PAGE_DPI` | `200` | DPI for OCR |
 
@@ -135,23 +137,23 @@ Core packages installed:
 - `rapidfuzz` - Fuzzy string matching
 - `pypdf`, `pdf2image` - PDF processing
 - `python-docx`, `python-pptx`, `openpyxl` - Office documents
-- `surya-ocr` - OCR engine (default)
+- `paddleocr`, `paddlepaddle` - OCR engine (default, multi-language)
 
 ### 2. System Dependencies (for PDF/OCR)
 ```bash
 # macOS
-brew install poppler tesseract antiword
+brew install poppler antiword
 
 # Ubuntu/Debian
-sudo apt install poppler-utils tesseract-ocr antiword
+sudo apt install poppler-utils antiword
 ```
 
 ### 3. Optional: Alternative OCR Engines
 
-**PaddleOCR** (better for Asian languages):
+**Surya** (lighter weight, English-focused):
 ```bash
-pip install paddleocr paddlepaddle
-export OCR_ENGINE=paddle
+pip install surya-ocr
+export OCR_ENGINE=surya
 ```
 
 **DeepSeek-OCR** (highest accuracy, requires API):

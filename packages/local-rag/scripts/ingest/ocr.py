@@ -8,8 +8,9 @@ from pathlib import Path
 from typing import List
 from PIL import Image
 
-ENGINE = os.getenv("OCR_ENGINE","surya").lower()
-CACHE_DIR = Path(os.getenv("OCR_CACHE_DIR","state/ocr_cache"))
+ENGINE = os.getenv("OCR_ENGINE", "paddle").lower()
+OCR_LANG = os.getenv("OCR_LANG", "en,he")  # Default: English + Hebrew
+CACHE_DIR = Path(os.getenv("OCR_CACHE_DIR", "state/ocr_cache"))
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 def _img_sha(img: Image.Image) -> str:
@@ -43,15 +44,34 @@ def ocr_surya(images: List[Image.Image]) -> str:
 
 def ocr_paddle(images: List[Image.Image]) -> str:
     from paddleocr import PaddleOCR
-    ocr = PaddleOCR(use_angle_cls=True, lang='en')
-    texts=[]
+    import numpy as np
+
+    # Parse language config - PaddleOCR uses specific lang codes
+    # For Hebrew, we use 'ar' (Arabic) as it shares RTL characteristics
+    # or 'latin' for mixed content. 'multilingual' also works.
+    lang = OCR_LANG.split(',')[0].strip() if ',' not in OCR_LANG else 'en'
+
+    # Map common language codes to PaddleOCR codes
+    lang_map = {
+        'he': 'ar',      # Hebrew -> use Arabic model (RTL support)
+        'hebrew': 'ar',
+        'en': 'en',
+        'english': 'en',
+        'multi': 'en',   # Multilingual fallback
+    }
+    paddle_lang = lang_map.get(lang.lower(), lang)
+
+    ocr = PaddleOCR(use_angle_cls=True, lang=paddle_lang, show_log=False)
+    texts = []
     for im in images:
-        h=_img_sha(im)
-        hit=_cache_get(h)
+        h = _img_sha(im)
+        hit = _cache_get(h)
         if hit is not None:
             texts.append(hit)
             continue
-        res = ocr.ocr(im, cls=True)
+        # Convert PIL Image to numpy array for PaddleOCR
+        img_array = np.array(im)
+        res = ocr.ocr(img_array, cls=True)
         txt = "\n".join([line[1][0] for line in (res[0] or [])])
         _cache_put(h, txt)
         texts.append(txt)
