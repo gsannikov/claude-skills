@@ -1,4 +1,4 @@
-# The "Second Brain" Architecture: A Deep Dive into 5 Custom AI Skills
+# The "Second Brain" Architecture: A Deep Dive into 6 Custom AI Skills
 
 ![Skills Architecture Hero](images/skills-architecture-hero.png)
 
@@ -8,7 +8,7 @@
 
 In the [first article](LINK_TO_PINNED_POST), I outlined the high-level architecture of my local-first AI system. Today, we're opening the hood.
 
-I don't use generic AI tools. I use **5 specialized skills**—modular, versioned code containers that run locally and connect my LLM to my digital life.
+I don't use generic AI tools. I use **6 specialized skills**—modular, versioned code containers that run locally and connect my LLM to my digital life.
 
 Here is the technical breakdown of each production skill and the patterns that power them.
 
@@ -127,6 +127,34 @@ graph TD
     *   Next Steps
 *   Saves to `ideas/` directory as Markdown.
 
+### 6. Social Media Post Generator 📱
+**Purpose**: Create platform-optimized content using algorithm insights.
+
+**The Problem**: Each social platform has different character limits, hashtag strategies, and algorithm priorities. Crafting effective posts is time-consuming.
+
+**The Solution**: A skill that understands platform-specific best practices and generates tailored content.
+
+**Platforms Supported**:
+- **Threads**: 500 chars, no hashtags, conversational tone
+- **X (Twitter)**: 280 chars, 1-2 hashtags max, punchy announcements
+- **LinkedIn**: 3,000 chars, professional tone, 3-5 hashtags
+
+**Algorithm Intelligence (2025)**:
+```python
+PLATFORM_PRIORITIES = {
+    "threads": ["engagement", "recency", "relevance", "profile_visits"],
+    "x": ["engagement_rate", "recency", "media", "authenticity"],
+    "linkedin": ["dwell_time", "engagement", "relevance", "connections"]
+}
+```
+
+**Output Includes**:
+- Platform-optimized text
+- Character count validation
+- Engagement score (1-10)
+- Best posting time
+- Media suggestions
+
 ---
 
 ## 🟡 Bonus: Meeting Recorder
@@ -161,6 +189,7 @@ This isn't a collection of scripts. It's a **System**.
 *   **Shared Library**: All skills use `shared/utils` for logging, config, and MCP clients.
 *   **Unified Context**: The RAG skill is available to *all* other skills. The Career Consultant can ask RAG "What projects did I do with Python?" to tailor a CV.
 *   **Single Interface**: I interact with everything through one Claude Desktop window.
+*   **Marketplace Distribution**: Skills can be installed via `/plugin marketplace add` for easy sharing.
 
 ## 🛡️ Strategic Advantages: Why This Architecture Wins
 
@@ -187,7 +216,7 @@ Because this is an **edge design** (local code, local data), it solves the bigge
 
 ## 🚀 Next Up: The Monorepo
 
-Managing 5+ skills can be a nightmare. In the next article, I'll show you the **Monorepo Architecture** that keeps this maintainable: CI/CD, shared dependencies, and standardized testing.
+Managing 6+ skills can be a nightmare. In the next article, I'll show you the **Monorepo Architecture** that keeps this maintainable: CI/CD, shared dependencies, and standardized testing.
 
 **Follow to catch Part 3 next week.**
 
