@@ -130,6 +130,9 @@ Uses `sentence-transformers/all-MiniLM-L6-v2`:
 ```bash
 cd packages/local-rag
 pip3 install -r requirements.txt
+# Or install globally on pyenv/system Python 3.11 (no venv)
+# pyenv shell 3.11.10
+# pip3 install --user -r requirements.txt
 ```
 
 Core packages installed:
