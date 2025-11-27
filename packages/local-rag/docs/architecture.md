@@ -145,10 +145,11 @@
 #### `ocr.py`
 - Optical Character Recognition for scanned documents
 - Multiple OCR engine support:
-  - **Surya** (default, CPU-friendly)
-  - **PaddleOCR** (optional)
-  - **DeepSeek-OCR** (optional, high accuracy)
+  - **PaddleOCR** (default, multi-language including Hebrew)
+  - **Surya** (optional, lighter weight, English-focused)
+  - **DeepSeek-OCR** (optional, highest accuracy)
 - Configurable DPI for quality/performance trade-off
+- Language configuration via `OCR_LANG` (default: `en,he`)
 
 #### `utils.py`
 - Helper utilities for text processing
@@ -429,6 +430,11 @@ python visualize.py document.md -f stats
 | `VECTOR_WEIGHT` | `0.7` | Vector search weight |
 | `BM25_WEIGHT` | `0.3` | BM25 search weight |
 | `USE_RERANKER` | `false` | Enable cross-encoder |
+| `OCR_ENABLED` | `true` | Enable OCR for images/PDFs |
+| `OCR_ENGINE` | `paddle` | OCR engine (paddle, surya, deepseek) |
+| `OCR_LANG` | `en,he` | OCR languages |
+| `OCR_MAX_PAGES` | `120` | Max pages to OCR per PDF |
+| `OCR_PAGE_DPI` | `200` | DPI for OCR rendering |
 
 ### Tuning Guidelines
 
@@ -448,7 +454,8 @@ python visualize.py document.md -f stats
 
 **For OCR quality**:
 - Increase DPI (200 → 300)
-- Use DeepSeek-OCR instead of Surya
+- Use DeepSeek-OCR for highest accuracy
+- Set `OCR_LANG` for your document languages (e.g., `he` for Hebrew)
 - Pre-process images (deskew, denoise)
 
 ## Deployment Architecture
@@ -485,7 +492,7 @@ Vector DB (Qdrant Cloud)
 | Embeddings | sentence-transformers | Vector generation |
 | Keyword Search | BM25 (custom) | Sparse retrieval |
 | Reranking | cross-encoder | Result refinement |
-| OCR | Surya/PaddleOCR | Image text extraction |
+| OCR | PaddleOCR/Surya | Image text extraction |
 | File Watching | watchdog | Change detection |
 | PDF | pypdf, pdfplumber | PDF parsing |
 | Office | python-docx, openpyxl | Office formats |
