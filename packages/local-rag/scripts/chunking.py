@@ -442,7 +442,7 @@ class TemplateChunker(BaseChunker):
                         metadata={
                             "strategy": "template",
                             "type": "markdown",
-                            "header": parent_header['title'] if parent_header else None
+                            "header": parent_header.get('title') if parent_header else None
                         }
                     )
                     current_chunk = []

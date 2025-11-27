@@ -10,6 +10,11 @@ Allows easy switching between backends without changing application code.
 """
 
 import os
+
+# Disable ChromaDB telemetry before any imports
+os.environ["ANONYMIZED_TELEMETRY"] = "false"
+os.environ["CHROMA_TELEMETRY"] = "false"
+
 import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field

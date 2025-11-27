@@ -44,6 +44,11 @@ EXCLUDE_DIRS = {
     '.venv', 'venv', 'env',           # Python environments
     '.idea', '.vscode',               # IDE configs
     'dist', 'build', '.next',         # Build outputs
+    '.cache', '.tmp', 'tmp', 'temp',  # Cache/temp
+    'vectordb', 'chromadb', 'chroma', # Vector databases (avoid indexing ourselves)
+    'claude-skills-data',             # Our own data folder
+    '.DS_Store',                      # macOS
+    'Thumbs.db',                      # Windows
 }
 
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "3000"))
@@ -243,7 +248,9 @@ class DocumentIndexer:
             chunk_id = f"{path}:{chunk.start}-{chunk.end}"
             ids.append(chunk_id)
             texts.append(chunk.text)
-            metadatas.append({
+
+            # Build metadata, filtering out None values (ChromaDB doesn't accept None)
+            meta = {
                 "path": str(path),
                 "filename": path.name,
                 "start": chunk.start,
@@ -251,8 +258,12 @@ class DocumentIndexer:
                 "chunk_index": i,
                 "mtime": int(path.stat().st_mtime),
                 "strategy": chunk.metadata.get("strategy", self.chunking_strategy),
-                **{k: v for k, v in chunk.metadata.items() if k != "strategy"}
-            })
+            }
+            # Add extra metadata from chunk, excluding None values
+            for k, v in chunk.metadata.items():
+                if k != "strategy" and v is not None:
+                    meta[k] = v
+            metadatas.append(meta)
 
         # Generate embeddings
         embeddings = self.embed_model.encode(texts, normalize_embeddings=True)
