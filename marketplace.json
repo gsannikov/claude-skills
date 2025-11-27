@@ -1,0 +1,74 @@
+{
+  "name": "claude-skills",
+  "owner": {
+    "name": "Gur Sannikov",
+    "email": "gursannikov@gmail.com"
+  },
+  "metadata": {
+    "description": "Personal productivity skills for Claude Code - inbox processing, RAG search, and automation",
+    "version": "1.0.0",
+    "pluginRoot": "./packages"
+  },
+  "plugins": [
+    {
+      "name": "career-consultant",
+      "source": "./packages/career-consultant",
+      "description": "Automated Israeli tech job analysis system with 6-component scoring (Match, Income, Growth, LowPrep, Stress, Location)",
+      "version": "1.1.0",
+      "author": "Gur Sannikov",
+      "keywords": ["career", "jobs", "analysis", "scoring", "israel", "tech"],
+      "category": "productivity",
+      "strict": false
+    },
+    {
+      "name": "reading-list",
+      "source": "./packages/reading-list",
+      "description": "Capture articles via Apple Notes inbox. Auto-scrape, summarize, categorize, and track reading progress",
+      "version": "1.0.0",
+      "author": "Gur Sannikov",
+      "keywords": ["reading", "articles", "inbox", "summarize", "apple-notes"],
+      "category": "productivity",
+      "strict": false
+    },
+    {
+      "name": "ideas-capture",
+      "source": "./packages/ideas-capture",
+      "description": "Capture fleeting ideas via Apple Notes inbox. AI expands, evaluates, scores potential, and organizes by type",
+      "version": "1.0.0",
+      "author": "Gur Sannikov",
+      "keywords": ["ideas", "capture", "brainstorm", "inbox", "apple-notes"],
+      "category": "productivity",
+      "strict": false
+    },
+    {
+      "name": "voice-memos",
+      "source": "./packages/voice-memos",
+      "description": "Process voice memos via Apple Notes inbox. Transcribe, extract action items, generate summaries",
+      "version": "1.0.0",
+      "author": "Gur Sannikov",
+      "keywords": ["voice", "transcription", "memos", "audio", "apple-notes"],
+      "category": "productivity",
+      "strict": false
+    },
+    {
+      "name": "local-rag",
+      "source": "./packages/local-rag",
+      "description": "Index local folders and query them using RAG. Supports PDF, DOCX, PPTX, XLSX, images with OCR",
+      "version": "1.0.0",
+      "author": "Gur Sannikov",
+      "keywords": ["rag", "search", "documents", "embeddings", "ocr"],
+      "category": "productivity",
+      "strict": false
+    },
+    {
+      "name": "social-media-post",
+      "source": "./packages/social-media-post",
+      "description": "Generate optimized social media posts for Threads, X (Twitter), and LinkedIn",
+      "version": "1.0.0",
+      "author": "Gur Sannikov",
+      "keywords": ["social-media", "marketing", "threads", "twitter", "linkedin"],
+      "category": "marketing",
+      "strict": false
+    }
+  ]
+}
