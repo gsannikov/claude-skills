@@ -374,16 +374,22 @@ class DocumentIndexer:
 
         def process_path(path: Path):
             if not self.should_index_file(path):
+                print(f"DEBUG: Skipping {path.name} - failed should_index_file")
                 return ("skip", path, 0, 0, None)
             if not force and not self.is_file_changed(path):
+                print(f"DEBUG: Skipping {path.name} - not changed")
                 return ("skip", path, 0, 0, None)
+            print(f"DEBUG: Processing {path.name}")
             try:
                 num_chunks, dropped = self.index_file(path)
+                print(f"DEBUG: Indexed {path.name}: {num_chunks} chunks")
                 return ("ok", path, num_chunks, dropped, None)
             except Exception as e:
+                print(f"DEBUG: Error indexing {path.name}: {e}")
                 return ("error", path, 0, 0, e)
 
         paths = list(candidates)
+        print(f"DEBUG: Found {len(paths)} candidate files")
 
         # Decide execution strategy
         if self.parallel_workers and self.parallel_workers > 1:

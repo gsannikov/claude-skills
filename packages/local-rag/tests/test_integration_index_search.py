@@ -234,6 +234,12 @@ def test_index_and_search_round_trip(tmp_path, patched_vector_store, patched_emb
     # Ensure we are using the in-memory stand-in to keep the test lightweight
     assert isinstance(indexer.vector_store, InMemoryChroma)
 
+    # Debug: verify files exist
+    print(f"\nDEBUG: source_dir = {source_dir}")
+    print(f"DEBUG: Files in source_dir:")
+    for f in source_dir.iterdir():
+        print(f"  - {f.name} ({f.stat().st_size} bytes)")
+    
     stats = indexer.index_directory(source_dir)
 
     assert stats["files_processed"] == 3
