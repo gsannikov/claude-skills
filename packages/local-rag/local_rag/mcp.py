@@ -22,8 +22,8 @@ from mcp.types import (
 )
 
 # Import from local package
-from . import config
 from .utils import setup_logging
+from .settings import get_settings
 from .indexer import DocumentIndexer
 from .query import DocumentSearcher
 
@@ -116,13 +116,10 @@ async def call_tool(
 ) -> Sequence[TextContent | ImageContent | EmbeddedResource]:
     """Handle tool calls."""
     
-    # Default user_data_dir if not provided
     user_data_dir = arguments.get("user_data_dir")
-    if not user_data_dir:
-        user_data_dir = os.path.expanduser("~/.local-rag-data")
-    
-    # Ensure user_data_dir exists
-    Path(user_data_dir).mkdir(parents=True, exist_ok=True)
+    settings = get_settings(user_data_dir=user_data_dir)
+    settings.apply_runtime_env()
+    Path(settings.user_data_dir).mkdir(parents=True, exist_ok=True)
 
     try:
         if name == "local_rag_index":
@@ -131,14 +128,9 @@ async def call_tool(
             
             if not path:
                 raise ValueError("Path is required")
-            
+
             indexer = DocumentIndexer(
-                user_data_dir=user_data_dir,
-                chunk_size=config.CHUNK_SIZE,
-                chunk_overlap=config.CHUNK_OVERLAP,
-                chunking_strategy=config.CHUNKING_STRATEGY,
-                vector_store_type=config.VECTOR_STORE,
-                embed_model_name=config.EMBED_MODEL
+                settings=settings
             )
             
             source_path = Path(path)
@@ -146,8 +138,8 @@ async def call_tool(
                 return [TextContent(type="text", text=f"Error: Path {path} does not exist")]
 
             if source_path.is_file():
-                count = indexer.index_file(source_path)
-                return [TextContent(type="text", text=f"Indexed file: {path} ({count} chunks)")]
+                count, dropped = indexer.index_file(source_path)
+                return [TextContent(type="text", text=f"Indexed file: {path} ({count} chunks, dropped {dropped})")]
             else:
                 stats = indexer.index_directory(source_path, force=force)
                 return [TextContent(type="text", text=json.dumps(stats, indent=2))]
@@ -155,13 +147,11 @@ async def call_tool(
         elif name == "local_rag_query":
             query = arguments.get("query")
             k = arguments.get("k", 5)
-            method = arguments.get("method", config.SEARCH_METHOD)
-            rerank = arguments.get("rerank", False)
+            method = arguments.get("method", settings.search_method)
+            rerank = arguments.get("rerank", settings.use_reranker)
 
             searcher = DocumentSearcher(
-                user_data_dir=user_data_dir,
-                vector_store_type=config.VECTOR_STORE,
-                embed_model_name=config.EMBED_MODEL,
+                settings=settings,
                 search_method=method,
                 use_reranker=rerank
             )

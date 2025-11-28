@@ -15,8 +15,9 @@ from typing import List, Optional
 from sentence_transformers import SentenceTransformer
 from rapidfuzz import fuzz
 
-from . import config
-from .vectorstore import VectorStoreType, get_vector_store
+from .settings import LocalRagSettings, get_settings
+from .storage import create_repository, VectorStoreRepository
+from .vectorstore import get_vector_store
 from .search import (
     HybridSearcher,
     SearchConfig,
@@ -26,6 +27,8 @@ from .search import (
     SearchResult
 )
 
+DEFAULT_SETTINGS = get_settings()
+
 
 class DocumentSearcher:
     """
@@ -34,27 +37,48 @@ class DocumentSearcher:
 
     def __init__(
         self,
-        user_data_dir: str,
-        vector_store_type: str = config.VECTOR_STORE,
-        embed_model_name: str = config.EMBED_MODEL,
-        search_method: str = config.SEARCH_METHOD,
-        vector_weight: float = config.VECTOR_WEIGHT,
-        bm25_weight: float = config.BM25_WEIGHT,
-        use_reranker: bool = config.USE_RERANKER
+        user_data_dir: Optional[str] = None,
+        vector_store_type: Optional[str] = None,
+        embed_model_name: Optional[str] = None,
+        search_method: Optional[str] = None,
+        vector_weight: Optional[float] = None,
+        bm25_weight: Optional[float] = None,
+        use_reranker: Optional[bool] = None,
+        settings: Optional[LocalRagSettings] = None
     ):
-        self.user_data_dir = user_data_dir
-        self.vector_store_type = vector_store_type
-        self.embed_model_name = embed_model_name
-        self.search_method = search_method
-        self.vector_weight = vector_weight
-        self.bm25_weight = bm25_weight
-        self.use_reranker = use_reranker
+        overrides = {}
+        if user_data_dir is not None:
+            overrides["user_data_dir"] = user_data_dir
+        if vector_store_type is not None:
+            overrides["vector_store"] = vector_store_type
+        if embed_model_name is not None:
+            overrides["embed_model"] = embed_model_name
+        if search_method is not None:
+            overrides["search_method"] = search_method
+        if vector_weight is not None:
+            overrides["vector_weight"] = vector_weight
+        if bm25_weight is not None:
+            overrides["bm25_weight"] = bm25_weight
+        if use_reranker is not None:
+            overrides["use_reranker"] = use_reranker
 
-        self.paths = config.get_paths(user_data_dir)
+        self.settings = settings or get_settings(**overrides)
+        self.settings.apply_runtime_env()
+
+        self.user_data_dir = str(self.settings.user_data_dir)
+        self.vector_store_type = self.settings.vector_store
+        self.embed_model_name = self.settings.embed_model
+        self.search_method = self.settings.search_method
+        self.vector_weight = self.settings.vector_weight
+        self.bm25_weight = self.settings.bm25_weight
+        self.use_reranker = self.settings.use_reranker
+
+        self.paths = self.settings.paths
 
         self._embed_model = None
         self._vector_store = None
         self._hybrid_searcher = None
+        self._repository: Optional[VectorStoreRepository] = None
 
     @property
     def embed_model(self):
@@ -68,24 +92,22 @@ class DocumentSearcher:
         """Lazy initialize vector store."""
         if self._vector_store is None:
             persist_dir = self.paths['persist_dir']
-
             if not persist_dir.exists():
                 raise FileNotFoundError(
                     f"Index not found at {persist_dir}. Please run indexing first."
                 )
-
-            try:
-                store_type = VectorStoreType(self.vector_store_type)
-            except ValueError:
-                store_type = VectorStoreType.CHROMA
-
-            self._vector_store = get_vector_store(
-                store_type=store_type,
-                collection_name="docs",
-                persist_dir=str(persist_dir)
-            )
-
+            # Initialize repository/store
+            self._vector_store = self.repository.store
         return self._vector_store
+
+    @property
+    def repository(self) -> VectorStoreRepository:
+        """Vector store wrapped in repository for idempotent operations."""
+        if self._repository is None:
+            self._repository = create_repository(self.settings, factory=get_vector_store)
+            if self._vector_store is None:
+                self._vector_store = self._repository.store
+        return self._repository
 
     @property
     def hybrid_searcher(self) -> HybridSearcher:
@@ -175,7 +197,7 @@ class DocumentSearcher:
         """Perform hybrid search using HybridSearcher."""
         # Get raw ChromaDB collection for hybrid searcher
         # Note: This requires access to the underlying collection
-        from vectorstore import ChromaVectorStore
+        from .vectorstore import ChromaVectorStore
 
         if isinstance(self.vector_store, ChromaVectorStore):
             collection = self.vector_store.collection
@@ -260,13 +282,13 @@ class DocumentSearcher:
         }
 
 
-def search(query: str, user_data_dir: str, k: int = 5, **kwargs):
+def search(query: str, user_data_dir: Optional[str] = None, k: int = 5, **kwargs):
     """
     Search the index.
 
     Backward-compatible wrapper around DocumentSearcher.
     """
-    searcher = DocumentSearcher(user_data_dir, **kwargs)
+    searcher = DocumentSearcher(user_data_dir=user_data_dir, **kwargs)
     results = searcher.search(query, k)
 
     output = {
@@ -293,31 +315,35 @@ Examples:
     )
 
     parser.add_argument("query", help="Search query")
-    parser.add_argument("--user-data-dir", required=True, help="Path to user data directory")
+    parser.add_argument(
+        "--user-data-dir",
+        default=str(DEFAULT_SETTINGS.user_data_dir),
+        help="Path to user data directory (default: %(default)s)"
+    )
     parser.add_argument("-k", type=int, default=5, help="Number of results (default: 5)")
     parser.add_argument(
         "--method",
         choices=["vector", "bm25", "hybrid"],
-        default=SEARCH_METHOD,
-        help=f"Search method (default: {SEARCH_METHOD})"
+        default=DEFAULT_SETTINGS.search_method,
+        help="Search method"
     )
     parser.add_argument(
         "--store",
         choices=["chroma", "qdrant"],
-        default=VECTOR_STORE,
-        help=f"Vector store backend (default: {VECTOR_STORE})"
+        default=DEFAULT_SETTINGS.vector_store,
+        help="Vector store backend"
     )
     parser.add_argument(
         "--vector-weight",
         type=float,
-        default=VECTOR_WEIGHT,
-        help=f"Weight for vector similarity (default: {VECTOR_WEIGHT})"
+        default=DEFAULT_SETTINGS.vector_weight,
+        help="Weight for vector similarity"
     )
     parser.add_argument(
         "--bm25-weight",
         type=float,
-        default=BM25_WEIGHT,
-        help=f"Weight for BM25 score (default: {BM25_WEIGHT})"
+        default=DEFAULT_SETTINGS.bm25_weight,
+        help="Weight for BM25 score"
     )
     parser.add_argument(
         "--rerank",

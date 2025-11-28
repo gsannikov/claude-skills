@@ -2,13 +2,9 @@ from pathlib import Path
 from pypdf import PdfReader
 from pdf2image import convert_from_path
 from PIL import Image
-import os
 
+from ..settings import LocalRagSettings, get_settings
 from .ocr import run_ocr
-
-USE_OCR = os.getenv("OCR_ENABLED","true").lower()=="true"
-OCR_MAX_PAGES = int(os.getenv("OCR_MAX_PAGES","120"))
-OCR_PAGE_DPI = int(os.getenv("OCR_PAGE_DPI","200"))
 
 # Text-based files (read directly)
 TEXT_EXTS = {
@@ -58,7 +54,8 @@ def _read_doc(p: Path) -> str:
 
     return ""
 
-def read_text_with_ocr(p: Path) -> str:
+def read_text_with_ocr(p: Path, settings: LocalRagSettings | None = None) -> str:
+    settings = settings or get_settings()
     ext = p.suffix.lower()
     if ext in TEXT_EXTS:
         return p.read_text(errors="ignore")
@@ -80,20 +77,19 @@ def read_text_with_ocr(p: Path) -> str:
             r = PdfReader(str(p))
             texts = [(pg.extract_text() or "") for pg in r.pages]
             joined = "\n".join(texts).strip()
-            if not USE_OCR or (len(texts) and (sum(len(t) for t in texts)/max(1,len(texts)) >= 100)):
+            if not settings.ocr_enabled or (len(texts) and (sum(len(t) for t in texts)/max(1,len(texts)) >= 100)):
                 return joined
-            pages = min(len(r.pages), OCR_MAX_PAGES)
+            pages = min(len(r.pages), settings.ocr_max_pages)
         except Exception as e:
             print(f"PDF text extraction failed for {p.name}: {e}")
             pages = None
-
-        if USE_OCR:
-            imgs = convert_from_path(str(p), dpi=OCR_PAGE_DPI, first_page=1, last_page=(pages or 1))
-            return run_ocr(imgs)
+        if settings.ocr_enabled:
+            imgs = convert_from_path(str(p), dpi=settings.ocr_page_dpi, first_page=1, last_page=(pages or 1))
+            return run_ocr(imgs, settings=settings)
         return joined
 
-    if ext in IMAGE_EXTS and USE_OCR:
+    if ext in IMAGE_EXTS and settings.ocr_enabled:
         img = Image.open(str(p)).convert("RGB")
-        return run_ocr([img])
+        return run_ocr([img], settings=settings)
 
     return ""

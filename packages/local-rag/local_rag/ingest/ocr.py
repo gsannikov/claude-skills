@@ -2,18 +2,19 @@ import os
 import io
 import base64
 import hashlib
+from pathlib import Path
+from typing import List, Optional
 
 import requests
-from pathlib import Path
-from typing import List
 from PIL import Image
 
-ENGINE = os.getenv("OCR_ENGINE", "paddle").lower()
-OCR_LANG = os.getenv("OCR_LANG", "en,he")  # Default: English + Hebrew
+from ..settings import LocalRagSettings, get_settings
 
-_default_cache_dir = Path.home() / ".cache" / "local-rag" / "ocr_cache"
-CACHE_DIR = Path(os.getenv("OCR_CACHE_DIR", _default_cache_dir))
-CACHE_DIR.mkdir(parents=True, exist_ok=True)
+# Cached defaults for backward compatibility with tests/env monkeypatching
+_DEFAULT_SETTINGS = get_settings()
+ENGINE = (_DEFAULT_SETTINGS.ocr_engine or "paddle").lower()
+OCR_LANG = _DEFAULT_SETTINGS.ocr_lang
+CACHE_DIR = None  # Populated lazily
 
 def _img_sha(img: Image.Image) -> str:
     b = io.BytesIO()
@@ -21,37 +22,53 @@ def _img_sha(img: Image.Image) -> str:
     data = b.getvalue()
     return hashlib.sha1(data).hexdigest()
 
-def _cache_get(h): 
-    p = CACHE_DIR / f"{h}.txt"
+def _get_cache_dir(settings: Optional[LocalRagSettings] = None) -> Path:
+    global CACHE_DIR
+    if CACHE_DIR is not None:
+        return CACHE_DIR
+    settings = settings or _DEFAULT_SETTINGS
+    default_dir = Path.home() / ".cache" / "local-rag" / "ocr_cache"
+    cache_dir = settings.ocr_cache_dir or default_dir
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    CACHE_DIR = cache_dir
+    return cache_dir
+
+def _cache_get(h: str, cache_dir: Optional[Path] = None):
+    cache_dir = cache_dir or _get_cache_dir()
+    p = cache_dir / f"{h}.txt"
     return p.read_text() if p.exists() else None
 
-def _cache_put(h, txt): 
-    (CACHE_DIR / f"{h}.txt").write_text(txt)
 
-def ocr_surya(images: List[Image.Image]) -> str:
+def _cache_put(h: str, txt: str, cache_dir: Optional[Path] = None):
+    cache_dir = cache_dir or _get_cache_dir()
+    (cache_dir / f"{h}.txt").write_text(txt)
+
+def ocr_surya(images: List[Image.Image], settings: LocalRagSettings) -> str:
     from surya.ocr import run_ocr
     import numpy as np
+    cache_dir = _get_cache_dir(settings)
     texts=[]
     for im in images:
         h=_img_sha(im)
-        hit=_cache_get(h)
+        hit=_cache_get(h, cache_dir)
         if hit is not None:
             texts.append(hit)
             continue
         out = run_ocr([np.array(im)])
         txt = "\n".join(block["text"] for page in out for block in page["text_blocks"])
-        _cache_put(h, txt)
+        _cache_put(h, txt, cache_dir)
         texts.append(txt)
     return "\n\f\n".join(texts)
 
-def ocr_paddle(images: List[Image.Image]) -> str:
+def ocr_paddle(images: List[Image.Image], settings: LocalRagSettings) -> str:
     from paddleocr import PaddleOCR
     import numpy as np
+    cache_dir = _get_cache_dir(settings)
 
     # Parse language config - PaddleOCR uses specific lang codes
     # For Hebrew, we use 'ar' (Arabic) as it shares RTL characteristics
     # or 'latin' for mixed content. 'multilingual' also works.
-    lang = OCR_LANG.split(',')[0].strip() if ',' not in OCR_LANG else 'en'
+    lang = settings.ocr_lang.split(',')[0].strip() if ',' not in settings.ocr_lang else 'en'
 
     # Map common language codes to PaddleOCR codes
     lang_map = {
@@ -67,7 +84,7 @@ def ocr_paddle(images: List[Image.Image]) -> str:
     texts = []
     for im in images:
         h = _img_sha(im)
-        hit = _cache_get(h)
+        hit = _cache_get(h, cache_dir)
         if hit is not None:
             texts.append(hit)
             continue
@@ -75,17 +92,18 @@ def ocr_paddle(images: List[Image.Image]) -> str:
         img_array = np.array(im)
         res = ocr.ocr(img_array, cls=True)
         txt = "\n".join([line[1][0] for line in (res[0] or [])])
-        _cache_put(h, txt)
+        _cache_put(h, txt, cache_dir)
         texts.append(txt)
     return "\n\f\n".join(texts)
 
-def ocr_deepseek(images: List[Image.Image]) -> str:
+def ocr_deepseek(images: List[Image.Image], settings: LocalRagSettings) -> str:
+    cache_dir = _get_cache_dir(settings)
     url = os.getenv("DEEPSEEK_OCR_URL")
     model = os.getenv("DEEPSEEK_OCR_MODEL")
     texts=[]
     for im in images:
         h=_img_sha(im)
-        hit=_cache_get(h)
+        hit=_cache_get(h, cache_dir)
         if hit is not None:
             texts.append(hit)
             continue
@@ -94,15 +112,19 @@ def ocr_deepseek(images: List[Image.Image]) -> str:
         payload = {"model": model, "prompt": "", "images": [base64.b64encode(b.getvalue()).decode()], "temperature": 0.0, "max_tokens": 4096}
         data = requests.post(url, json=payload, timeout=120).json()
         txt = data.get("choices",[{}])[0].get("text","")
-        _cache_put(h, txt)
+        _cache_put(h, txt, cache_dir)
         texts.append(txt)
     return "\n\f\n".join(texts)
 
-def run_ocr(images: List[Image.Image]) -> str:
-    if ENGINE == "surya":
-        return ocr_surya(images)
-    if ENGINE == "paddle":
-        return ocr_paddle(images)
-    if ENGINE == "deepseek":
-        return ocr_deepseek(images)
+def run_ocr(images: List[Image.Image], settings: Optional[LocalRagSettings] = None) -> str:
+    settings = settings or get_settings()
+    if not images:
+        return ""
+    engine = (globals().get("ENGINE") or settings.ocr_engine or "paddle").lower()
+    if engine == "surya":
+        return ocr_surya(images, settings)
+    if engine == "paddle":
+        return ocr_paddle(images, settings)
+    if engine == "deepseek":
+        return ocr_deepseek(images, settings)
     return ""

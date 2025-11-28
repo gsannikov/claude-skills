@@ -49,6 +49,11 @@ local-rag query "neural network training" --user-data-dir ~/rag-data
 local-rag index ~/Documents/research --user-data-dir ~/rag-data
 ```
 
+Optional flags:
+- `--parallel 6` to enable multithreaded ingestion on Apple silicon
+- `--include "*.md" "*.pdf"` / `--exclude "archive/**"` to control scope
+- `--max-errors 10` to abort early on systemic failures
+
 ### Query the database
 ```bash
 local-rag query "neural network training" --user-data-dir ~/rag-data
@@ -120,7 +125,8 @@ The indexer automatically skips:
 
 ### Storage Location
 ```
-~/MyDrive/claude-skills-data/local-rag/
+~/Library/Application Support/local-rag/   # macOS default
+~/.local-rag-data                          # other platforms (default)
 ├── vectordb/              # Vector database (ChromaDB/Qdrant)
 └── state/
     ├── ingest_state.json  # File tracking
@@ -144,6 +150,11 @@ The indexer automatically skips:
 | `OCR_LANG` | `en,he` | OCR language(s) |
 | `OCR_MAX_PAGES` | `120` | Max pages to OCR |
 | `OCR_PAGE_DPI` | `200` | DPI for OCR |
+| `CHUNK_MIN_CHARS` | `40` | Drop chunks shorter than this before embedding |
+| `CHUNK_STRIP_CONTROL` | `true` | Remove control characters before embedding |
+| `OCR_CACHE_DIR` | `~/.cache/local-rag/ocr_cache` | Cache OCR outputs |
+| `LOCAL_RAG_PARALLEL` | `6` | Default worker count for indexing |
+| `LOCAL_RAG_MAX_ERRORS` | `20` | Stop indexing after this many errors |
 
 ### Embedding Model
 Uses `sentence-transformers/all-MiniLM-L6-v2`:

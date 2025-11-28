@@ -12,6 +12,8 @@ __all__ = [
     "search",
     "vectorstore",
     "visualize",
+    "settings",
+    "storage",
 ]
 
 __version__ = "2.0.0"

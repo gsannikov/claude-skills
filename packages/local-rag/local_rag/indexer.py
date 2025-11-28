@@ -10,16 +10,24 @@ import sys
 import hashlib
 import json
 import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import List, Generator, Tuple, Optional
+import threading
 
 from sentence_transformers import SentenceTransformer
 
-from . import config
+from .settings import LocalRagSettings, get_settings
 from .ingest.extractor import read_text_with_ocr as read_text
+from .ingest.discover import discover_files
+from .ingest.filters import filter_chunks
 from .chunking import ChunkingStrategy, get_chunker, chunk_text, Chunk
-from .vectorstore import VectorStoreType, get_vector_store, get_vector_store_from_env
 from .search import BM25Index
+from .storage import create_repository, VectorStoreRepository
+from .vectorstore import get_vector_store
+
+# Load defaults once
+DEFAULT_SETTINGS = get_settings()
 
 
 # Configuration defaults
@@ -79,29 +87,67 @@ class DocumentIndexer:
 
     def __init__(
         self,
-        user_data_dir: str,
-        chunk_size: int = config.CHUNK_SIZE,
-        chunk_overlap: int = config.CHUNK_OVERLAP,
-        chunking_strategy: str = config.CHUNKING_STRATEGY,
-        vector_store_type: str = config.VECTOR_STORE,
-        embed_model_name: str = config.EMBED_MODEL,
-        build_bm25: bool = True
+        user_data_dir: Optional[str] = None,
+        chunk_size: Optional[int] = None,
+        chunk_overlap: Optional[int] = None,
+        chunking_strategy: Optional[str] = None,
+        vector_store_type: Optional[str] = None,
+        embed_model_name: Optional[str] = None,
+        build_bm25: bool = True,
+        include_globs: Optional[List[str]] = None,
+        exclude_globs: Optional[List[str]] = None,
+        parallel_workers: Optional[int] = None,
+        max_errors: Optional[int] = None,
+        settings: Optional[LocalRagSettings] = None
     ):
-        self.user_data_dir = user_data_dir
-        self.chunk_size = chunk_size
-        self.chunk_overlap = chunk_overlap
-        self.chunking_strategy = chunking_strategy
-        self.vector_store_type = vector_store_type
-        self.embed_model_name = embed_model_name
-        self.build_bm25 = build_bm25
+        overrides = {}
+        if user_data_dir is not None:
+            overrides["user_data_dir"] = user_data_dir
+        if chunk_size is not None:
+            overrides["chunk_size"] = chunk_size
+        if chunk_overlap is not None:
+            overrides["chunk_overlap"] = chunk_overlap
+        if chunking_strategy is not None:
+            overrides["chunking_strategy"] = chunking_strategy
+        if vector_store_type is not None:
+            overrides["vector_store"] = vector_store_type
+        if embed_model_name is not None:
+            overrides["embed_model"] = embed_model_name
+        if include_globs is not None:
+            overrides["include_globs"] = include_globs
+        if exclude_globs is not None:
+            overrides["exclude_globs"] = exclude_globs
+        if parallel_workers is not None:
+            overrides["parallel_workers"] = parallel_workers
+        if max_errors is not None:
+            overrides["max_errors"] = max_errors
 
-        self.paths = config.get_paths(user_data_dir)
-        self.state = load_state(self.paths['state_path'])
+        self.settings = settings or get_settings(**overrides)
+        self.settings.apply_runtime_env()
+
+        self.user_data_dir = str(self.settings.user_data_dir)
+        self.chunk_size = self.settings.chunk_size
+        self.chunk_overlap = self.settings.chunk_overlap
+        self.chunking_strategy = self.settings.chunking_strategy
+        self.vector_store_type = self.settings.vector_store
+        self.embed_model_name = self.settings.embed_model
+        self.build_bm25 = build_bm25
+        self.include_globs = list(self.settings.include_globs or [])
+        self.exclude_globs = list(self.settings.exclude_globs or [])
+        self.parallel_workers = self.settings.parallel_workers
+        self.max_errors = self.settings.max_errors
+        self.min_chunk_chars = self.settings.chunk_min_chars
+        self.strip_control_chars = self.settings.chunk_strip_control
+
+        self.paths = self.settings.paths
+        self.state = load_state(self.paths["state_path"])
 
         self._embed_model = None
         self._vector_store = None
         self._chunker = None
         self._bm25_index = None
+        self._repository: Optional[VectorStoreRepository] = None
+        self._write_lock = threading.Lock()
 
     @property
     def embed_model(self):
@@ -115,18 +161,18 @@ class DocumentIndexer:
     def vector_store(self):
         """Lazy initialize vector store."""
         if self._vector_store is None:
-            print(f"Initializing {self.vector_store_type} vector store...")
-            try:
-                store_type = VectorStoreType(self.vector_store_type)
-            except ValueError:
-                store_type = VectorStoreType.CHROMA
-
-            self._vector_store = get_vector_store(
-                store_type=store_type,
-                collection_name="docs",
-                persist_dir=str(self.paths['persist_dir'])
-            )
+            # Ensure repository is initialized so we reuse the same store instance
+            self._vector_store = self.repository.store
         return self._vector_store
+
+    @property
+    def repository(self) -> VectorStoreRepository:
+        """Vector store wrapped in repository for idempotent upserts."""
+        if self._repository is None:
+            self._repository = create_repository(self.settings, factory=get_vector_store)
+            if self._vector_store is None:
+                self._vector_store = self._repository.store
+        return self._repository
 
     @property
     def chunker(self):
@@ -188,47 +234,47 @@ class DocumentIndexer:
         stored_hash = self.state.get(str(path), {}).get("hash")
         return current_hash != stored_hash
 
-    def index_file(self, path: Path) -> int:
+    def index_file(self, path: Path) -> Tuple[int, int]:
         """
         Index a single file.
 
         Returns:
-            Number of chunks indexed
+            (Number of chunks indexed, chunks dropped)
         """
         if not self.should_index_file(path):
-            return 0
+            return 0, 0
 
         try:
-            text = read_text(path)
+            text = read_text(path, settings=self.settings)
         except Exception as e:
             print(f"Error reading {path.name}: {e}")
-            return 0
+            return 0, 0
 
         if not text.strip():
-            return 0
-
-        # Delete existing chunks for this file
-        self.vector_store.delete_documents(where={"path": str(path)})
-
-        # Also remove from BM25 index
-        if self.bm25_index:
-            # Remove old entries (by prefix matching on doc_id)
-            old_ids = [doc_id for doc_id in self.bm25_index.doc_ids if doc_id.startswith(str(path))]
-            for old_id in old_ids:
-                self.bm25_index.remove_document(old_id)
+            return 0, 0
 
         # Chunk the text
         chunks = list(self.chunker.chunk(text, file_path=str(path)))
 
         if not chunks:
-            return 0
+            return 0, 0
+
+        # Quality filter
+        filtered_chunks, dropped = filter_chunks(
+            chunks,
+            min_chars=self.min_chunk_chars,
+            strip_control=self.strip_control_chars,
+        )
+
+        if not filtered_chunks:
+            return 0, dropped
 
         # Prepare data for indexing
         ids = []
         texts = []
         metadatas = []
 
-        for i, chunk in enumerate(chunks):
+        for i, chunk in enumerate(filtered_chunks):
             chunk_id = f"{path}:{chunk.start}-{chunk.end}"
             ids.append(chunk_id)
             texts.append(chunk.text)
@@ -252,26 +298,37 @@ class DocumentIndexer:
         # Generate embeddings
         embeddings = self.embed_model.encode(texts, normalize_embeddings=True)
 
-        # Add to vector store
-        self.vector_store.add_documents(
-            ids=ids,
-            texts=texts,
-            embeddings=embeddings.tolist(),
-            metadatas=metadatas
-        )
+        with self._write_lock:
+            # Delete existing chunks for this file
+            self.repository.delete_documents(where={"path": str(path)})
 
-        # Add to BM25 index
-        if self.bm25_index:
-            self.bm25_index.add_documents(ids, texts)
+            # Also remove from BM25 index
+            if self.bm25_index:
+                # Remove old entries (by prefix matching on doc_id)
+                old_ids = [doc_id for doc_id in self.bm25_index.doc_ids if doc_id.startswith(str(path))]
+                for old_id in old_ids:
+                    self.bm25_index.remove_document(old_id)
 
-        # Update state
-        self.state[str(path)] = {
-            "hash": fhash(path),
-            "mtime": int(path.stat().st_mtime),
-            "chunks": len(chunks)
-        }
+            # Add to vector store
+            self.repository.upsert_documents(
+                ids=ids,
+                texts=texts,
+                embeddings=embeddings.tolist(),
+                metadatas=metadatas
+            )
 
-        return len(chunks)
+            # Add to BM25 index
+            if self.bm25_index:
+                self.bm25_index.add_documents(ids, texts)
+
+            # Update state
+            self.state[str(path)] = {
+                "hash": fhash(path),
+                "mtime": int(path.stat().st_mtime),
+                "chunks": len(filtered_chunks)
+            }
+
+        return len(filtered_chunks), dropped
 
     def index_directory(self, source_dir: Path, force: bool = False) -> dict:
         """
@@ -288,31 +345,70 @@ class DocumentIndexer:
             "files_processed": 0,
             "files_skipped": 0,
             "chunks_created": 0,
+            "chunks_filtered": 0,
             "errors": 0
         }
 
         print(f"Scanning {source_dir}...")
 
-        for path in source_dir.rglob("*"):
+        candidates = discover_files(
+            source_dir,
+            allowed_exts=ALLOWED_EXTS,
+            exclude_dirs=EXCLUDE_DIRS,
+            include_globs=self.include_globs,
+            exclude_globs=self.exclude_globs,
+        )
+
+        def process_path(path: Path):
             if not self.should_index_file(path):
-                continue
-
-            # Check if file changed (unless forcing)
+                return ("skip", path, 0, 0, None)
             if not force and not self.is_file_changed(path):
-                stats["files_skipped"] += 1
-                continue
-
+                return ("skip", path, 0, 0, None)
             try:
-                num_chunks = self.index_file(path)
+                num_chunks, dropped = self.index_file(path)
+                return ("ok", path, num_chunks, dropped, None)
+            except Exception as e:
+                return ("error", path, 0, 0, e)
+
+        paths = list(candidates)
+
+        # Decide execution strategy
+        if self.parallel_workers and self.parallel_workers > 1:
+            with ThreadPoolExecutor(max_workers=self.parallel_workers) as executor:
+                futures = {executor.submit(process_path, p): p for p in paths}
+                for future in as_completed(futures):
+                    status, path, num_chunks, dropped, err = future.result()
+                    if status == "error":
+                        print(f"Error indexing {path.name}: {err}")
+                        stats["errors"] += 1
+                        if self.max_errors and stats["errors"] >= self.max_errors:
+                            print(f"Max errors reached ({self.max_errors}); aborting.")
+                            break
+                    elif num_chunks > 0:
+                        stats["files_processed"] += 1
+                        stats["chunks_created"] += num_chunks
+                        stats["chunks_filtered"] += dropped
+                        print(f"Indexed: {path.name} ({num_chunks} chunks, dropped {dropped})")
+                    else:
+                        stats["files_skipped"] += 1
+        else:
+            for path in paths:
+                status, path, num_chunks, dropped, err = process_path(path)
+                if status == "error":
+                    print(f"Error indexing {path.name}: {err}")
+                    stats["errors"] += 1
+                    if self.max_errors and stats["errors"] >= self.max_errors:
+                        print(f"Max errors reached ({self.max_errors}); aborting.")
+                        break
+                    continue
+
                 if num_chunks > 0:
                     stats["files_processed"] += 1
                     stats["chunks_created"] += num_chunks
-                    print(f"Indexed: {path.name} ({num_chunks} chunks)")
+                    stats["chunks_filtered"] += dropped
+                    print(f"Indexed: {path.name} ({num_chunks} chunks, dropped {dropped})")
                 else:
                     stats["files_skipped"] += 1
-            except Exception as e:
-                print(f"Error indexing {path.name}: {e}")
-                stats["errors"] += 1
 
         # Save state and BM25 index
         save_state(self.paths['state_path'], self.state)
@@ -329,26 +425,45 @@ class DocumentIndexer:
             "chunking_strategy": self.chunking_strategy,
             "chunk_size": self.chunk_size,
             "chunk_overlap": self.chunk_overlap,
-            "total_documents": self.vector_store.count(),
+            "total_documents": self.repository.count(),
             "indexed_files": len(self.state),
             "bm25_enabled": self.build_bm25 and self.bm25_index is not None,
             "bm25_documents": self.bm25_index.doc_count if self.bm25_index else 0
         }
 
 
-def index_directory(source_dir: Path, user_data_dir: str, **kwargs):
+def index_directory(
+    source_dir: Path,
+    user_data_dir: Optional[str] = None,
+    settings: Optional[LocalRagSettings] = None,
+    include_globs: Optional[List[str]] = None,
+    exclude_globs: Optional[List[str]] = None,
+    parallel_workers: Optional[int] = None,
+    max_errors: Optional[int] = None,
+    **kwargs
+):
     """
     Index all files in directory.
 
     Backward-compatible wrapper around DocumentIndexer.
     """
-    indexer = DocumentIndexer(user_data_dir, **kwargs)
+    indexer = DocumentIndexer(
+        user_data_dir=user_data_dir,
+        settings=settings,
+        include_globs=include_globs,
+        exclude_globs=exclude_globs,
+        parallel_workers=parallel_workers,
+        max_errors=max_errors,
+        **kwargs
+    )
     stats = indexer.index_directory(source_dir)
 
     print(f"\nIndexing complete:")
     print(f"  Files processed: {stats['files_processed']}")
     print(f"  Files skipped:   {stats['files_skipped']}")
     print(f"  Chunks created:  {stats['chunks_created']}")
+    if stats.get("chunks_filtered"):
+        print(f"  Chunks dropped:  {stats['chunks_filtered']}")
     if stats['errors']:
         print(f"  Errors:          {stats['errors']}")
 
@@ -369,35 +484,63 @@ Examples:
     )
 
     parser.add_argument("source_dir", help="Directory to index")
-    parser.add_argument("--user-data-dir", required=True, help="Path to user data directory")
+    parser.add_argument(
+        "--user-data-dir",
+        default=str(DEFAULT_SETTINGS.user_data_dir),
+        help="Path to user data directory (default: %(default)s)"
+    )
     parser.add_argument(
         "--strategy",
         choices=["fixed", "sentence", "semantic", "template"],
-        default=CHUNKING_STRATEGY,
-        help=f"Chunking strategy (default: {CHUNKING_STRATEGY})"
+        default=DEFAULT_SETTINGS.chunking_strategy,
+        help="Chunking strategy"
     )
     parser.add_argument(
         "--store",
         choices=["chroma", "qdrant"],
-        default=VECTOR_STORE,
-        help=f"Vector store backend (default: {VECTOR_STORE})"
+        default=DEFAULT_SETTINGS.vector_store,
+        help="Vector store backend"
     )
     parser.add_argument(
         "--chunk-size",
         type=int,
-        default=CHUNK_SIZE,
-        help=f"Chunk size in characters (default: {CHUNK_SIZE})"
+        default=DEFAULT_SETTINGS.chunk_size,
+        help="Chunk size in characters"
     )
     parser.add_argument(
         "--chunk-overlap",
         type=int,
-        default=CHUNK_OVERLAP,
-        help=f"Chunk overlap in characters (default: {CHUNK_OVERLAP})"
+        default=DEFAULT_SETTINGS.chunk_overlap,
+        help="Chunk overlap in characters"
     )
     parser.add_argument(
         "--no-bm25",
         action="store_true",
         help="Disable BM25 index building"
+    )
+    parser.add_argument(
+        "--parallel",
+        type=int,
+        default=DEFAULT_SETTINGS.parallel_workers,
+        help="Worker count for indexing (defaults to %(default)s)"
+    )
+    parser.add_argument(
+        "--include",
+        nargs="*",
+        default=DEFAULT_SETTINGS.include_globs or None,
+        help="Glob patterns to include (relative to source dir)"
+    )
+    parser.add_argument(
+        "--exclude",
+        nargs="*",
+        default=DEFAULT_SETTINGS.exclude_globs or None,
+        help="Glob patterns to exclude (relative to source dir)"
+    )
+    parser.add_argument(
+        "--max-errors",
+        type=int,
+        default=DEFAULT_SETTINGS.max_errors,
+        help="Abort after this many errors (defaults to %(default)s)"
     )
     parser.add_argument(
         "--force",
@@ -423,7 +566,11 @@ Examples:
         chunk_overlap=args.chunk_overlap,
         chunking_strategy=args.strategy,
         vector_store_type=args.store,
-        build_bm25=not args.no_bm25
+        build_bm25=not args.no_bm25,
+        include_globs=args.include,
+        exclude_globs=args.exclude,
+        parallel_workers=args.parallel,
+        max_errors=args.max_errors,
     )
 
     if args.stats:
@@ -437,6 +584,8 @@ Examples:
     print(f"  Files processed: {stats['files_processed']}")
     print(f"  Files skipped:   {stats['files_skipped']}")
     print(f"  Chunks created:  {stats['chunks_created']}")
+    if stats.get("chunks_filtered"):
+        print(f"  Chunks dropped:  {stats['chunks_filtered']}")
     if stats['errors']:
         print(f"  Errors:          {stats['errors']}")
 
