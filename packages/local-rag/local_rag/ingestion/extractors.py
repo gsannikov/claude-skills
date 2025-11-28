@@ -82,19 +82,28 @@ def read_text_with_ocr(p: Path, settings: LocalRagSettings | None = None) -> str
         return _read_xlsx(p)
 
     if ext == ".pdf":
+        print(f"PDF: Reading {p.name}...", flush=True)
         try:
             _configure_pdf_logging()
             r = PdfReader(str(p), strict=False)
+            print(f"PDF: Found {len(r.pages)} pages", flush=True)
             texts = [(pg.extract_text() or "") for pg in r.pages]
             joined = "\n".join(texts).strip()
-            if not settings.ocr_enabled or (len(texts) and (sum(len(t) for t in texts)/max(1,len(texts)) >= 100)):
+            avg_text_len = sum(len(t) for t in texts)/max(1,len(texts))
+            print(f"PDF: Average {avg_text_len:.0f} chars/page", flush=True)
+            
+            if not settings.ocr_enabled or (len(texts) and avg_text_len >= 100):
+                print(f"PDF: Using extracted text (OCR={settings.ocr_enabled}, avg_len={avg_text_len:.0f})", flush=True)
                 return joined
             pages = min(len(r.pages), settings.ocr_max_pages)
+            print(f"PDF: Will OCR first {pages} pages", flush=True)
         except Exception as e:
-            print(f"PDF text extraction failed for {p.name}: {e}")
+            print(f"PDF text extraction failed for {p.name}: {e}", flush=True)
             pages = None
         if settings.ocr_enabled:
+            print(f"PDF: Converting to images (dpi={settings.ocr_page_dpi})...", flush=True)
             imgs = convert_from_path(str(p), dpi=settings.ocr_page_dpi, first_page=1, last_page=(pages or 1))
+            print(f"PDF: Converted {len(imgs)} images, starting OCR...", flush=True)
             return run_ocr(imgs, settings=settings)
         return joined
 
