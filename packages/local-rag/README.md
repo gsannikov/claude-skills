@@ -13,7 +13,20 @@ Hybrid semantic + keyword search over your local documents using embeddings, BM2
 - **Persistent Storage**: Local vector database + BM25 index
 - **Incremental Updates**: Only re-index changed files
 
-## Quickstart (no virtualenv)
+## Quickstart (Docker - Recommended)
+
+```bash
+# From repo root
+cd packages/local-rag
+
+# Run the wrapper script (builds image automatically)
+./run_mcp_docker.sh
+
+# The MCP server is configured in claude.desktop.mcp.json to use this script.
+# Just restart Claude Desktop and use the tools!
+```
+
+## Quickstart (Local Python)
 
 ```bash
 # From repo root
