@@ -93,9 +93,12 @@ query rag what are the key findings about climate change?
 ### User Data Location
 ```
 ~/MyDrive/claude-skills-data/local-rag/
-├── chromadb/           # Vector database storage
+├── vectordb/           # Vector database storage
+│   ├── chroma.sqlite3  # ChromaDB database
+│   └── [uuid]/         # Collection data
 └── state/
-    └── ingest_state.json  # File tracking state
+    ├── ingest_state.json  # File tracking state
+    └── bm25_index.json    # BM25 keyword index
 ```
 
 ### Environment Variables
@@ -169,6 +172,8 @@ pytesseract>=0.3.10
 - **poppler-utils**: PDF to image conversion
 - **tesseract**: OCR engine
 - **tesseract-lang**: Language packs (e.g., Hebrew)
+- **qpdf**: Required by OCRmyPDF
+- **ghostscript**: Required by OCRmyPDF
 - **antiword**: Legacy .doc extraction (optional)
 
 Install on macOS:
