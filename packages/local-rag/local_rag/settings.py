@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import os
 import platform
-from functools import lru_cache
 from pathlib import Path
 from typing import List, Optional
 
@@ -90,10 +89,12 @@ class LocalRagSettings(BaseSettings):
         }
 
 
-@lru_cache(maxsize=1)
 def get_settings(**overrides) -> LocalRagSettings:
     """
-    Load settings once per process; allows overrides for tests or CLI injection.
+    Create settings with optional overrides.
+    
+    Each call creates fresh settings, allowing tests and different contexts
+    to use independent configurations.
     """
     settings = LocalRagSettings(**overrides)
     settings.apply_runtime_env()
