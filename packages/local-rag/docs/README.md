@@ -38,24 +38,17 @@ Complete documentation for the Local RAG project.
 
 ## Quick Start
 
-**New to the project?** Start here:
+**New to the project?**
+- Read [problem-and-vision.md](problem-and-vision.md)
+- Install: [user-guides/installation.md](user-guides/installation.md)
+- Use: [user-guides/usage.md](user-guides/usage.md)
 
-1. Read [problem-and-vision.md](problem-and-vision.md) - Understand what we're building
-2. Follow [user-guides/installation.md](user-guides/installation.md) - Get set up
-3. Learn from [user-guides/usage.md](user-guides/usage.md) - Start using it
-
-**Want to contribute?** Read these:
-
-1. [architecture.md](architecture.md) - Understand the system
-2. [coding-conventions.md](coding-conventions.md) - Follow our standards
-3. [backlog.md](backlog.md) - Find tasks to work on
-4. [agent-guide.md](agent-guide.md) - Work with Claude Code
-
-**Looking for specific info?** Jump to:
-
-- [Features and bugs](features-and-bugs.md) - Known issues
-- [Roadmap](roadmap.md) - What's coming
-- [Changelog](changelog.md) - What changed
+**Contribute**
+- [architecture.md](architecture.md)
+- [coding-conventions.md](coding-conventions.md)
+- [backlog.md](backlog.md)
+- [agent-guide.md](agent-guide.md)
+- [changelog.md](changelog.md)
 
 ---
 
