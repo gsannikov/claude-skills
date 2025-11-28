@@ -145,6 +145,7 @@ The indexer automatically skips:
 | `VECTOR_WEIGHT` | `0.7` | Vector search weight |
 | `BM25_WEIGHT` | `0.3` | BM25 search weight |
 | `USE_RERANKER` | `false` | Enable cross-encoder |
+| `EMBED_BATCH_SIZE` | `32` | Batch size for embedding model encode() |
 | `OCR_ENABLED` | `true` | Enable OCR |
 | `OCR_ENGINE` | `paddle` | OCR engine (paddle, surya, deepseek) |
 | `OCR_LANG` | `en,he` | OCR language(s) |

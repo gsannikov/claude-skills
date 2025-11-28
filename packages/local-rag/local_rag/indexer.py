@@ -93,6 +93,7 @@ class DocumentIndexer:
         chunking_strategy: Optional[str] = None,
         vector_store_type: Optional[str] = None,
         embed_model_name: Optional[str] = None,
+        embed_batch_size: Optional[int] = None,
         build_bm25: bool = True,
         include_globs: Optional[List[str]] = None,
         exclude_globs: Optional[List[str]] = None,
@@ -113,6 +114,8 @@ class DocumentIndexer:
             overrides["vector_store"] = vector_store_type
         if embed_model_name is not None:
             overrides["embed_model"] = embed_model_name
+        if embed_batch_size is not None:
+            overrides["embed_batch_size"] = embed_batch_size
         if include_globs is not None:
             overrides["include_globs"] = include_globs
         if exclude_globs is not None:
@@ -509,6 +512,12 @@ Examples:
         help="Vector store backend"
     )
     parser.add_argument(
+        "--embed-batch-size",
+        type=int,
+        default=DEFAULT_SETTINGS.embed_batch_size,
+        help="Batch size for embedding model encode() calls"
+    )
+    parser.add_argument(
         "--chunk-size",
         type=int,
         default=DEFAULT_SETTINGS.chunk_size,
@@ -573,6 +582,7 @@ Examples:
         chunk_overlap=args.chunk_overlap,
         chunking_strategy=args.strategy,
         vector_store_type=args.store,
+        embed_batch_size=args.embed_batch_size,
         build_bm25=not args.no_bm25,
         include_globs=args.include,
         exclude_globs=args.exclude,
