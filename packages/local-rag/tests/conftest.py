@@ -180,7 +180,7 @@ sys.modules["mcp_server"] = fake_mcp
 PACKAGE_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PACKAGE_ROOT))
 
-import local_rag.vectorstore as vectorstore  # noqa: E402
+from local_rag.adapters import vectorstore  # noqa: E402
 from local_rag.ingestion import ocr as ingest_ocr  # noqa: E402
 from local_rag.ingestion import extractors as ingest_extractor  # noqa: E402
 from local_rag.ingestion import utils as ingest_utils  # noqa: E402

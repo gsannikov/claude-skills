@@ -24,7 +24,7 @@ from ..ingestion.filters import filter_chunks
 from ..ingestion.chunking import ChunkingStrategy, get_chunker, chunk_text, Chunk
 from ..search.hybrid import BM25Index
 from ..storage import create_repository, VectorStoreRepository
-from ..vectorstore import get_vector_store
+from ..adapters.vectorstore import get_vector_store
 
 # Load defaults once
 DEFAULT_SETTINGS = get_settings()

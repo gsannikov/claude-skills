@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import Callable, Dict, List, Optional
 
 from ..settings import LocalRagSettings
-from ..vectorstore import BaseVectorStore, VectorStoreType, get_vector_store
+from ..adapters.vectorstore import BaseVectorStore, VectorStoreType, get_vector_store
 
 
 class VectorStoreRepository:

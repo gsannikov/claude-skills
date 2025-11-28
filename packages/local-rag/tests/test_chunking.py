@@ -2,7 +2,7 @@
 
 import pytest
 
-from local_rag.chunking import (
+from local_rag.ingestion.chunking import (
     Chunk,
     ChunkingStrategy,
     BaseChunker,

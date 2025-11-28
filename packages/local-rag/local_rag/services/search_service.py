@@ -197,7 +197,7 @@ class DocumentSearcher:
         """Perform hybrid search using HybridSearcher."""
         # Get raw ChromaDB collection for hybrid searcher
         # Note: This requires access to the underlying collection
-        from ..vectorstore import ChromaVectorStore
+        from ..adapters.vectorstore import ChromaVectorStore
 
         if isinstance(self.vector_store, ChromaVectorStore):
             collection = self.vector_store.collection

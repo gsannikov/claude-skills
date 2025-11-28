@@ -86,9 +86,10 @@ class _FakeImage:
     def convert(self, *_args, **_kwargs):
         return self
 
-from local_rag.indexer import DocumentIndexer
-from local_rag.query import DocumentSearcher
-from local_rag import vectorstore, search
+from local_rag.services.index_service import DocumentIndexer
+from local_rag.services.search_service import DocumentSearcher
+from local_rag import search
+from local_rag.adapters import vectorstore
 
 
 class InMemoryChroma(vectorstore.BaseVectorStore):
@@ -196,7 +197,7 @@ def patched_vector_store(monkeypatch):
         return stores[key]
 
     monkeypatch.setattr("vectorstore.ChromaVectorStore", InMemoryChroma)
-    monkeypatch.setattr("local_rag.vectorstore.ChromaVectorStore", InMemoryChroma)
+    monkeypatch.setattr("local_rag.adapters.vectorstore.ChromaVectorStore", InMemoryChroma)
     monkeypatch.setattr("local_rag.services.index_service.get_vector_store", get_store)
     monkeypatch.setattr("local_rag.services.search_service.get_vector_store", get_store)
     return get_store

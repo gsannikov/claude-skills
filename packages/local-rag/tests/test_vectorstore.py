@@ -2,7 +2,7 @@
 
 import pytest
 import tempfile
-from local_rag.vectorstore import (
+from local_rag.adapters.vectorstore import (
     VectorStoreType,
     Document,
     SearchResult,
