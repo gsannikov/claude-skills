@@ -119,6 +119,9 @@ jobs:
 
       - name: Check Python syntax
         run: |
+          set -euo pipefail
+          shopt -s nullglob
+
           echo "=== Checking shared scripts ==="
           python -m py_compile shared/scripts/release.py
           python -m py_compile shared/scripts/skill_generator.py
@@ -132,8 +135,17 @@ jobs:
             python -m py_compile "$f"
           done
 
-          echo "=== Checking local-rag scripts ==="
-          for f in packages/local-rag/scripts/*.py packages/local-rag/scripts/ingest/*.py; do
+          echo "=== Checking local-rag modules ==="
+          LOCAL_RAG_PATHS=(
+            packages/local-rag/local_rag/*.py
+            packages/local-rag/local_rag/adapters/*.py
+            packages/local-rag/local_rag/ingestion/*.py
+            packages/local-rag/local_rag/search/*.py
+            packages/local-rag/local_rag/services/*.py
+            packages/local-rag/local_rag/storage/*.py
+            packages/local-rag/local_rag/utils.py
+          )
+          for f in "${LOCAL_RAG_PATHS[@]}"; do
             python -m py_compile "$f"
           done
 
@@ -232,7 +244,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          # PaddlePaddle wheels are only published up to Python 3.10 right now.
+          python-version: '3.10'
           cache: 'pip'
 
       - name: Install dependencies
