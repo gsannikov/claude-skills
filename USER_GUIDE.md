@@ -774,7 +774,12 @@ All user data is stored separately from skill code:
 │   ├── transcripts/
 │   └── analyzed/
 ├── local-rag/
-│   └── chromadb/
+│   ├── vectordb/
+│   │   ├── chroma.sqlite3
+│   │   └── [collection-uuid]/
+│   └── state/
+│       ├── ingest_state.json
+│       └── bm25_index.json
 └── social-media-post/
     ├── posts/
     ├── templates/
