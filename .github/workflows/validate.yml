@@ -118,6 +118,7 @@ jobs:
           python-version: '3.11'
 
       - name: Check Python syntax
+        shell: bash
         run: |
           set -euo pipefail
           shopt -s nullglob
@@ -144,6 +145,7 @@ jobs:
             packages/local-rag/local_rag/services/*.py
             packages/local-rag/local_rag/storage/*.py
             packages/local-rag/local_rag/utils.py
+            packages/local-rag/local_rag/utils/*.py
           )
           for f in "${LOCAL_RAG_PATHS[@]}"; do
             python -m py_compile "$f"
