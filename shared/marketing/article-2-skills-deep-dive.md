@@ -74,7 +74,9 @@ def score_job(job_desc, user_profile):
 *   **Keyword Search**: BM25 with inverted index
 *   **Embeddings**: `all-MiniLM-L6-v2` (384-dim, runs on CPU)
 *   **Reranking**: Cross-encoder (optional, for precision)
-*   **Storage**: Markdown, PDF, Office docs in `~/brain`
+*   **Storage**: Hybrid storage with ChromaDB SQLite and BM25 index in `~/MyDrive/claude-skills-data/local-rag/`
+    *   `vectordb/` - ChromaDB collections and SQLite database
+    *   `state/` - Ingestion state tracking and BM25 index
 
 **Workflow**:
 ```mermaid
@@ -139,22 +141,60 @@ graph TD
 *   Saves to `ideas/` directory as Markdown.
 
 ### 6. Social Media Post Generator 📱
-**Purpose**: Generate platform-optimized posts using algorithm insights.
+**Purpose**: Generate platform-optimized posts using algorithm insights and best practices.
 
 **The Challenge**: Each platform has different character limits, hashtag strategies, and algorithm priorities.
-**The Fix**: A skill that encodes platform-specific best practices and generates tailored content.
+**The Fix**: A skill that encodes platform-specific best practices (updated for 2025) and generates tailored content.
 
 **Supported Platforms**:
-*   **Threads**: Conversational, engagement-focused (no hashtags)
-*   **X (Twitter)**: Concise, 1-2 hashtags, thread-friendly
-*   **LinkedIn**: Professional, 3-5 hashtags, long-form
 
-**Output includes**:
-*   Character count vs. limit
-*   Engagement hooks (questions, CTAs)
-*   Media suggestions
-*   Optimal posting time
-*   Engagement score prediction
+| Platform | Char Limit | Hashtags | Best For |
+|----------|------------|----------|----------|
+| Threads | 500 (10K extended) | None | Conversational, questions |
+| X (Twitter) | 280 (25K Blue) | 1-2 max | Concise announcements |
+| LinkedIn | 3,000 | 3-5 max | Professional deep-dives |
+
+**Algorithm Priorities (2025)**:
+*   **Threads**: Engagement (40%) > Recency (30%) > Relevance (20%) > Profile (10%)
+*   **X**: Engagement rate > Recency > Media > Authenticity
+*   **LinkedIn**: Dwell time > Engagement > Relevance > Connections
+
+**Output Format**:
+Each generated post includes:
+*   **Platform**: Target platform
+*   **Character Count**: Current/limit
+*   **Engagement Hooks**: Questions, CTAs used
+*   **Media Suggestion**: Recommended visuals
+*   **Best Posting Time**: Optimal time for US audience
+*   **Engagement Score**: 1-10 rating
+
+**Example Output**:
+```
+Platform: Threads
+Style: Short & Punchy
+Character Count: 274/500
+
+Teach Claude Code to automate like a Pro.
+
+Navigator v3.3.1:
+✅ One-command updates
+✅ Figma MCP integration
+✅ Storybook + Chromatic automation
+✅ 18 skills total
+
+"Update Navigator" → Done in 2 min
+
+Install: /plugin marketplace add alekspetrov/navigator
+
+What workflow would you automate next?
+
+---
+Metadata:
+- Engagement Hook: Opening statement + closing question
+- Visual Suggestion: Terminal screenshot
+- Best Time: Tuesday 10 AM ET
+- Engagement Score: 8.5/10
+```
 
 ---
 
