@@ -300,10 +300,14 @@ main() {
         PY_BIN="$PYTHON_CMD"
     fi
 
-    if [ -f "setup.py" ]; then
-        "$PY_BIN" setup.py
+    # Install setup-manager
+    print_step "Installing Setup Manager..."
+    "$INSTALL_DIR/$VENV_DIR/bin/pip" install -e packages/setup-manager
+
+    if [ -f "packages/setup-manager/setup_manager/cli.py" ]; then
+        "$PY_BIN" -m setup_manager.cli
     else
-        print_error "setup.py not found in repository"
+        print_error "Setup Manager CLI not found"
         exit 1
     fi
 

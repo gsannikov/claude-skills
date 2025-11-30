@@ -4,7 +4,6 @@ This guide covers how to use each skill in the Claude Skills ecosystem with deta
 
 ## Table of Contents
 
-- [Quick Start](#quick-start)
 - [Skills Overview](#skills-overview)
 - [Career Consultant](#-career-consultant)
 - [Reading List](#-reading-list)
@@ -14,19 +13,6 @@ This guide covers how to use each skill in the Claude Skills ecosystem with deta
 - [Social Media Post](#-social-media-post)
 - [Apple Notes Setup](#apple-notes-setup)
 - [Data Storage](#data-storage)
-
----
-
-## Quick Start
-
-| Skill | Command | Apple Note |
-|-------|---------|------------|
-| Career Consultant | `process inbox` | Job Links Inbox |
-| Reading List | `process reading list` | Reading List Inbox |
-| Ideas Capture | `process ideas` | Ideas Inbox |
-| Voice Memos | `process voice memos` | Voice Memos Inbox |
-| Local RAG | `search documents` | N/A (local files) |
-| Social Media Post | `create [platform] post` | N/A (generates posts) |
 
 ---
 

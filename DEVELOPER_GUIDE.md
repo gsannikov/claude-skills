@@ -4,6 +4,7 @@ This guide covers how to create new skills, test them, and release them in the C
 
 ## Table of Contents
 
+- [Manual Installation](#manual-installation)
 - [Repository Structure](#repository-structure)
 - [Creating a New Skill](#creating-a-new-skill)
 - [Skill Structure](#skill-structure)
@@ -12,6 +13,45 @@ This guide covers how to create new skills, test them, and release them in the C
 - [Release Process](#release-process)
 - [CI/CD](#cicd)
 - [Best Practices](#best-practices)
+
+---
+
+## Manual Installation
+
+If you prefer not to use the one-line installer, you can set up the environment manually.
+
+### Prerequisites
+- Python 3.11+
+- Node.js & npm
+- Git
+- `uv` (Python package manager)
+
+### Installation Steps
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/gsannikov/claude-skills.git ~/MyDrive/claude-skills
+cd ~/MyDrive/claude-skills
+
+# 2. Run the interactive setup wizard
+# This handles virtualenv creation, dependency installation, and MCP config
+uv run packages/setup-manager/setup_manager/cli.py
+```
+
+### Setup Options
+
+The setup CLI supports several flags for automation and debugging:
+
+```bash
+# Run interactive setup (default)
+uv run packages/setup-manager/setup_manager/cli.py
+
+# Check system status without making changes
+uv run packages/setup-manager/setup_manager/cli.py --check
+
+# Disable colored output (for logs/CI)
+uv run packages/setup-manager/setup_manager/cli.py --no-color
+```
 
 ---
 

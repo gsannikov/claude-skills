@@ -58,7 +58,12 @@
       "author": "Gur Sannikov",
       "keywords": ["rag", "search", "documents", "embeddings", "ocr"],
       "category": "productivity",
-      "strict": false
+      "strict": false,
+      "mcp": {
+        "command": "python3",
+        "args": ["-m", "local_rag.mcp"],
+        "env": {"PYTHONUNBUFFERED": "1"}
+      }
     },
     {
       "name": "social-media-post",
@@ -69,6 +74,21 @@
       "keywords": ["social-media", "marketing", "threads", "twitter", "linkedin"],
       "category": "marketing",
       "strict": false
+    },
+    {
+      "name": "setup-manager",
+      "source": "./packages/setup-manager",
+      "description": "Manages installation, configuration, and maintenance of the Claude Skills ecosystem",
+      "version": "1.0.0",
+      "author": "Gur Sannikov",
+      "keywords": ["setup", "maintenance", "config", "mcp"],
+      "category": "system",
+      "strict": false,
+      "mcp": {
+        "command": "uv",
+        "args": ["run", "packages/setup-manager/setup_manager/server.py"],
+        "env": {"PYTHONUNBUFFERED": "1"}
+      }
     }
   ]
 }
