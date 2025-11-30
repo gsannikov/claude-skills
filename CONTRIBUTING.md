@@ -278,26 +278,257 @@ Fixes #123
 - One sentence per line for easier diffs
 - Use fenced code blocks with language hints
 - Tables for structured data
+- Links with descriptive text: `[career consultant](packages/career-consultant/)`
 
 ### YAML
 
 - 2-space indentation
 - Quote strings with special characters
 - Use comments for complex configurations
+- Maintain consistent field ordering
+- Example:
+  ```yaml
+  version: 1.0.0
+  updated: 2025-11-25
+  skill: skill-name
+  codename: Descriptive Name
+  status: stable  # stable, beta, alpha, deprecated
+  ```
 
 ### Python
 
+**General**:
 - Follow PEP 8
-- Type hints encouraged
-- Docstrings for public functions
-- Keep scripts focused and simple
+- Type hints encouraged for function signatures
+- Docstrings for public functions (Google style)
+- Keep scripts focused and simple (single responsibility)
+
+**Naming**:
+- `snake_case` for functions and variables
+- `PascalCase` for classes
+- `UPPER_CASE` for constants
+- Descriptive names: `process_job_url()` not `proc()`
+
+**Example**:
+```python
+def load_database(db_path: str) -> dict:
+    """Load YAML database from filesystem.
+    
+    Args:
+        db_path: Absolute path to YAML file
+        
+    Returns:
+        Parsed database dictionary
+        
+    Raises:
+        FileNotFoundError: If database doesn't exist
+    """
+    with open(db_path) as f:
+        return yaml.safe_load(f)
+```
 
 ### Skill Documentation
 
 - Clear, actionable commands
-- Real examples
-- Token usage estimates where relevant
-- Troubleshooting sections
+- Real examples with expected output
+- Token usage estimates for heavy operations
+- Troubleshooting sections for common issues
+
+---
+
+## Comprehensive Coding Conventions
+
+### SKILL.md Structure
+
+**Required Sections** (in order):
+
+1. **Frontmatter** (YAML):
+   ```markdown
+   ---
+   name: skill-name
+   description: One-line description
+   version: 1.0.0
+   ---
+   ```
+
+2. **Header**: `# Skill Name`
+
+3. **Overview**: What the skill does, key capabilities
+
+4. **Commands**: All user-facing commands with examples
+
+5. **Workflows**: Step-by-step processes
+
+6. **Configuration**: Any user configuration options
+
+7. **Data Storage**: Where data is stored, format details
+
+8. **Modules** (if applicable): On-demand modules available
+
+9. **Token Budget**: Estimates for operations
+
+10. **Version**: At bottom
+
+**Best Practices**:
+- Keep under 500 lines if possible (use modules for complexity)
+- Include real examples with actual URLs/data
+- Document all Apple Notes integration patterns
+- Progressive disclosure: basics first, advanced later
+
+### Module Architecture
+
+**When to Use Modules**:
+- Heavy processing (\u003e5,000 tokens)
+- Specialized workflows (not used every time)
+- Complex multi-step operations
+- Expert-level features
+
+**Module Structure**:
+```markdown
+# modules/advanced-search.md
+---
+name: advanced-search
+type: on-demand
+token_budget: 8000
+---
+
+[Full module specification]
+```
+
+**Loading Pattern**:
+```markdown
+To use advanced search:
+1. Say "load advanced search module"
+2. Claude will load and enable advanced features
+3. Use command: "search with filters: ..."
+```
+
+### Security Guidelines
+
+**Credential Management**:
+- ❌ NEVER commit API keys, tokens, passwords
+- ✅ Use environment variables or separate config files
+- ✅ Add credential files to `.gitignore`
+- ✅ Document credential setup in README
+
+**User Data**:
+- ❌ NEVER store user data in repo
+- ✅ Always use `~/MyDrive/claude-skills-data/`
+- ✅ Sanitize scraped content before storage
+- ✅ Respect user privacy (no logging of personal data)
+
+**Input Validation**:
+- Validate URLs before scraping
+- Sanitize user input in commands
+- Check file paths before writing
+- Handle malformed YAML gracefully
+
+**Example**:
+```python
+def validate_url(url: str) -> bool:
+    """Validate URL is safe to scrape."""
+    if not url.startswith(('http://', 'https://')):
+        return False
+    # Additional checks...
+    return True
+```
+
+### Performance Best Practices
+
+**Token Budget Management**:
+
+1. **Progressive Loading**:
+   ```markdown
+   # Load summary first
+   Database contains 500 jobs (Tier 1: 50, Tier 2: 200, Tier 3: 250)
+   
+   # Load details on demand
+   "Show details for nvidia-tpm-20251120"
+   ```
+
+2. **On-Demand Modules**:
+   - Don't load everything at start
+   - Heavy modules loaded when requested
+   - Clear modules after use if needed
+
+3. **Chunking Large Operations**:
+   ```markdown
+   # Bad: Process 100 URLs at once
+   # Good: Process 5 at a time, prompt to continue
+   Processed 5 jobs. Continue with next 5? (95 remaining)
+   ```
+
+4. **Archiving Old Data**:
+   - Move inactive items to `archive/` folder
+   - Keep active database under 10,000 lines
+   - Summarize old data in statistics
+
+**File I/O**:
+- Batch writes (don't write after every item)
+- Use atomic writes (write to temp, then rename)
+- Cache reads when possible
+- Stream large files, don't load entirely
+
+**Apple Notes**:
+- Limit inbox to \u003c100 items
+- Process in batches
+- Clear processed items
+- Handle timeouts gracefully
+
+**Example**:
+```python
+# Batch processing pattern
+BATCH_SIZE = 5
+
+def process_inbox(items: list):
+    """Process items in batches to avoid context overload."""
+    for i in range(0, len(items), BATCH_SIZE):
+        batch = items[i:i+BATCH_SIZE]
+        process_batch(batch)
+        
+        if i + BATCH_SIZE < len(items):
+            # Prompt to continue
+            print(f"Processed {i+BATCH_SIZE}/{len(items)}. Continue?")
+```
+
+### Error Handling
+
+**Be Graceful**:
+- Always handle expected errors
+- Provide actionable error messages
+- Offer fallback options
+- Don't crash the skill
+
+**Example**:
+```python
+try:
+    data = scrape_url(url)
+except RequestTimeout:
+    print("⚠️ Scrape timeout. Try using web_fetch or manual entry.")
+    return None
+except ValueError as e:
+    print(f"❌ Invalid URL: {e}")
+    return None
+```
+
+**Error Messages Should**:
+- ✅ Explain what went wrong
+- ✅ Suggest how to fix it
+- ✅ Offer alternatives
+- ❌ Don't just say "Error"
+
+### Testing Checklist
+
+Before submitting a skill:
+
+- [ ] All documented commands work
+- [ ] YAML files validate
+- [ ] Python scripts run without errors
+- [ ] Token budget estimates are accurate
+- [ ] Error handling tested (bad URLs, missing files, etc.)
+- [ ] README matches SKILL.md capabilities
+- [ ] CHANGELOG.md updated
+- [ ] version.yaml bumped appropriately
 
 ---
 
