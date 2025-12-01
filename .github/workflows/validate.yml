@@ -45,49 +45,49 @@ jobs:
           git diff --name-only "$BASE_SHA"...HEAD > /tmp/changed_files.txt
 
           python <<'PY'
-import json
-import os
-import pathlib
+          import json
+          import os
+          import pathlib
 
-changed = [line.strip() for line in open("/tmp/changed_files.txt") if line.strip()]
-packages_dir = pathlib.Path("packages")
-all_skills = sorted([p.name for p in packages_dir.iterdir() if p.is_dir()])
+          changed = [line.strip() for line in open("/tmp/changed_files.txt") if line.strip()]
+          packages_dir = pathlib.Path("packages")
+          all_skills = sorted([p.name for p in packages_dir.iterdir() if p.is_dir()])
 
-skills = []
-seen = set()
-shared_changed = False
-local_rag_changed = False
+          skills = []
+          seen = set()
+          shared_changed = False
+          local_rag_changed = False
 
-for path in changed:
-    parts = path.split("/")
-    if len(parts) >= 2 and parts[0] == "packages":
-        skill = parts[1]
-        if skill not in seen:
-            seen.add(skill)
-            skills.append(skill)
-        if skill == "local-rag":
-            local_rag_changed = True
-    if path.startswith("shared/") or path == "dependencies.yaml":
-        shared_changed = True
+          for path in changed:
+              parts = path.split("/")
+              if len(parts) >= 2 and parts[0] == "packages":
+                  skill = parts[1]
+                  if skill not in seen:
+                      seen.add(skill)
+                      skills.append(skill)
+                  if skill == "local-rag":
+                      local_rag_changed = True
+              if path.startswith("shared/") or path == "dependencies.yaml":
+                  shared_changed = True
 
-# When shared or dependency files change, run validation for every skill to stay safe.
-if shared_changed:
-    skills = all_skills
+          # When shared or dependency files change, run validation for every skill to stay safe.
+          if shared_changed:
+              skills = all_skills
 
-outputs = {
-    "skill_matrix": json.dumps(skills),
-    "has_skills": "true" if skills else "false",
-    "run_local_rag_tests": "true" if local_rag_changed or shared_changed else "false",
-}
+          outputs = {
+              "skill_matrix": json.dumps(skills),
+              "has_skills": "true" if skills else "false",
+              "run_local_rag_tests": "true" if local_rag_changed or shared_changed else "false",
+          }
 
-with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-    for key, value in outputs.items():
-        fh.write(f"{key}={value}\n")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              for key, value in outputs.items():
+                  fh.write(f"{key}={value}\n")
 
-print(f"Changed files: {changed}")
-print(f"Skill matrix: {outputs['skill_matrix']}")
-print(f"Run local-rag tests: {outputs['run_local_rag_tests']}")
-PY
+          print(f"Changed files: {changed}")
+          print(f"Skill matrix: {outputs['skill_matrix']}")
+          print(f"Run local-rag tests: {outputs['run_local_rag_tests']}")
+          PY
 
   validate:
     runs-on: ubuntu-latest
