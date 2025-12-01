@@ -1,0 +1,81 @@
+# Recipe Preview Mapping
+# Copy this to: packages/recipe-manager/templates/preview-mapping.yaml
+
+skill: recipe-manager
+default_preview: card
+theme: cooking
+
+mappings:
+  recipe:
+    preview_type: card
+    theme: cooking
+    rtl: true
+    data_path: "recipes/{status}/{id}.yaml"
+    
+    header:
+      icon: "icon"
+      title: "name"
+      badges:
+        - field: status
+          color_map:
+            "To try": "amber"
+            "Try next": "blue"
+            "Tried": "green"
+            "Perfected": "purple"
+        - field: type
+      rating:
+        field: rating
+        max: 5
+        symbol: "⭐"
+    
+    quick_stats:
+      - icon: "⏱️"
+        label: "הכנה"
+        field: prep_time
+      - icon: "🔥"
+        label: "בישול"
+        field: cook_time
+      - icon: "👥"
+        label: "מנות"
+        field: servings
+      - icon: "📊"
+        label: "קושי"
+        field: difficulty
+    
+    sections:
+      - type: tag_list
+        title: "אוהבים"
+        icon: "👨‍👩‍👧‍👦"
+        field: relevant
+        style: pills
+        color: blue
+        
+      - type: bullet_list
+        title: "מצרכים"
+        icon: "🥗"
+        field: ingredients
+        bullet: "●"
+        bullet_color: green
+        
+      - type: numbered_steps
+        title: "אופן הכנה"
+        icon: "👨‍🍳"
+        field: instructions
+        number_style: gradient
+        
+      - type: callout
+        title: "טיפים והערות"
+        icon: "💡"
+        field: notes
+        style: warning
+        condition: "notes && notes.length > 0 && notes[0]"
+    
+    footer:
+      tags:
+        field: tags
+        prefix: "#"
+      brand: "🍳 Recipe Manager • Sannikov Family"
+
+# Usage:
+# User: "Preview arais-tortilla"
+# Claude loads mapping, loads recipe YAML, renders card-base.jsx with data

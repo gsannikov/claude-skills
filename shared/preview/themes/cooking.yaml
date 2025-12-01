@@ -1,0 +1,51 @@
+# Cooking Theme - Warm colors for food/recipe content
+name: cooking
+description: Warm orange and red tones perfect for recipes and food content
+
+colors:
+  primary: "#f97316"        # Orange 500
+  primary_dark: "#ea580c"   # Orange 600
+  secondary: "#ef4444"      # Red 500
+  accent: "#ec4899"         # Pink 500
+  
+  background:
+    page: "from-orange-50 to-red-50"
+    surface: "#ffffff"
+    muted: "#fff7ed"        # Orange 50
+  
+  text:
+    primary: "#1f2937"      # Gray 800
+    secondary: "#4b5563"    # Gray 600
+    muted: "#9ca3af"        # Gray 400
+    inverse: "#ffffff"
+
+gradients:
+  header: "from-orange-500 via-red-500 to-pink-500"
+  button: "from-orange-500 to-red-500"
+  accent: "from-amber-400 to-orange-500"
+
+badges:
+  status:
+    "To try": { bg: "amber-100", text: "amber-800", border: "amber-300" }
+    "Try next": { bg: "blue-100", text: "blue-800", border: "blue-300" }
+    "Tried": { bg: "green-100", text: "green-800", border: "green-300" }
+    "Perfected": { bg: "purple-100", text: "purple-800", border: "purple-300" }
+  
+  type:
+    "Ninja": { icon: "🔥", bg: "red-100", text: "red-800" }
+    "Oven": { icon: "🫕", bg: "orange-100", text: "orange-800" }
+    "Stovetop": { icon: "🍳", bg: "yellow-100", text: "yellow-800" }
+    "School Breakfast": { icon: "🥣", bg: "blue-100", text: "blue-800" }
+    "No Cook": { icon: "🥗", bg: "green-100", text: "green-800" }
+
+sections:
+  bullet_color: "orange-500"
+  number_bg: "from-orange-500 to-red-500"
+  
+callouts:
+  tip: { bg: "yellow-50", border: "yellow-400", icon: "💡" }
+  warning: { bg: "amber-50", border: "amber-400", icon: "⚠️" }
+  note: { bg: "blue-50", border: "blue-400", icon: "📝" }
+
+rtl: true
+font_family: "system-ui, -apple-system, sans-serif"

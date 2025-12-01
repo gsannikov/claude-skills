@@ -1,0 +1,110 @@
+# Job Analysis Preview Mapping
+# Copy this to: packages/career-consultant/templates/preview-mapping.yaml
+
+skill: career-consultant
+default_preview: report
+theme: professional
+
+mappings:
+  job:
+    preview_type: report
+    theme: professional
+    rtl: false
+    data_path: "jobs/analyzed/{id}.yaml"
+    
+    header:
+      icon: "🎯"
+      title: "position_title"
+      subtitle: "company_name"
+      badges:
+        - field: priority
+          type: priority
+        - field: location
+        - field: work_model
+          prefix: ""
+    
+    score_bar:
+      title: "Priority Score"
+      total: "score_total"
+      max: 100
+      breakdown:
+        - name: "Match"
+          field: "scores.match"
+          color: "blue"
+        - name: "Income"
+          field: "scores.income"
+          color: "green"
+        - name: "Growth"
+          field: "scores.growth"
+          color: "purple"
+        - name: "Low Prep"
+          field: "scores.lowprep"
+          color: "cyan"
+        - name: "Stress"
+          field: "scores.stress"
+          color: "yellow"
+        - name: "Location"
+          field: "scores.location"
+          color: "pink"
+    
+    sections:
+      - type: key_value
+        title: "Job Details"
+        icon: "📋"
+        fields:
+          - label: "Company"
+            field: company_name
+          - label: "Location"
+            field: location
+          - label: "Salary Range"
+            field: salary_range
+          - label: "Experience"
+            field: years_experience
+          - label: "Team Size"
+            field: team_size
+      
+      - type: pros_cons
+        pros_field: "analysis.pros"
+        cons_field: "analysis.cons"
+        pros_title: "Strengths"
+        cons_title: "Concerns"
+      
+      - type: bullet_list
+        title: "Key Requirements"
+        icon: "📝"
+        field: "requirements.must_have"
+      
+      - type: bullet_list
+        title: "Nice to Have"
+        icon: "✨"
+        field: "requirements.nice_to_have"
+      
+      - type: action_items
+        title: "Next Steps"
+        icon: "🚀"
+        field: "next_steps"
+      
+      - type: text_block
+        title: "Preparation Notes"
+        icon: "📖"
+        field: "prep_notes"
+    
+    footer:
+      brand: "🎯 Career Consultant • Job Analysis Report"
+
+  # Summary view for job list
+  job_summary:
+    preview_type: summary
+    theme: professional
+    
+    list_item:
+      title: "position_title"
+      subtitle: "company_name"
+      score: "score_total"
+      badges:
+        - field: priority
+        - field: status
+
+# Usage:
+# User: "Preview job nvidia-tpm"
+# Claude loads mapping, loads job YAML, renders report-base.jsx with data

@@ -1,0 +1,57 @@
+# Professional Theme - Corporate blues for career/business content
+name: professional
+description: Clean blue and gray tones for career, jobs, and business content
+
+colors:
+  primary: "#2563eb"        # Blue 600
+  primary_dark: "#1d4ed8"   # Blue 700
+  secondary: "#0891b2"      # Cyan 600
+  accent: "#06b6d4"         # Cyan 500
+  
+  background:
+    page: "from-slate-100 to-blue-50"
+    surface: "#ffffff"
+    muted: "#f8fafc"        # Slate 50
+  
+  text:
+    primary: "#0f172a"      # Slate 900
+    secondary: "#475569"    # Slate 600
+    muted: "#94a3b8"        # Slate 400
+    inverse: "#ffffff"
+
+gradients:
+  header: "from-blue-600 via-blue-500 to-cyan-500"
+  button: "from-blue-600 to-cyan-600"
+  accent: "from-blue-400 to-cyan-400"
+
+badges:
+  priority:
+    "First": { bg: "green-500", text: "white" }
+    "Second": { bg: "yellow-500", text: "black" }
+    "Third": { bg: "red-500", text: "white" }
+    "Pass": { bg: "gray-400", text: "white" }
+  
+  status:
+    "New": { bg: "blue-100", text: "blue-800" }
+    "Applied": { bg: "cyan-100", text: "cyan-800" }
+    "Interview": { bg: "green-100", text: "green-800" }
+    "Offer": { bg: "purple-100", text: "purple-800" }
+    "Rejected": { bg: "red-100", text: "red-800" }
+
+score_colors:
+  high: "green-500"       # >= 70
+  medium: "yellow-500"    # >= 50
+  low: "red-500"          # < 50
+
+sections:
+  bullet_color: "blue-500"
+  number_bg: "from-blue-600 to-cyan-600"
+  
+callouts:
+  action: { bg: "blue-50", border: "blue-400", icon: "📋" }
+  success: { bg: "green-50", border: "green-400", icon: "✅" }
+  warning: { bg: "yellow-50", border: "yellow-400", icon: "⚠️" }
+  info: { bg: "cyan-50", border: "cyan-400", icon: "ℹ️" }
+
+rtl: false
+font_family: "system-ui, -apple-system, 'Segoe UI', sans-serif"
