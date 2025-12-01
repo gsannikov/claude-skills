@@ -7,9 +7,16 @@ from pathlib import Path
 from typing import Iterable, List, Set
 
 
-def _is_excluded_dir(path: Path, exclude_dirs: Set[str]) -> bool:
-    """Check if any parent directory is excluded by name."""
-    return any(parent.name in exclude_dirs for parent in path.parents)
+def _is_excluded_dir(path: Path, root: Path, exclude_dirs: Set[str]) -> bool:
+    """Check if any parent directory (relative to root) is excluded by name."""
+    # Only check parents within the scanned directory tree, not absolute system paths
+    try:
+        rel_path = path.relative_to(root)
+        # Check each component of the relative path (excluding the filename itself)
+        return any(part in exclude_dirs for part in rel_path.parent.parts)
+    except ValueError:
+        # path is not relative to root, shouldn't happen but handle gracefully
+        return False
 
 
 def _matches_globs(rel_path: str, globs: List[str]) -> bool:
@@ -36,7 +43,7 @@ def discover_files(
         if not path.is_file():
             continue
 
-        if _is_excluded_dir(path, exclude_dirs):
+        if _is_excluded_dir(path, root, exclude_dirs):
             continue
 
         if path.suffix.lower() not in allowed_exts:
