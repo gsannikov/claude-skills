@@ -24,7 +24,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Run actionlint
-        uses: rhysd/actionlint@v1
+        uses: rhysd/actionlint@v1.7.7
 
   detect-changes:
     runs-on: ubuntu-latest
@@ -100,7 +100,11 @@ jobs:
             [[ "${{ steps.filter.outputs.skill_social_media_post }}" == "true" ]] && skills+=(social-media-post)
           fi
 
-          skills_json=$(printf '%s\n' "${skills[@]}" | jq -R . | jq -s .)
+          if [[ ${#skills[@]} -eq 0 ]]; then
+            skills_json="[]"
+          else
+            skills_json=$(printf '%s\n' "${skills[@]}" | jq -R . | jq -s .)
+          fi
           run_local_rag=$([[ "$shared" == "true" || "${{ steps.filter.outputs.skill_local_rag }}" == "true" ]] && echo true || echo false)
 
           {
