@@ -8,6 +8,7 @@ on:
       - 'shared/**'
       - 'dependencies.yaml'
       - '*.md'
+      - '.github/**'
   pull_request:
     branches: [main]
     paths:
@@ -15,6 +16,7 @@ on:
       - 'shared/**'
       - 'dependencies.yaml'
       - '*.md'
+      - '.github/**'
 
 jobs:
   actionlint:
