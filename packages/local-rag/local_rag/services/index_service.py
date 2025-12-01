@@ -238,10 +238,8 @@ class DocumentIndexer:
         if not path.exists() or not path.is_file():
             return False
 
-        # Check if any parent directory is in exclusion list
-        for parent in path.parents:
-            if parent.name in EXCLUDE_DIRS:
-                return False
+        # Note: Parent directory exclusion is handled by discover_files()
+        # to avoid false positives with system paths like /tmp
 
         if path.suffix.lower() not in ALLOWED_EXTS:
             return False
