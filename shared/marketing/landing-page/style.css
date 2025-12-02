@@ -1,8 +1,9 @@
 :root {
-    --text-color: #e6f1ff;
-    --accent-color: #64ffda;
-    --glass-bg: rgba(10, 25, 47, 0.3);
-    --glass-border: rgba(100, 255, 218, 0.1);
+    --text-color: #ffffff;
+    --accent-color: #6366f1;
+    --secondary-accent: #8b5cf6;
+    --glass-bg: rgba(10, 10, 10, 0.3);
+    --glass-border: rgba(99, 102, 241, 0.2);
     --font-main: 'Inter', sans-serif;
 }
 
@@ -16,7 +17,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #020c1b; /* Fallback */
+    background-color: #0a0a0a; /* Fallback */
 }
 
 .background-container {
@@ -33,7 +34,7 @@ body {
 
 .mist-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at center, transparent 0%, rgba(2, 12, 27, 0.8) 100%);
+    background: radial-gradient(circle at center, transparent 0%, rgba(10, 10, 10, 0.8) 100%);
     backdrop-filter: blur(8px);
 }
 
@@ -44,11 +45,63 @@ body {
     position: relative;
 }
 
-.logo {
-    font-size: 4rem; font-weight: 200; letter-spacing: 0.8em;
+.logo-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeIn 2s ease-out forwards;
+}
+
+.logo6 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
     color: var(--text-color);
-    text-shadow: 0 0 30px rgba(100, 255, 218, 0.2);
-    opacity: 0; animation: fadeIn 2s ease-out forwards;
+    text-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+}
+
+.logo6 .guriq { color: var(--text-color); }
+
+.logo6 .o-circle {
+    width: 42px;
+    height: 42px;
+    border: 4px solid var(--accent-color);
+    border-radius: 50%;
+    margin-left: 6px;
+    position: relative;
+    box-shadow: 0 0 15px var(--accent-color);
+}
+
+.logo6 .o-circle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+.tagline {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.4em;
+    color: rgba(230, 241, 255, 0.5);
+    text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+    .logo6 { font-size: 3rem; }
+    .logo6 .o-circle { width: 28px; height: 28px; border-width: 3px; }
+    .logo6 .o-circle::after { width: 8px; height: 8px; }
+    .tagline { font-size: 0.7rem; letter-spacing: 0.3em; }
 }
 
 .contact-link {
@@ -64,11 +117,37 @@ body {
 .contact-link:hover {
     color: var(--accent-color);
     border-bottom-color: var(--accent-color);
-    text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+    text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
 }
 
 @keyframes fadeIn { to { opacity: 1; } }
 
-@media (max-width: 768px) {
-    .logo { font-size: 2.5rem; letter-spacing: 0.4em; }
+/* Cursor Follower */
+.cursor-follower {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.2), transparent);
+    border: 2px solid rgba(99, 102, 241, 0.3);
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: screen;
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+body:hover .cursor-follower {
+    width: 50px;
+    height: 50px;
+}
+
+/* Enhanced glow animation for logo */
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 15px var(--accent-color); }
+    50% { box-shadow: 0 0 25px var(--accent-color), 0 0 40px var(--secondary-accent); }
+}
+
+.logo6 .o-circle {
+    animation: pulse 3s ease-in-out infinite;
 }
