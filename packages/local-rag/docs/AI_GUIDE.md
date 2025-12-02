@@ -35,7 +35,7 @@ Or when using MCP tools, always pass `user_data_dir` parameter:
 ```json
 {
   "path": "/path/to/documents",
-  "user_data_dir": "/Users/gursannikov/MyDrive/claude-skills-data/local-rag"
+  "user_data_dir": "~/Documents/claude-skills-data/local-rag"  # or as configured in shared/config/paths.py
 }
 ```
 
@@ -51,7 +51,7 @@ Or via MCP:
 ```json
 {
   "query": "search query",
-  "user_data_dir": "/Users/gursannikov/MyDrive/claude-skills-data/local-rag"
+  "user_data_dir": "~/Documents/claude-skills-data/local-rag"  # or as configured in shared/config/paths.py
 }
 ```
 

@@ -16,8 +16,17 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
-# Configuration
-BASE_DIR = Path("/Users/gursannikov/MyDrive/claude-skills-data/recipe-manager")
+# Configuration - uses centralized path config
+import sys
+from pathlib import Path
+
+# Add project root to path to import shared config
+_project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(_project_root))
+
+from shared.config.paths import get_skill_data_dir
+
+BASE_DIR = get_skill_data_dir("recipe-manager")
 RECIPES_DIR = BASE_DIR / "recipes"
 EXPORTS_DIR = BASE_DIR / "exports"
 

@@ -24,13 +24,13 @@ AI-powered recipe collection manager for extracting, organizing, and tracking fa
 All recipes are stored locally in YAML format for reliability and version control.
 
 - **User Data Location**: Configured in `config/paths.py`
-- **Default Path**: `/Users/gursannikov/MyDrive/claude-skills-data/recipe-manager`
+- **Path**: Configured in `shared/config/paths.py` (default: `~/Documents/claude-skills-data/recipe-manager`)
 - **Recipe Files**: YAML files in `recipes/`
 - **Configuration**: `config/settings.yaml`
 
 **Directory Structure**:
 ```
-/Users/gursannikov/MyDrive/claude-skills-data/recipe-manager/
+~/Documents/claude-skills-data/recipe-manager/  # or as configured in shared/config/paths.py
 ├── config/
 │   └── settings.yaml       # User preferences
 ├── recipes/

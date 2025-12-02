@@ -10,7 +10,9 @@ BUILD_DIR="$APP_DIR/.build/release"
 INSTALL_DIR="$HOME/Applications"
 APP_NAME="MeetingRecorder"
 BINARY_NAME="MeetingRecorderApp"  # Executable target name from Package.swift
-DATA_DIR="$HOME/MyDrive/claude-skills-data/voice-memos/meetings"
+# Use centralized path config - default to Documents if not configured
+# User data path is configured in shared/config/paths.py
+DATA_DIR="${CLAUDE_SKILLS_DATA_DIR:-$HOME/Documents/claude-skills-data}/voice-memos/meetings"
 
 echo "=================================="
 echo "Meeting Recorder Setup"

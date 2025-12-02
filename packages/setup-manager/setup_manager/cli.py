@@ -192,9 +192,15 @@ def run_setup(args):
     """Main setup flow."""
     print_header("Claude Skills Setup")
     
-    # Determine paths
+    # Determine paths using centralized config
     project_root = Path(__file__).parent.parent.parent.parent
-    skills_data_path = Path.home() / "MyDrive" / "claude-skills-data"
+    try:
+        sys.path.insert(0, str(project_root))
+        from shared.config.paths import get_user_data_base
+        skills_data_path = get_user_data_base()
+    except ImportError:
+        # Fallback if shared config not available
+        skills_data_path = Path.home() / "Documents" / "claude-skills-data"
     
     print_info(f"Project Root: {project_root}")
     print_info(f"Data Directory: {skills_data_path}")

@@ -2,16 +2,26 @@
 Path Configuration for Career Consultant Skill
 
 This file contains path configurations for the skill package.
-Users should update USER_DATA_BASE to point to their user-data folder.
+Uses centralized path configuration from shared/config/paths.py
 """
+
+import sys
+from pathlib import Path
+
+# Add project root to path to import shared config
+_project_root = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(_project_root))
+
+from shared.config.paths import get_skill_data_dir
 
 # ============================================
 # User Configuration
 # ============================================
-# CONFIGURE THIS: Set your user-data directory path
-# Example: "/Users/<username>/Documents/career-consultant/user-data"
-# Example: "/Users/<username>/MyDrive/career-consultant/user-data"
-USER_DATA_BASE = "/Users/gursannikov/MyDrive/claude-skills-data/career-consultant"
+# NOTE: User data path is configured in shared/config/paths.py
+# This is the SINGLE SOURCE OF TRUTH for all user data paths.
+# To change your user data location, edit shared/config/paths.py
+
+USER_DATA_BASE = str(get_skill_data_dir("career-consultant"))
 
 # Example paths:
 # macOS: "/Users/username/Documents/career-consultant/user-data"

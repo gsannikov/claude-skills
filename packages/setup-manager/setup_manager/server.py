@@ -3,6 +3,7 @@ MCP Server for Setup & Maintenance Manager.
 """
 import json
 import logging
+import platform
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -26,9 +27,20 @@ logger = logging.getLogger("setup-manager")
 
 # Helper to get default data dir (can be overridden by args if needed, but good default)
 def get_default_data_dir() -> Path:
-    if platform.system() == "Windows":
+    """Get default data directory using centralized path config."""
+    try:
+        # Try to import from shared config
+        import sys
+        from pathlib import Path
+        project_root = Path(__file__).parent.parent.parent.parent
+        sys.path.insert(0, str(project_root))
+        from shared.config.paths import get_user_data_base
+        return get_user_data_base()
+    except ImportError:
+        # Fallback if shared config not available
+        if platform.system() == "Windows":
+            return Path.home() / "Documents" / "claude-skills-data"
         return Path.home() / "Documents" / "claude-skills-data"
-    return Path.home() / "MyDrive" / "claude-skills-data"
 
 server = Server("setup-manager")
 

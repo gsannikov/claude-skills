@@ -23,13 +23,16 @@ Architecture decisions, roadmap, and project management.
 
 ### ADR-002: Centralized User Data
 
-**Decision**: User data in `~/MyDrive/claude-skills-data/` outside repo.
+**Decision**: User data in configurable location outside repo (default: `~/Documents/claude-skills-data/`).
+Path configured in `shared/config/paths.py` - single source of truth.
 
 **Rationale**:
 - Clear separation of code and data
 - Never risk committing personal data
 - Easier backup/sync decisions
 - Global config for cross-skill settings
+- Configurable location (no hardcoded paths)
+- Easy to move project/data folders without breaking paths
 
 ### ADR-003: Apple Notes Inbox Pattern
 

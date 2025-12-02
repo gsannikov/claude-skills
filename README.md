@@ -19,9 +19,12 @@ curl -fsSL https://raw.githubusercontent.com/gsannikov/claude-skills/main/instal
 ```
 
 **What this does:**
-1.  Sets up the entire ecosystem in `~/MyDrive/claude-skills`
+1.  Sets up the entire ecosystem (default: `~/Projects/claude-skills`)
 2.  Installs all dependencies
 3.  Configures Claude Desktop automatically
+4.  Sets up user data directory (default: `~/Documents/claude-skills-data`)
+
+**Note**: User data path is configured in `shared/config/paths.py` - edit this file to change the location.
 
 ---
 

@@ -18,9 +18,13 @@ Global instructions for Claude when working with this skills monorepo.
 ### Key Paths
 
 ```
-~/MyDrive/claude-skills/           # This repo (code)
-~/MyDrive/claude-skills-data/      # User data (gitignored)
+~/Projects/claude-skills/          # This repo (code) - can be anywhere
+~/Documents/claude-skills-data/     # User data (gitignored) - configured in shared/config/paths.py
 ```
+
+**⚠️ Important**: User data path is configured in `shared/config/paths.py`. 
+This is the **SINGLE SOURCE OF TRUTH** for all user data paths.
+To change your user data location, edit `USER_DATA_BASE` in that file.
 
 ## 📁 Repo Structure
 
@@ -48,11 +52,12 @@ claude-skills/
 
 ## 🔧 Global Rules
 
-1. **User Data**: Always in `~/MyDrive/claude-skills-data/{skill}/`
+1. **User Data**: Configured in `shared/config/paths.py` (default: `~/Documents/claude-skills-data/{skill}/`)
 2. **Storage Format**: YAML for structured data, Markdown for content
 3. **Deduplication**: Always dedupe before adding items
 4. **Stats Tracking**: Update stats after operations
 5. **Apple Notes**: Keep processed section minimal (stats only)
+6. **Path Configuration**: All paths use centralized config - never hardcode user data paths
 
 ## 📋 Skill Loading
 
@@ -80,7 +85,7 @@ social_media_skill = "packages/social-media-post/SKILL.md"
 ### Release Process
 
 ```bash
-cd ~/MyDrive/claude-skills
+cd ~/Projects/claude-skills  # or wherever the repo is located
 python shared/scripts/release.py career-consultant --patch
 ```
 

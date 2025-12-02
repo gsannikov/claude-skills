@@ -106,8 +106,9 @@ See `version.yaml` for version info.
     print(f"   - README.md")
     print(f"   - CHANGELOG.md")
     
-    # Create user-data directory
-    user_data_dir = Path.home() / 'MyDrive' / 'claude-skills-data' / name
+    # Create user-data directory using centralized path config
+    from shared.config.paths import get_skill_data_dir
+    user_data_dir = get_skill_data_dir(name)
     if not user_data_dir.exists():
         user_data_dir.mkdir(parents=True)
         print(f"✅ Created user-data: {user_data_dir}")
@@ -151,7 +152,8 @@ description: {description or f'{display_name} skill with {", ".join(patterns)} p
     content += f"""
 ## ⚙️ Storage Configuration
 
-**User Data Location**: `~/MyDrive/claude-skills-data/{name}/`
+**User Data Location**: Configured in `shared/config/paths.py`
+Default: `~/Documents/claude-skills-data/{name}/`
 
 ```
 {name}/

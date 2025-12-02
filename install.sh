@@ -16,7 +16,8 @@ set -e
 # ═══════════════════════════════════════════════════════════════════════════════
 
 REPO_URL="https://github.com/gsannikov/claude-skills.git"
-INSTALL_DIR="${CLAUDE_SKILLS_DIR:-$HOME/MyDrive/claude-skills}"
+# Default install directory - can be overridden with CLAUDE_SKILLS_DIR env var
+INSTALL_DIR="${CLAUDE_SKILLS_DIR:-$HOME/Projects/claude-skills}"
 BRANCH="${CLAUDE_SKILLS_BRANCH:-main}"
 VENV_DIR=".venv"
 RUN_TESTS="${RUN_TESTS:-1}"  # Set RUN_TESTS=0 to skip pytest during install

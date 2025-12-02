@@ -12,10 +12,19 @@ public class Config {
     private var configDict: [String: Any] = [:]
 
     public init() {
-        // Default to claude-skills-data location
+        // Get user data base from environment variable or use default
+        // Default location matches centralized config in shared/config/paths.py
         let homeDir = FileManager.default.homeDirectoryForCurrentUser.path
-        defaultDataPath = "\(homeDir)/MyDrive/claude-skills-data/voice-memos/meetings"
-        defaultConfigPath = "\(homeDir)/MyDrive/claude-skills-data/voice-memos/meeting-recorder-config.yaml"
+        
+        // Check for environment variable first (set by setup or user)
+        if let envDataDir = ProcessInfo.processInfo.environment["CLAUDE_SKILLS_DATA_DIR"] {
+            defaultDataPath = "\(envDataDir)/voice-memos/meetings"
+            defaultConfigPath = "\(envDataDir)/voice-memos/meeting-recorder-config.yaml"
+        } else {
+            // Default to Documents/claude-skills-data (matches centralized config default)
+            defaultDataPath = "\(homeDir)/Documents/claude-skills-data/voice-memos/meetings"
+            defaultConfigPath = "\(homeDir)/Documents/claude-skills-data/voice-memos/meeting-recorder-config.yaml"
+        }
 
         // Create directories if needed
         createDirectoriesIfNeeded()

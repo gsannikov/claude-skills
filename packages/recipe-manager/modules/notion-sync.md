@@ -47,7 +47,10 @@ database_url: "https://www.notion.so/2461eaaa56f680c4a8d7f1df05616964"
 from pathlib import Path
 import yaml
 
-USER_DATA_BASE = "/Users/gursannikov/MyDrive/claude-skills-data/recipe-manager"
+# User data path is configured in shared/config/paths.py
+# Import from centralized config:
+from shared.config.paths import get_skill_data_dir
+USER_DATA_BASE = str(get_skill_data_dir("recipe-manager"))
 recipes_dir = Path(USER_DATA_BASE) / "recipes"
 
 all_recipes = []
