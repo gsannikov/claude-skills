@@ -4,9 +4,10 @@
   Edit rules in .aligntrue/rules/ instead.
 -->
 
-# CLAUDE.md
+# Agent Rules
 
 This file contains the canonical rules from `.aligntrue/rules/`.
+AI agents should follow these guidelines.
 
 <!-- aligntrue:rule CLAUDE.md -->
 

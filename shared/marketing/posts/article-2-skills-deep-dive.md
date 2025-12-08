@@ -254,6 +254,99 @@ Because this is an **edge design** (local code, local data), it solves the bigge
 
 ---
 
+## 🔄 Platform Independence: AlignTrue Integration
+
+One of the biggest challenges with AI skills is platform lock-in. What if you want to switch from Claude to OpenAI? What if your team uses different AI assistants? What if a new, better model launches tomorrow?
+
+### The Multi-Platform Challenge
+
+Different AI platforms expect instructions in different formats:
+- **Claude Desktop**: `CLAUDE.md` in project root
+- **OpenAI Codex**: `AGENTS.md` 
+- **Cursor IDE**: `.cursor/rules/*.mdc` multi-file format
+- **Google Antigravity**: Platform-agnostic markdown
+- **Windsurf, Cody, Continue**: Each with custom configuration
+
+Building skills that work everywhere requires maintaining multiple versions of the same instructions—a maintenance nightmare that kills productivity.
+
+###AlignTrue: The Solution
+
+I integrated [AlignTrue](https://github.com/aligntrue/aligntrue) to solve this problem elegantly:
+
+```yaml
+# .aligntrue/config.yaml
+mode: solo
+sources:
+  - type: local
+    path: .aligntrue/rules
+exporters:
+  - claude          # Claude Desktop (CLAUDE.md)
+  - openai-codex    # OpenAI Codex CLI (AGENTS.md)
+  - cursor          # Cursor IDE (.cursor/rules/*.mdc)
+```
+
+**The Workflow:**
+1. Maintain **ONE** source file: `.aligntrue/rules/CLAUDE.md`
+2. Run `aligntrue sync`
+3. Platform-specific files auto-generate from the single source of truth
+
+**The Architecture:**
+
+```mermaid
+graph TD
+    Source[/.aligntrue/rules/CLAUDE.md/]
+    
+    Source -->|sync| Claude[CLAUDE.md<br/>Claude Desktop]
+    Source -->|sync| OpenAI[AGENTS.md<br/>OpenAI Codex]
+    Source -->|sync| Cursor[.cursor/rules/*.mdc<br/>Cursor IDE]
+    Source -->|sync| Anti[Platform-agnostic<br/>Google Antigravity]
+    
+    Dev1[Developer 1<br/>Uses Claude] --> Claude
+    Dev2[Developer 2<br/>Uses GPT-4] --> OpenAI
+    Dev3[Developer 3<br/>Uses Cursor] --> Cursor
+    Dev4[Developer 4<br/>Uses Antigravity] --> Anti
+    
+    style Source fill:#fef3c7,stroke:#92400e,stroke-width:3px
+    style Claude fill:#e3f2fd,stroke:#1565c0
+    style OpenAI fill:#f3e5f5,stroke:#7b1fa2
+    style Cursor fill:#e8f5e9,stroke:#2e7d32
+    style Anti fill:#ffebee,stroke:#c62828
+```
+
+### Benefits for SDK Developers
+
+**For Open Source Contributors:**
+- Clone the repo and use **your** preferred AI assistant
+- No manual format conversion needed
+- Guaranteed consistency across platforms
+- Lower barrier to entry—use familiar tools
+
+**For Teams:**
+- Team members can use different AI platforms
+- Instructions stay synchronized automatically
+- No "works on my machine" issues
+- Easy onboarding regardless of AI preference
+
+**For You:**
+- Switch AI platforms without migration pain
+- Future-proof against new AI assistants
+- No vendor lock-in
+- True platform independence
+
+### Real-World Impact
+
+Since integrating AlignTrue, the claude-skills repository has had contributors using:
+- **Claude Desktop** (original target)
+- **OpenAI Codex** via CLI
+- **Cursor IDE** for integrated development
+- **Google Antigravity** (the platform we're using right now!)
+
+All working on the same codebase, with the same capabilities, **without manual instruction translation**. This is the future of AI-augmented development: platform-agnostic, vendor-independent, and truly open.
+
+This architectural decision makes claude-skills not just open-source in code, but **open-source in platform accessibility**. You're never locked in. You always have choice.
+
+---
+
 ## 🚀 Next Up: The Monorepo
 
 Managing 6+ skills can be a nightmare. In the next article, I'll show you the **Monorepo Architecture** that keeps this maintainable: CI/CD, shared dependencies, and standardized testing.

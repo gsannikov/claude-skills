@@ -84,6 +84,7 @@ This isn't another productivity app like Notion or Obsidian. It's an **open arch
 2.  **Native Cloud Bridges**: It bridges natively to your existing cloud environment. I use **Apple Notes** for capture and **Google Drive** for storage, seamlessly integrated via MCP.
 3.  **Privacy & Corporate Ready**: Full privacy enabled. It can be used behind firewalls for people looking to unleash productivity at work without crossing corporate rules or sending data out of the organization.
 4.  **Speed of Evolution**: It is the fastest solution to get the latest AI advancements. Because it separates **Data**, **LLM**, and **Code**, you can swap the model the day a new one drops without migrating your data.
+5.  **Platform Agnostic**: Using AlignTrue for instruction sync, the skills work seamlessly across **Claude Desktop**, **OpenAI Codex**, **Cursor IDE**, **Google Antigravity**, and other AI coding assistants. Switch models or tools without rewriting your workflows—true vendor independence.
 
 ---
 

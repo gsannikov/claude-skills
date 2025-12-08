@@ -227,7 +227,70 @@ flowchart TD
 
 This documentation isn't for humans—it's for the AI to help me build faster.
 
-### 8. Use an Agentic IDE (The Orchestrator)
+### 9. Cross-Platform Instructions with AlignTrue
+
+Your AI instructions shouldn't lock you into a single platform. I use **AlignTrue** to maintain a single source of truth that exports to multiple AI coding assistants.
+
+**The Problem:**
+- Claude Desktop uses `CLAUDE.md`
+- OpenAI Codex uses `AGENTS.md` or `~/.codex/instructions.md`
+- Cursor IDE uses `.cursorrules`
+- Google Antigravity works with platform-agnostic formats
+- Windsurf, Cody, and others each have custom formats
+
+Maintaining these separately is a nightmare—updates get out of sync, contributors can't use their preferred tools, and you're locked into one vendor.
+
+**The Solution:**
+AlignTrue acts as a compiler for AI instructions:
+
+```mermaid
+graph LR
+    Source[.aligntrue/rules/CLAUDE.md]
+    Source -->|aligntrue sync| Claude[CLAUDE.md]
+    Source -->|aligntrue sync| OpenAI[AGENTS.md]
+    Source -->|aligntrue sync| Cursor[.cursorrules]
+    Source -->|aligntrue sync| Anti[Google Antigravity]
+    
+    style Source fill:#fef3c7,stroke:#92400e,stroke-width:3px
+    style Claude fill:#e3f2fd,stroke:#1565c0
+    style OpenAI fill:#f3e5f5,stroke:#7b1fa2
+    style Cursor fill:#e8f5e9,stroke:#2e7d32
+    style Anti fill:#ffebee,stroke:#c62828
+```
+
+**How It Works:**
+1. Edit once in `.aligntrue/rules/CLAUDE.md` (source of truth)
+2. Run `aligntrue sync`
+3. All platform-specific files update automatically
+4. Commit everything to git—contributors pull and use their preferred AI
+
+**Configuration:**
+```yaml
+# .aligntrue/config.yaml
+mode: solo
+sources:
+  - type: local
+    path: .aligntrue/rules
+exporters:
+  - claude        # Claude Desktop
+  - openai        # OpenAI Codex
+  - cursor        # Cursor IDE
+```
+
+**Why This Matters:**
+- **For Open Source**: Contributors can use Claude, GPT-4, Cursor, Antigravity, or local models
+- **For Teams**: Teams using different AI tools stay perfectly synchronized
+- **For You**: Switch AI platforms without migrating your instructions
+- **For Adoption**: Lower barrier to entry—developers use familiar tools
+
+This is especially critical for SDK developers working with this monorepo. Whether you're using Claude Desktop, OpenAI's Codex, Google's Antigravity, or Cursor IDE, you get **identical** capabilities. No platform lock-in, no vendor dependency—just pure, portable AI instructions.
+
+**Real-World Impact:**
+Since adding AlignTrue, I've had contributors using 3 different AI platforms collaborate seamlessly on the same codebase. The instructions stay in sync automatically, and everyone has the same context regardless of their AI assistant choice.
+
+---
+
+### 10. Architecture: Edge Deployment vs. Centralized SaaS
 
 I didn't write all this code alone. I used **Agentic IDEs** (like Claude Code, Cursor, or Windsurf) to orchestrate the entire lifecycle. It doesn't just "autocomplete code"; it manages the project state.
 

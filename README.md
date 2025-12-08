@@ -3,6 +3,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Skills](https://img.shields.io/badge/skills-6-blue.svg)](packages/)
 [![Version](https://img.shields.io/badge/monorepo-v1.1.0-green.svg)](PROJECT.md)
+[![AlignTrue](https://img.shields.io/badge/AlignTrue-enabled-purple.svg)](.aligntrue/)
+[![Platform](https://img.shields.io/badge/AI-agnostic-orange.svg)](DEVELOPER_GUIDE.md#aligntrue-workflow)
 
 **Turn Claude into your personal productivity engine.**
 
@@ -55,6 +57,7 @@ curl -fsSL https://raw.githubusercontent.com/gsannikov/claude-skills/main/instal
 
 - **[User Guide](USER_GUIDE.md)**: Detailed commands and workflows.
 - **[Developer Guide](DEVELOPER_GUIDE.md)**: Architecture and manual setup.
+- **[AlignTrue Setup](.aligntrue/README.md)**: Cross-platform AI instruction sync.
 - **[Vision & Roadmap](VISION.md)**: Why we built this and where we're going.
 - **[FAQ](docs/FAQ.md)**: Common questions and troubleshooting.
 - **[Contributing](CONTRIBUTING.md)**: How to build new skills.
