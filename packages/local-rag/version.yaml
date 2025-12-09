@@ -1,5 +1,3 @@
-version: 2.0.0
-updated: 2025-11-27
 skill: local-rag
-codename: Hybrid Search
-status: stable
+updated: '2025-12-09'
+version: 2.1.0
