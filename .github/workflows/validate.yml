@@ -98,7 +98,8 @@ jobs:
           if [[ ${#skills[@]} -eq 0 ]]; then
             skills_json="[]"
           else
-            skills_json=$(printf '%s\n' "${skills[@]}" | jq -R . | jq -s .)
+            # Use jq -c for compact single-line JSON output
+            skills_json=$(printf '%s\n' "${skills[@]}" | jq -R . | jq -sc .)
           fi
           run_local_rag=$([[ "$shared" == "true" || "${{ steps.filter.outputs.skill_local_rag }}" == "true" ]] && echo true || echo false)
 
