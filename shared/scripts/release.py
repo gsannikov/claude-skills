@@ -144,7 +144,12 @@ def run_tests(skill_name: str) -> bool:
         print(f"⚠️  Tests directory not found: {test_path}")
         return True
     
-    result = subprocess.run(['pytest', str(test_path)], capture_output=True)
+    # Run from REPO_ROOT with absolute path to avoid pytest.ini in subdirs
+    result = subprocess.run(
+        [sys.executable, '-m', 'pytest', str(test_path.absolute()), '--rootdir', str(REPO_ROOT)],
+        capture_output=True,
+        cwd=REPO_ROOT
+    )
     if result.returncode != 0:
         print(f"❌ Tests failed for {skill_name}")
         print(result.stdout.decode())

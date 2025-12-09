@@ -83,7 +83,7 @@ if not USE_REAL_OCR_DEPS:
         def convert(self, *_args, **_kwargs):
             return self
 
-        def save(self, fp, format=None):
+        def save(self, fp, format=None, **kwargs):
             if hasattr(fp, "write"):
                 fp.write(self._content)
 
@@ -98,8 +98,28 @@ if not USE_REAL_OCR_DEPS:
 
     fake_pil = types.ModuleType("PIL")
     fake_pil.Image = FakeImage
+
+    class FakeImageDraw:
+        @staticmethod
+        def Draw(img):
+            return FakeImageDraw()
+        def text(self, *args, **kwargs):
+            pass
+
+    class FakeImageFont:
+        @staticmethod
+        def truetype(*args, **kwargs):
+            return FakeImageFont()
+        @staticmethod
+        def load_default():
+            return FakeImageFont()
+
+    fake_pil.ImageDraw = FakeImageDraw
+    fake_pil.ImageFont = FakeImageFont
     sys.modules["PIL"] = fake_pil
     sys.modules["PIL.Image"] = FakeImage
+    sys.modules["PIL.ImageDraw"] = FakeImageDraw
+    sys.modules["PIL.ImageFont"] = FakeImageFont
 
 # paddleocr / paddlepaddle stubs
 fake_paddleocr = types.ModuleType("paddleocr")
