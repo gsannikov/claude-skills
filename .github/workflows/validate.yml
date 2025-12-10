@@ -361,15 +361,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r packages/local-rag/requirements-dev.txt
           
-      - name: Debug Environment
-        run: |
-          echo "=== PIP LIST ==="
-          pip list
-          echo "=== IMPORT CHECK ==="
-          python -c "import pypdf; print('pypdf:', pypdf.__version__, pypdf.__file__)" || echo "FAIL: pypdf"
-          python -c "import pytesseract; print('pytesseract:', pytesseract.__version__, pytesseract.__file__)" || echo "FAIL: pytesseract"
-          python -c "import ocrmypdf; print('ocrmypdf:', ocrmypdf.__version__, ocrmypdf.__file__)" || echo "FAIL: ocrmypdf"
-
       - name: Run local-rag tests
         env:
           TOKENIZERS_PARALLELISM: "false"
