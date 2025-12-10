@@ -251,6 +251,25 @@ jobs:
 
           echo "✅ All Python scripts syntax OK"
 
+  skill-structure-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pytest pyyaml
+
+      - name: Run skill structure tests
+        run: |
+          echo "=== Running Skill Structure Validation Tests ==="
+          pytest shared/tests/test_skill_structure.py -v --tb=short
+
   dependency-check:
     runs-on: ubuntu-latest
     permissions:
