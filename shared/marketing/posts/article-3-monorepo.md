@@ -192,25 +192,22 @@ This prevents the "docs rot" problem that kills every project.
 
 ---
 
-## 🚀 The `/ship` Command: One-Click Releases
+## 🚀 The `/release` Command: One-Click Publishing
 
 Release day used to be painful. Run tests. Update changelog. Bump version. Tag. Push. Pray.
 
 Now it's one command:
 
 ```bash
-/ship career-consultant patch
+/release career-consultant --patch
 ```
 
 **What It Does**:
-1.  Validates code and tests pass
-2.  Checks dependency graph (are docs in sync?)
-3.  Bumps version in `version.yaml`
-4.  Updates `CHANGELOG.md` with recent commits
-5.  Creates git tag
-6.  Pushes to GitHub (triggers release workflow)
+1.  Validates status and arguments
+2.  Triggers the **GitHub Actions Release Workflow**
+3.  Cloud runner handles tests, version bumping, changelogs, tagging, and creating the GitHub Release
 
-The entire CI/CD pipeline is wrapped in a Claude command. I just describe what changed, and the system handles the rest.
+I just describe what to release, and the cloud handles the rest.
 
 ---
 

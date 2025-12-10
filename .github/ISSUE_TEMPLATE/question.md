@@ -10,6 +10,9 @@ assignees: ''
 
 Ask your question clearly and concisely.
 
+**Please check the [FAQ](https://github.com/gsannikov/claude-skills/blob/main/docs/FAQ.md) first!**
+- [ ] I have checked the FAQ and didn't find an answer.
+
 ## Category
 
 What is your question about?

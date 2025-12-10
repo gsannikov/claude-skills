@@ -398,7 +398,18 @@ pytest-cov>=4.0.0
 
 ## Release Process
 
-### Using the Release Script
+### Option 1: Using Claude Command (Recommended)
+
+Simply type `/release` in the chat:
+
+```bash
+/release                  # Interactive prompts
+/release career-consultant # Release specific skill
+```
+
+This triggers the **Cloud Release Workflow** (GitHub Actions), ensuring consistency and audit logs.
+
+### Option 2: Using the Release Script (Manual)
 
 ```bash
 cd ~/Projects/claude-skills  # or wherever your repo is located
@@ -531,6 +542,7 @@ python shared/scripts/dependency_tracker.py affected packages/voice-memos/SKILL.
 |---------|---------|
 | `/deps` | Quick dependency status check |
 | `/refactor` | Full dependency-aware update workflow |
+| `/release` | Trigger Cloud Release Workflow |
 
 ### Adding New Dependencies
 
