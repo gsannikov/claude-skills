@@ -166,6 +166,24 @@ nodes:
       2. Sync MCP configuration
       3. Update query examples
 
+  # ============================================
+  # RECIPE MANAGER SKILL
+  # ============================================
+  - path: packages/recipe-manager/SKILL.md
+    type: source
+    description: Core recipe manager skill logic
+    depends_on: []
+    rebuild_instructions: |
+      Source file. Update version.yaml and CHANGELOG.md on changes.
+
+  - path: packages/recipe-manager/README.md
+    type: derived
+    description: User documentation for recipe manager
+    depends_on:
+      - packages/recipe-manager/SKILL.md
+    rebuild_instructions: |
+      Sync commands and features from SKILL.md
+
   - path: packages/local-rag/docs/architecture.md
     type: source
     description: Local RAG architecture documentation
@@ -323,6 +341,47 @@ nodes:
     rebuild_instructions: |
       Source file for project vision and strategy. Update manually.
 
+  - path: install.sh
+    type: source
+    description: Main installation script
+    depends_on: []
+    rebuild_instructions: |
+      Update when:
+      1. Project structure changes
+      2. New dependencies are added
+      3. Python version requirements change
+
+  - path: AUTOMATION_GUIDE.md
+    type: documentation
+    description: Guide for automated agents
+    depends_on:
+      - PROJECT.md
+    rebuild_instructions: |
+      Update when automation patterns or tools change.
+
+  - path: AGENTS.md
+    type: documentation
+    description: Agent persona definitions
+    depends_on:
+      - PROJECT.md
+    rebuild_instructions: |
+      Update when new agent roles are defined.
+
+  - path: SECURITY.md
+    type: documentation
+    description: Security policy
+    depends_on: []
+    rebuild_instructions: |
+      Update manually for security policy changes.
+
+  - path: CHANGELOG.md
+    type: documentation
+    description: Project history
+    depends_on:
+      - packages/*/SKILL.md
+    rebuild_instructions: |
+      Update after every release or significant change.
+
   - path: CONTRIBUTING.md
     type: documentation
     description: Contributor guidelines and coding conventions
@@ -428,6 +487,12 @@ groups:
       - packages/setup-manager/SKILL.md
       - packages/setup-manager/README.md
 
+  recipe-manager:
+    description: All recipe manager related files
+    members:
+      - packages/recipe-manager/SKILL.md
+      - packages/recipe-manager/README.md
+
   documentation:
     description: All user-facing documentation
     members:
@@ -438,7 +503,14 @@ groups:
       - VISION.md
       - CONTRIBUTING.md
       - docs/FAQ.md
+      - CONTRIBUTING.md
+      - docs/FAQ.md
       - .github/ISSUE_TEMPLATE/
+      - install.sh
+      - AUTOMATION_GUIDE.md
+      - AGENTS.md
+      - SECURITY.md
+      - CHANGELOG.md
 
   marketing:
     description: All marketing/blog content
