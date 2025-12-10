@@ -1,6 +1,7 @@
 # Claude Skills Ecosystem
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Build Status](https://github.com/gsannikov/claude-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/gsannikov/claude-skills/actions/workflows/validate.yml)
 [![Skills](https://img.shields.io/badge/skills-6-blue.svg)](packages/)
 [![Version](https://img.shields.io/badge/monorepo-v1.1.0-green.svg)](PROJECT.md)
 [![AlignTrue](https://img.shields.io/badge/AlignTrue-enabled-purple.svg)](.aligntrue/)
