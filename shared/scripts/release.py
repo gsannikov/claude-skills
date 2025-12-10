@@ -49,6 +49,24 @@ SKILL_CONFIG = {
         'version_file': 'version.yaml',
         'changelog': 'CHANGELOG.md',
     },
+    'social-media-post': {
+        'has_host_scripts': False,
+        'has_tests': False,
+        'version_file': 'version.yaml',
+        'changelog': 'CHANGELOG.md',
+    },
+    'recipe-manager': {
+        'has_host_scripts': False,
+        'has_tests': False,
+        'version_file': 'version.yaml',
+        'changelog': 'CHANGELOG.md',
+    },
+    'setup-manager': {
+        'has_host_scripts': False,
+        'has_tests': True,
+        'version_file': 'version.yaml',
+        'changelog': 'CHANGELOG.md',
+    },
 }
 
 REPO_ROOT = Path(__file__).parent.parent.parent
