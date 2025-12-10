@@ -1,6 +1,6 @@
 # 🚀 Building the Exocortex: From Prototype to Production
 
-![Production Grade AI Skills](images/hero-banner.png)
+![Production Grade AI Skills](../images/hero-banner.png)
 
 Scaling a prototype into a production system typically requires a dedicated engineering team.
 
@@ -30,7 +30,7 @@ The following eight practices form the engineering blueprint used to deliver v1.
 
 Why build a React app when the LLM renders HTML? I used `html_generator.py` to generate **interactive, self-contained HTML reports** directly in the chat.
 
-![Interactive HTML Report Mockup](images/html-report-mockup.png)
+![Interactive HTML Report Mockup](../images/html-report-mockup.png)
 
 Users get a full dashboard with sorting, filtering, and export capabilities—zero frontend code required.
 

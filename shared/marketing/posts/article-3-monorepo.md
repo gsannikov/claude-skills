@@ -1,6 +1,6 @@
 # Scaling AI: The Monorepo Architecture for Custom Skills
 
-![Monorepo Architecture Hero](images/monorepo-hero.png)
+![Monorepo Architecture Hero](../images/monorepo-hero.png)
 
 *Part 3 of the "AI-Augmented Homosapiens" series. [Read Part 2 here](LINK_TO_PART_2).*
 

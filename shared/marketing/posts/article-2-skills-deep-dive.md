@@ -1,6 +1,6 @@
 # The "Second Brain" Architecture: A Deep Dive into 6 Custom AI Skills
 
-![Skills Architecture Hero](images/skills-architecture-hero.png)
+![Skills Architecture Hero](../images/skills-architecture-hero.png)
 
 *Part 2 of the "AI-Augmented Homosapiens" series. [Read Part 1 here](LINK_TO_PART_1).*
 

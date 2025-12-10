@@ -1,6 +1,6 @@
 # Exocortex: The Infrastructure for Human Augmentation
 
-![AI-Augmented Architecture](images/ai-augmented-hero.png)
+![AI-Augmented Architecture](../images/ai-augmented-hero.png)
 
 *Building a permanent extension of your biological mind.*
 
