@@ -54,8 +54,8 @@ This script uses GitHub CLI (`gh`) to automate the entire GitHub release process
 
 ### **Example 1: Minimal (Auto-detect everything possible)**
 ```bash
-bash /Users/gursannikov/MyDrive/github-release-auto.sh \
-  /Users/gursannikov/MyDrive/career-consultant.skill/claude-skills-sdk/claude-skill-template \
+bash /Users/username/MyDrive/github-release-auto.sh \
+  /Users/username/MyDrive/career-consultant.skill/claude-skills-sdk/claude-skill-template \
   claude-skill-template
 ```
 **What happens:**
@@ -67,8 +67,8 @@ bash /Users/gursannikov/MyDrive/github-release-auto.sh \
 
 ### **Example 2: Specify owner**
 ```bash
-bash /Users/gursannikov/MyDrive/github-release-auto.sh \
-  /Users/gursannikov/MyDrive/myproject \
+bash /Users/username/MyDrive/github-release-auto.sh \
+  /Users/username/MyDrive/myproject \
   my-awesome-repo \
   gsannikov
 ```
@@ -81,8 +81,8 @@ bash /Users/gursannikov/MyDrive/github-release-auto.sh \
 
 ### **Example 3: Specify custom release tag**
 ```bash
-bash /Users/gursannikov/MyDrive/github-release-auto.sh \
-  /Users/gursannikov/MyDrive/myproject \
+bash /Users/username/MyDrive/github-release-auto.sh \
+  /Users/username/MyDrive/myproject \
   my-awesome-repo \
   gsannikov \
   v2.0.0
@@ -97,11 +97,11 @@ bash /Users/gursannikov/MyDrive/github-release-auto.sh \
 ### **Example 4: For your Claude Skills SDK Template**
 ```bash
 # Make script executable (first time only)
-chmod +x /Users/gursannikov/MyDrive/github-release-auto.sh
+chmod +x /Users/username/MyDrive/github-release-auto.sh
 
 # Run the script
-bash /Users/gursannikov/MyDrive/github-release-auto.sh \
-  /Users/gursannikov/MyDrive/career-consultant.skill/claude-skills-sdk/claude-skill-template \
+bash /Users/username/MyDrive/github-release-auto.sh \
+  /Users/username/MyDrive/career-consultant.skill/claude-skills-sdk/claude-skill-template \
   claude-skill-template \
   gsannikov \
   v1.0.0

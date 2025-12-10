@@ -20,7 +20,7 @@ from typing import Optional
 #   "/Users/username/Documents/claude-skills-data"
 #   "/Users/username/MyDrive/claude-skills-data"
 #   "~/Documents/claude-skills-data"  # Will be expanded to full path
-USER_DATA_BASE: Optional[str] = "/Users/gursannikov/Documents/claude-skills-data"
+USER_DATA_BASE: Optional[str] = None
 
 # If None, will try to auto-detect from common locations
 # Set to None to enable auto-detection
