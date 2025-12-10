@@ -1,6 +1,6 @@
 ---
 name: recipe-manager
-description: Imports recipes from web/Apple Notes, scales ingredients, and syncs to Notion.
+description: Extracts recipes from URLs/Images to local YAML files. Tracks family preferences and cooking history.
 ---
 
 # Recipe Manager Skill

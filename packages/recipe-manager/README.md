@@ -1,6 +1,6 @@
 # Recipe Manager Skill
 
-Imports recipes from web/Apple Notes, scales ingredients, and syncs to Notion.
+Extracts recipes from URLs/Images to local YAML files. Tracks family preferences and cooking history.
 
 ## 🌟 Capabilities
 

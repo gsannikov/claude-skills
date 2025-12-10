@@ -42,7 +42,7 @@ curl -fsSL https://raw.githubusercontent.com/gsannikov/exocortex/main/install.sh
 | **🎙️ Voice Memos** | Transcribes audio, extracts action items, and identifies speakers. |
 | **🔍 Local RAG** | Searches your local documents (PDF, Docx, Code) using semantic understanding. |
 | **📱 Social Media** | Generates optimized posts for LinkedIn, X, and Threads with algorithm insights. |
-| **🍳 Recipe Manager** | Imports recipes from web/Apple Notes, scales ingredients, and syncs to Notion. |
+| **🍳 Recipe Manager** | Extracts recipes from web/images to local YAML files. Tracks family preferences. |
 | **🔧 Setup Manager** | Automates the environment setup, dependency management, and system health checks. |
 
 ---
