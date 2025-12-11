@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0] - 2025-12-11
+
+### Added
+- feat: migrate career data and consolidate dashboards
+
+### Fixed
+- fix(dashboard): resolve data paths for career and backlog
+
 ## [0.2.1] - 2025-12-11
 
 ### Fixed
