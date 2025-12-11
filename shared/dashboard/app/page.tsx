@@ -1,10 +1,11 @@
-import { getJobs, getSystemStats } from '@/lib/api';
-import { Briefcase, Zap, Clock, ArrowUpRight } from 'lucide-react';
+import { getJobs, getSystemStats, getActivityFeed } from '@/lib/api';
+import { Briefcase, Zap, Clock, ArrowUpRight, Activity } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function Dashboard() {
   const jobs = await getJobs();
   const system = await getSystemStats();
+  const activities = await getActivityFeed();
   
   const appliedCount = jobs.filter(j => j.status === 'applied').length;
   const interviewCount = jobs.filter(j => j.status === 'interviewing').length;
@@ -30,17 +31,17 @@ export default async function Dashboard() {
             />
         </Link>
         <StatCard 
-            title="System Load" 
+            title="Knowledge Load" 
             value={`${system.cpu}%`} 
-            subtitle="All systems nominal"
+            subtitle="Capacity utilization"
             icon={Zap}
             accent="purple" 
         />
         <StatCard 
-            title="Uptime" 
-            value={system.uptime} 
-            subtitle="Since last reboot"
-            icon={Clock}
+            title="Memory Usage" 
+            value={`${Math.round(system.memory)}MB`} 
+            subtitle="Heap allocation"
+            icon={Activity}
             accent="green" 
         />
         <Link href="/recipes" className="glass-panel p-6 flex flex-col justify-between items-start bg-gradient-to-br from-emerald-900/40 to-black hover:border-emerald-500/30 transition-all cursor-pointer group">
@@ -107,8 +108,22 @@ export default async function Dashboard() {
                 <Clock className="w-5 h-5 text-neutral-400" />
                 Latest Activity
             </h2>
-            <div className="glass-panel p-6 min-h-[300px] border-dashed border-neutral-800 flex items-center justify-center text-neutral-600">
-                Activity feed coming soon...
+            <div className="glass-panel p-0 overflow-hidden">
+                <div className="divide-y divide-white/5">
+                    {activities.length === 0 ? (
+                        <div className="p-6 text-center text-neutral-500 italic">No recent activity.</div>
+                    ) : (
+                        activities.map((item) => (
+                            <Link key={item.id} href={item.url || '#'} className="block p-4 hover:bg-white/5 transition-colors">
+                                <div className="text-xs text-neutral-500 mb-1 flex justify-between">
+                                    <span className="uppercase tracking-wider font-medium text-xs opacity-70">{item.action}</span>
+                                    <span>{new Date(item.date).toLocaleDateString()}</span>
+                                </div>
+                                <div className="font-medium text-neutral-200">{item.title}</div>
+                            </Link>
+                        ))
+                    )}
+                </div>
             </div>
          </div>
       </div>

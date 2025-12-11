@@ -4,23 +4,9 @@ import yaml from 'yaml';
 import matter from 'gray-matter';
 import { glob } from 'glob';
 import { DATA_PATHS } from './paths';
+import type { JobAnalysis, Idea, ReadingItem, Recipe, ActivityItem } from './shared-types';
 
-export interface JobAnalysis {
-  id: string;
-  title: string;
-  company: string;
-  status: 'applied' | 'interviewing' | 'offer' | 'rejected' | 'backlog';
-  priority?: 'First' | 'Second' | 'Third';
-  score?: number;
-  match_score?: number;
-  salary_score?: number;
-  growth_score?: number;
-  stress_score?: number;
-  location_score?: number;
-  added_at: string;
-  url?: string;
-  filePath: string;
-}
+export { JobAnalysis, Idea, ReadingItem, Recipe, ActivityItem };
 
 export async function getJobs(): Promise<JobAnalysis[]> {
   try {
@@ -100,22 +86,57 @@ export async function getJobs(): Promise<JobAnalysis[]> {
 }
 
 export async function getSystemStats() {
-    // Mock for MVP
+    // Real stats based on data volume
+    const jobs = await getJobs();
+    const ideas = await getIdeas();
+    const recipes = await getRecipes();
+    const reading = await getReadingList();
+    
+    // Calculate "knowledge load" as a percentage of some arbitrary goal (e.g. 1000 items)
+    const totalItems = jobs.length + ideas.length + recipes.length + reading.length;
+    const load = Math.min(Math.round((totalItems / 1000) * 100), 100);
+
     return {
         status: 'Operational',
-        uptime: '99.9%',
-        cpu: 12,
-        memory: 34
+        uptime: '99.9%', // Keeps this as 'availability' target
+        cpu: load, // Re-purposed as "Knowledge Index"
+        memory: process.memoryUsage().heapUsed / 1024 / 1024 // Real heap usage in MB
     }
 }
 
-export interface Idea {
-    id: string;
-    title: string;
-    tags: string[];
-    content: string;
-    filePath: string;
-    date: string;
+export async function getActivityFeed(): Promise<ActivityItem[]> {
+    const jobs = await getJobs();
+    const ideas = await getIdeas();
+    const recipes = await getRecipes();
+
+    const activities: ActivityItem[] = [
+        ...jobs.map(j => ({
+            id: `job-${j.id}`,
+            type: 'job' as const,
+            title: j.title,
+            date: j.added_at,
+            url: `/career`, // internal link
+            action: `Tracked application`
+        })),
+        ...ideas.map(i => ({
+            id: `idea-${i.id}`,
+            type: 'idea' as const,
+            title: i.title,
+            date: i.date,
+            url: `/ideas`,
+            action: `Captured idea`
+        })),
+        ...recipes.map(r => ({
+            id: `recipe-${r.id}`,
+            type: 'recipe' as const,
+            title: r.name,
+            date: r.source?.date_added || new Date().toISOString(), // Fallback
+            url: `/recipes/${r.id}`,
+            action: `Added recipe`
+        }))
+    ];
+
+    return activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 10);
 }
 
 export async function getIdeas(): Promise<Idea[]> {
@@ -147,48 +168,19 @@ export async function getIdeas(): Promise<Idea[]> {
     }
 }
 
-export interface ReadingItem {
-    url: string;
-    title: string;
-    status: string;
-    summary?: string;
-    filePath: string; 
-}
-
 export async function getReadingList(): Promise<ReadingItem[]> {
     try {
         const filePath = path.join(DATA_PATHS.readingList, 'reading-list.yaml');
         const content = await fs.readFile(filePath, 'utf-8');
         const data = yaml.parse(content) as any[];
         
-        return data.map(item => ({
+        return data.map((item: any) => ({
             ...item,
             filePath // Point to main list file for now
         }));
     } catch {
         return [];
     }
-}
-
-export interface Recipe {
-    id: string;
-    name: string;
-    name_en?: string;
-    type?: string;
-    icon?: string;
-    status: string;
-    tags: string[];
-    prep_time?: string;
-    cook_time?: string;
-    servings?: string;
-    ingredients: string[];
-    instructions: string[];
-    notes?: string[];
-    source?: {
-        credit?: string;
-        date_added?: string;
-    };
-    filePath: string;
 }
 
 export async function getRecipes(): Promise<Recipe[]> {
@@ -223,6 +215,7 @@ export async function getRecipes(): Promise<Recipe[]> {
         return [];
     }
 }
+
 export async function getRecipe(id: string): Promise<Recipe | null> {
     try {
         const recipes = await getRecipes();
