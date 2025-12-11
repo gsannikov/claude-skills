@@ -79,6 +79,18 @@ SKILL_CONFIG = {
         'version_file': 'pyproject.toml',
         'changelog': '_dev/CHANGELOG.md',
     },
+    'interview-prep': {
+        'has_host_scripts': True,
+        'has_tests': True,
+        'version_file': '_dev/version.yaml',
+        'changelog': '_dev/CHANGELOG.md',
+    },
+    'dashboard': {
+        'has_host_scripts': False,
+        'has_tests': True,
+        'version_file': 'package.json',
+        'changelog': 'CHANGELOG.md',
+    },
 }
 
 REPO_ROOT = Path(__file__).parent.parent.parent
@@ -98,6 +110,10 @@ def get_current_version(skill_name: str) -> str:
         content = version_path.read_text()
         match = re.search(r'^version\s*=\s*"([^"]+)"', content, re.MULTILINE)
         return match.group(1) if match else '0.0.0'
+    elif version_path.name == 'package.json':
+        import json
+        with open(version_path) as f:
+            return json.load(f).get('version', '0.0.0')
     
     with open(version_path) as f:
         data = yaml.safe_load(f)
@@ -136,6 +152,16 @@ def update_version_file(skill_name: str, new_version: str, dry_run: bool = False
             flags=re.MULTILINE
         )
         version_path.write_text(new_content)
+        print(f"✅ Updated {version_path}")
+        return
+    elif version_path.name == 'package.json':
+        import json
+        with open(version_path) as f:
+            data = json.load(f)
+        data['version'] = new_version
+        with open(version_path, 'w') as f:
+            json.dump(data, f, indent=2)
+            f.write('\n') # Add trailing newline
         print(f"✅ Updated {version_path}")
         return
     
