@@ -5,6 +5,7 @@ import { getRecipes, getRecipe } from './services/recipes';
 import { getIdeas } from './services/ideas';
 import { getReadingList } from './services/reading';
 import { getSystemStats, getActivityFeed } from './services/system';
+import { getCollateralFiles } from './services/collateral';
 
 export { 
     JobAnalysis, Idea, ReadingItem, Recipe, ActivityItem,
@@ -12,5 +13,6 @@ export {
     getRecipes, getRecipe, 
     getIdeas, 
     getReadingList, 
-    getSystemStats, getActivityFeed 
+    getSystemStats, getActivityFeed,
+    getCollateralFiles
 };

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { LayoutDashboard, BookOpen, Mic, Lightbulb, Activity, Briefcase, Users, Database, Utensils, Share2, Code, Settings } from 'lucide-react';
 import Link from 'next/link';
+import OpenCollateralButton from '../components/OpenCollateralButton';
 
 export const metadata: Metadata = {
   title: 'Exocortex | Dashboard',
@@ -48,7 +49,8 @@ export default function RootLayout({
                 <NavItem icon={Settings} label="Setup & Health" href="/setup" />
             </nav>
 
-            <div className="mt-auto pt-6 border-t border-white/5">
+            <div className="mt-auto pt-6 border-t border-white/5 space-y-2">
+                <OpenCollateralButton />
                 <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white/5">
                     <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                     <span className="text-sm font-medium text-neutral-400">System Online</span>

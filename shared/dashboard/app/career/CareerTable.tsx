@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import { ExternalLink, FileText, ArrowUpDown, ArrowUp, ArrowDown, Search } from 'lucide-react';
 import { JobAnalysis } from '@/lib/shared-types';
+import { openFile } from '../actions';
 
 interface CareerTableProps {
   initialJobs: JobAnalysis[];
@@ -162,14 +163,19 @@ export default function CareerTable({ initialJobs }: CareerTableProps) {
                             <td className="p-4 text-right">
                                 <div className="flex justify-end gap-3 opacity-50 group-hover:opacity-100 transition-opacity">
                                     {job.url && (
-                                        <a href={job.url} target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-cyan-400 transition-colors" title="View Job">
+                                        <a href={job.url} target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-cyan-400 transition-colors" title="Open Website">
                                             <ExternalLink className="w-4 h-4" />
                                         </a>
                                     )}
-                                    {/* Placeholder for local file link - potentially via a localized API route in future */}
-                                    <span className="text-neutral-600 cursor-not-allowed" title="Analysis View">
-                                        <FileText className="w-4 h-4" />
-                                    </span>
+                                    {job.filePath && (
+                                        <button 
+                                            onClick={() => openFile(job.filePath)}
+                                            className="text-neutral-400 hover:text-blue-400 transition-colors" 
+                                            title="Open in Editor"
+                                        >
+                                            <FileText className="w-4 h-4" />
+                                        </button>
+                                    )}
                                 </div>
                             </td>
                         </tr>
