@@ -172,6 +172,7 @@ class SkillActionInput(BaseModel):
     params: dict = Field(default_factory=dict, description="Action parameters")
 
 
+
 # Phase 3: Smart Matching & Production Models
 
 class FindSkillInput(BaseModel):
@@ -366,8 +367,6 @@ def git_commit_change(file_path: Path, message: str) -> bool:
     except Exception as e:
         logger.warning(f"Git commit failed: {e}")
         return False
-
-
 # =============================================================================
 # Helper Functions  
 # =============================================================================
@@ -1156,6 +1155,9 @@ async def apply_patch(params: ApplyPatchInput) -> str:
         "diff_preview": diff_preview,
         "reason": params.reason
     }, indent=2)
+        "diff_preview": diff_preview,
+        "reason": params.reason
+    }, indent=2)
 
 
 @mcp.tool(
@@ -1231,7 +1233,7 @@ async def mark_pattern_applied(pattern_id: str) -> str:
 @mcp.tool(
     name="exocortex_find_skill",
     annotations={
-        "title": "Find Best Skill for Query",
+        "title": "Smart Skill Matching",
         "readOnlyHint": True,
         "destructiveHint": False,
         "idempotentHint": True,
@@ -1239,116 +1241,61 @@ async def mark_pattern_applied(pattern_id: str) -> str:
     }
 )
 async def find_skill(params: FindSkillInput) -> str:
-    """Find the best matching skill for a natural language query.
+    """Find the best skill for a user query.
     
-    Uses smart trigger matching to rank skills by relevance.
-    Call this when unsure which skill to use for a task.
+    Uses keyword scoring and semantic heuristics to improved discovery.
+    Example: "prepare for interview" -> interview-prep (score 95)
     
     Args:
-        params: FindSkillInput with query and top_k
+        params: FindSkillInput with natural language query
         
     Returns:
-        str: JSON with ranked skill matches
+        str: JSON list of matching skills with scores
     """
     metrics.track_tool("find_skill")
     
-    # Get all skills
-    skills = []
-    for skill_dir in SKILLS_DIR.iterdir():
-        if skill_dir.is_dir() and (skill_dir / "SKILL.md").exists():
-            if skill_dir.name == "exocortex-mcp":
-                continue
-            skill_info = parse_skill_header(skill_dir)
-            if skill_info:
-                skills.append(skill_info)
+    # Check cache
+    cache_key = f"find:{params.query}:{params.top_k}"
+    cached = skill_cache.get(cache_key)
+    if cached:
+        return cached
     
-    # Score each skill
-    scored = []
-    for skill in skills:
-        score = compute_trigger_score(params.query, skill)
+    results = []
+    for skill_path in SKILLS_DIR.iterdir():
+        if not skill_path.is_dir() or skill_path.name == "exocortex-mcp":
+            continue
+        if not (skill_path / "SKILL.md").exists():
+            continue
+            
+        info = parse_skill_header(skill_path)
+        if not info:
+            continue
+            
+        score = compute_trigger_score(params.query, info)
         if score > 0:
-            scored.append({
-                "skill": skill["name"],
-                "score": round(score, 2),
-                "triggers": skill["triggers"],
-                "description": skill["description"][:100]
+            results.append({
+                "skill": info["name"],
+                "score": score,
+                "description": info["description"]
             })
     
     # Sort by score descending
-    scored.sort(key=lambda x: x["score"], reverse=True)
-    top_matches = scored[:params.top_k]
+    results.sort(key=lambda x: x["score"], reverse=True)
+    top_results = results[:params.top_k]
     
-    if not top_matches:
-        return json.dumps({
-            "matches": [],
-            "message": "No matching skills found. Try different keywords.",
-            "hint": "Use exocortex_list_skills to see all available skills"
-        })
-    
-    return json.dumps({
+    output = json.dumps({
         "query": params.query,
-        "matches": top_matches,
-        "best_match": top_matches[0]["skill"] if top_matches else None,
-        "hint": f"Use exocortex_get_skill('{top_matches[0]['skill']}') to load the best match"
+        "matches": top_results
     }, indent=2)
-
-
-@mcp.tool(
-    name="exocortex_health",
-    annotations={
-        "title": "Server Health Check",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False
-    }
-)
-async def health_check() -> str:
-    """Get server health status and diagnostics.
     
-    Returns:
-        str: JSON health report
-    """
-    metrics.track_tool("health")
-    
-    # Count skills
-    skill_count = sum(
-        1 for d in SKILLS_DIR.iterdir() 
-        if d.is_dir() and (d / "SKILL.md").exists() and d.name != "exocortex-mcp"
-    )
-    
-    # Check data directories
-    data_status = {
-        "backup_dir": BACKUP_DIR.exists(),
-        "data_dir": DATA_DIR.exists(),
-        "patterns_file": (DATA_DIR / "learned-patterns.json").exists(),
-        "metrics_file": METRICS_FILE.exists()
-    }
-    
-    # Count backups
-    backup_count = len(list(BACKUP_DIR.glob("*.md"))) if BACKUP_DIR.exists() else 0
-    
-    # Count patterns
-    patterns = load_patterns()
-    pending_patterns = sum(1 for p in patterns if not p.get("applied", False))
-    
-    return json.dumps({
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "skills_available": skill_count,
-        "backups_available": backup_count,
-        "patterns_total": len(patterns),
-        "patterns_pending": pending_patterns,
-        "cache_stats": skill_cache.stats(),
-        "data_status": data_status,
-        "version": "0.3.0"  # Phase 3
-    }, indent=2)
+    skill_cache.set(cache_key, output)
+    return output
 
 
 @mcp.tool(
     name="exocortex_metrics",
     annotations={
-        "title": "Usage Metrics",
+        "title": "Get Server Metrics",
         "readOnlyHint": True,
         "destructiveHint": False,
         "idempotentHint": True,
@@ -1356,27 +1303,30 @@ async def health_check() -> str:
     }
 )
 async def get_metrics() -> str:
-    """Get usage metrics and analytics.
-    
-    Returns:
-        str: JSON metrics report
-    """
+    """Get usage statistics and system health."""
+    metrics.track_tool("metrics")
     stats = metrics.get_stats()
-    
-    # Add derived metrics
-    total_calls = sum(stats["tool_calls"].values())
-    most_used_tool = max(stats["tool_calls"], key=stats["tool_calls"].get) if stats["tool_calls"] else None
-    most_used_skill = max(stats["skill_usage"], key=stats["skill_usage"].get) if stats["skill_usage"] else None
-    
+    return json.dumps(stats, indent=2)
+
+
+@mcp.tool(
+    name="exocortex_health",
+    annotations={
+        "title": "Check Health",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+        "openWorldHint": False
+    }
+)
+async def health_check() -> str:
+    """Simple health check for monitoring."""
     return json.dumps({
-        **stats,
-        "summary": {
-            "total_tool_calls": total_calls,
-            "most_used_tool": most_used_tool,
-            "most_used_skill": most_used_skill,
-            "total_sessions": stats["sessions"],
-            "error_count": len(stats["errors"])
-        }
+        "status": "ok",
+        "timestamp": datetime.now().isoformat(),
+        "version": "0.3.0",
+        "skills_loaded": len(list(SKILLS_DIR.glob("*/SKILL.md"))),
+        "cache_entries": len(skill_cache.stats()["keys"])
     }, indent=2)
 
 
@@ -1385,132 +1335,66 @@ async def get_metrics() -> str:
     annotations={
         "title": "Cache Management",
         "readOnlyHint": False,
-        "destructiveHint": False,
+        "destructiveHint": True,
         "idempotentHint": False,
         "openWorldHint": False
     }
 )
 async def cache_control(params: CacheControlInput) -> str:
-    """Manage the skill cache for performance tuning.
+    """Manage the internal skill cache.
     
-    Actions:
-    - stats: Show cache statistics
-    - invalidate: Clear entire cache
-    - invalidate_skill: Clear cache for specific skill
-    
-    Args:
-        params: CacheControlInput with action
-        
-    Returns:
-        str: JSON result
+    Use to clear cache after manual edits or to inspect memory usage.
     """
     metrics.track_tool("cache_control")
     
     if params.action == "stats":
-        return json.dumps({
-            "action": "stats",
-            "cache": skill_cache.stats(),
-            "ttl_seconds": CACHE_TTL
-        }, indent=2)
+        return json.dumps(skill_cache.stats(), indent=2)
     
     elif params.action == "invalidate":
         skill_cache.invalidate()
-        return json.dumps({
-            "action": "invalidate",
-            "status": "success",
-            "message": "All cache entries cleared"
-        })
-    
+        return json.dumps({"status": "cleared_all", "stats": skill_cache.stats()}, indent=2)
+        
     elif params.action == "invalidate_skill":
         if not params.skill_name:
-            return json.dumps({"status": "error", "message": "skill_name required for invalidate_skill"})
+            return json.dumps({"error": "skill_name required for invalidate_skill"}, indent=2)
         skill_cache.invalidate(params.skill_name)
-        return json.dumps({
-            "action": "invalidate_skill",
-            "skill": params.skill_name,
-            "status": "success"
-        })
+        return json.dumps({"status": f"cleared_{params.skill_name}", "stats": skill_cache.stats()}, indent=2)
     
-    return json.dumps({"status": "error", "message": f"Unknown action: {params.action}"})
+    return json.dumps({"error": f"Unknown action: {params.action}"}, indent=2)
 
 
 @mcp.tool(
     name="exocortex_cross_skill",
     annotations={
-        "title": "Cross-Skill Reference",
+        "title": "Cross-Skill Integration",
         "readOnlyHint": True,
         "destructiveHint": False,
         "idempotentHint": True,
         "openWorldHint": False
     }
 )
-async def cross_skill_reference(source_skill: str, target_skill: str) -> str:
-    """Get handoff information between skills.
+async def cross_skill_integration(source: str, target: str) -> str:
+    """Get integration guidance between two skills."""
+    metrics.track_tool("cross_skill")
     
-    Some skills work together (e.g., job-analyzer -> interview-prep).
-    This shows how to transition between related skills.
-    
-    Args:
-        source_skill: Current skill
-        target_skill: Skill to hand off to
-        
-    Returns:
-        str: JSON with handoff guidance
-    """
-    metrics.track_tool("cross_skill", skill=source_skill)
-    
-    # Define known skill relationships
-    relationships = {
-        ("job-analyzer", "interview-prep"): {
-            "handoff": "After scheduling interview, use interview-prep for preparation",
-            "shared_data": "~/exocortex-data/career/",
-            "trigger": "Prepare for [company] interview"
+    # Hardcoded known integrations for Phase 3
+    integrations = {
+        "job-analyzer:interview-prep": {
+            "type": "shared-storage",
+            "path": "~/exocortex-data/career/",
+            "workflow": "Analyze job -> Save to career DB -> Read from interview-prep"
         },
-        ("ideas-capture", "social-media-post"): {
-            "handoff": "Expand idea into social post",
-            "shared_data": "~/exocortex-data/ideas/",
-            "trigger": "Create post from idea"
-        },
-        ("voice-memos", "ideas-capture"): {
-            "handoff": "Extract ideas from voice memos",
-            "shared_data": "~/exocortex-data/",
-            "trigger": "Process voice memos to ideas"
-        },
-        ("reading-list", "ideas-capture"): {
-            "handoff": "Capture insights from articles",
-            "shared_data": "~/exocortex-data/",
-            "trigger": "Save insight from article"
+        "ideas-capture:project-planner": {
+            "type": "conversion",
+            "workflow": "Capture idea -> Promote to project -> Create plan"
         }
     }
     
-    key = (source_skill, target_skill)
-    reverse_key = (target_skill, source_skill)
-    
-    if key in relationships:
-        return json.dumps({
-            "source": source_skill,
-            "target": target_skill,
-            "direction": "forward",
-            **relationships[key]
-        }, indent=2)
-    elif reverse_key in relationships:
-        return json.dumps({
-            "source": source_skill,
-            "target": target_skill,
-            "direction": "reverse",
-            **relationships[reverse_key],
-            "note": "Typically flows the other direction"
-        }, indent=2)
-    
-    return json.dumps({
-        "source": source_skill,
-        "target": target_skill,
-        "relationship": "none",
-        "message": "No known relationship between these skills"
-    })
-
-
-# =============================================================================
+    key = f"{source}:{target}"
+    if key in integrations:
+        return json.dumps(integrations[key], indent=2)
+        
+    return json.dumps({"status": "no_direct_integration_known", "advice": "Check shared data folders manually"}, indent=2)
 # Entry Point
 # =============================================================================
 
@@ -1519,28 +1403,26 @@ def main():
     parser = argparse.ArgumentParser(description="Exocortex MCP Server")
     parser.add_argument(
         "--transport", 
-        choices=["stdio", "http"], 
-        default="stdio",
-        help="Transport type (default: stdio)"
+        default="stdio", 
+        choices=["stdio", "http"],
+        help="Transport protocol (default: stdio)"
+    )
+    parser.add_argument(
+        "--host", 
+        default="localhost", 
+        help="Host for HTTP server (default: localhost)"
     )
     parser.add_argument(
         "--port", 
         type=int, 
-        default=8765,
-        help="HTTP port (default: 8765)"
-    )
-    parser.add_argument(
-        "--host",
-        default="127.0.0.1",
-        help="HTTP host (default: 127.0.0.1)"
+        default=8000, 
+        help="Port for HTTP server (default: 8000)"
     )
     
     args = parser.parse_args()
     
-    logger.info(f"Starting Exocortex MCP Server v0.3.0 (transport={args.transport})")
-    
     if args.transport == "http":
-        logger.info(f"HTTP server at http://{args.host}:{args.port}")
+        print(f"Starting Exocortex MCP HTTP Server on {args.host}:{args.port}...")
         mcp.run(transport="streamable_http", host=args.host, port=args.port)
     else:
         mcp.run()
