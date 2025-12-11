@@ -27,19 +27,19 @@ SKILL_CONFIG = {
     },
     'reading-list': {
         'has_host_scripts': False,
-        'has_tests': False,
+        'has_tests': True,
         'version_file': 'version.yaml',
         'changelog': 'CHANGELOG.md',
     },
     'ideas-capture': {
         'has_host_scripts': False,
-        'has_tests': False,
+        'has_tests': True,
         'version_file': 'version.yaml',
         'changelog': 'CHANGELOG.md',
     },
     'voice-memos': {
         'has_host_scripts': False,
-        'has_tests': False,
+        'has_tests': True,
         'version_file': 'version.yaml',
         'changelog': 'CHANGELOG.md',
     },
@@ -51,13 +51,13 @@ SKILL_CONFIG = {
     },
     'social-media-post': {
         'has_host_scripts': False,
-        'has_tests': False,
+        'has_tests': True,
         'version_file': 'version.yaml',
         'changelog': 'CHANGELOG.md',
     },
     'recipe-manager': {
         'has_host_scripts': False,
-        'has_tests': False,
+        'has_tests': True,
         'version_file': 'version.yaml',
         'changelog': 'CHANGELOG.md',
     },
@@ -69,7 +69,7 @@ SKILL_CONFIG = {
     },
     'next-skill': {
         'has_host_scripts': False,
-        'has_tests': False,
+        'has_tests': True,
         'version_file': 'version.yaml',
         'changelog': 'CHANGELOG.md',
     },
@@ -193,20 +193,19 @@ def run_tests(skill_name: str) -> bool:
         print(f"⚠️  Tests directory not found: {test_path}")
         return True
     
-    # Run from REPO_ROOT with absolute path to avoid pytest.ini in subdirs
-    result = subprocess.run(
-        [sys.executable, '-m', 'pytest', str(test_path.absolute()), '--rootdir', str(REPO_ROOT)],
-        capture_output=True,
-        cwd=REPO_ROOT
-    )
-    if result.returncode != 0:
+    print(f"Running tests for {skill_name}...")
+    # Use uv run pytest to ensure correct environment
+    test_cmd = ["uv", "run", "pytest", str(test_path)]
+    try:
+        # Run from REPO_ROOT to ensure pytest.ini is found correctly
+        subprocess.run(test_cmd, check=True, cwd=REPO_ROOT)
+        print(f"✅ Tests passed for {skill_name}")
+        return True
+    except subprocess.CalledProcessError as e:
         print(f"❌ Tests failed for {skill_name}")
-        print(result.stdout.decode())
-        print(result.stderr.decode())
+        print(e.stdout.decode() if e.stdout else "")
+        print(e.stderr.decode() if e.stderr else "")
         return False
-    
-    print(f"✅ Tests passed for {skill_name}")
-    return True
 
 
 def create_git_tag(skill_name: str, version: str, dry_run: bool = False):

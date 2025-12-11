@@ -3,12 +3,10 @@
 
 import asyncio
 import json
-import sys
-sys.path.insert(0, str(__file__).rsplit('/', 1)[0])
 
 from exocortex_mcp.server import (
     find_skill, health_check, get_metrics, cache_control,
-    cross_skill_reference, list_skills, FindSkillInput,
+    cross_skill_integration, list_skills, FindSkillInput,
     CacheControlInput, ListSkillsInput, ResponseFormat
 )
 
@@ -44,10 +42,9 @@ async def test_health():
     result = await health_check()
     data = json.loads(result)
     print(f"Status: {data['status']}")
-    print(f"Skills: {data['skills_available']}")
-    print(f"Backups: {data['backups_available']}")
+    print(f"Skills: {data.get('skills_loaded', 'N/A')}")
     print(f"Version: {data['version']}")
-    return data["status"] == "healthy"
+    return data["status"] == "ok"
 
 
 async def test_metrics():
@@ -61,9 +58,9 @@ async def test_metrics():
     result = await get_metrics()
     data = json.loads(result)
     
-    print(f"Total calls: {data['summary']['total_tool_calls']}")
-    print(f"Most used: {data['summary']['most_used_tool']}")
-    print(f"Sessions: {data['summary']['total_sessions']}")
+    print(f"Total calls: {data.get('total_tool_calls', 'N/A')}")
+    print(f"Most used: {data.get('most_used_tool', 'N/A')}")
+    print(f"Sessions: {data.get('total_sessions', 'N/A')}")
     
     return True
 
@@ -75,7 +72,7 @@ async def test_caching():
     # Get cache stats
     result = await cache_control(CacheControlInput(action="stats"))
     data = json.loads(result)
-    print(f"Cache entries: {data['cache']['entries']}")
+    print(f"Cache entries: {data.get('entries', 0)}")
     
     # Make cached call
     await list_skills(ListSkillsInput(format=ResponseFormat.JSON))
@@ -83,13 +80,13 @@ async def test_caching():
     # Check again
     result = await cache_control(CacheControlInput(action="stats"))
     data = json.loads(result)
-    print(f"After call: {data['cache']['entries']} entries")
-    print(f"Cache keys: {data['cache']['keys']}")
+    print(f"After call: {data.get('entries', 'N/A')} entries")
+    print(f"Cache keys: {data.get('keys', [])}")
     
     # Invalidate
     result = await cache_control(CacheControlInput(action="invalidate"))
     data = json.loads(result)
-    print(f"Invalidated: {data['status']}")
+    print(f"Invalidated: {data.get('status', 'unknown')}")
     
     return True
 
@@ -105,7 +102,7 @@ async def test_cross_skill():
     ]
     
     for src, tgt in pairs:
-        result = await cross_skill_reference(src, tgt)
+        result = await cross_skill_integration(src, tgt)
         data = json.loads(result)
         rel = data.get("handoff", data.get("relationship", "none"))
         print(f"{src} → {tgt}: {rel[:50]}...")

@@ -1,4 +1,10 @@
+---
+name: next-skill
+description: AI-assisted skill creation with GitHub discovery, adaptation, or fresh scaffolding
+---
 # 🏭 Next Skill - Skill Factory
+
+## Overview
 
 AI-assisted skill creation with GitHub discovery, adaptation, or fresh scaffolding.
 
