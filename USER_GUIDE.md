@@ -1,16 +1,18 @@
 # User Guide
 
-This guide covers how to use each skill in the Claude Skills ecosystem with detailed command examples.
+This guide covers how to use each skill in the Exocortex ecosystem with detailed command examples.
 
 ## Table of Contents
 
 - [Skills Overview](#skills-overview)
-- [Career Consultant](#-career-consultant)
+- [Job Analyzer](#-job-analyzer)
+- [Interview Prep](#-interview-prep)
 - [Reading List](#-reading-list)
 - [Ideas Capture](#-ideas-capture)
 - [Voice Memos](#-voice-memos)
 - [Local RAG](#-local-rag)
 - [Social Media Post](#-social-media-post)
+- [Recipe Manager](#-recipe-manager)
 - [Apple Notes Setup](#apple-notes-setup)
 - [Data Storage](#data-storage)
 
@@ -24,79 +26,23 @@ All skills follow the same pattern:
 3. **Store** - Data saved to YAML database
 4. **Query** - Search and retrieve information
 
-**User Data Location**: `~/MyDrive/claude-skills-data/{skill}/`
+**User Data Location**: `~/exocortex-data/{skill}/`
 
 ---
 
-## Career Consultant
+## 💼 Job Analyzer
 
-**Purpose**: AI-powered assistant for analyzing tech job opportunities with personalized 6-component scoring, company research, interview preparation, and market intelligence.
+**Purpose**: Find, analyze, and track job opportunities in the Israeli tech market with 6-component scoring.
 
 ### Command Categories
 
 | Category | Example Commands |
 |----------|------------------|
-| Backlog | `add to backlog`, `process inbox`, `show backlog` |
 | Analysis | `analyze: [URL]`, `analyze job [id]` |
-| Setup | `customize scoring weights`, `show my configuration` |
-| Interview Prep | `create prep plan`, `build STAR story` |
-| Market Intel | `compare companies`, `salary benchmark` |
-| Debug | `/debug on`, `/debug help` |
-
----
-
-### Backlog Management
-
-#### Add Single Job
-```
-Add to backlog: https://linkedin.com/jobs/view/12345
-```
-```
-Save this job: https://company.com/careers/senior-engineer
-```
-```
-Add high priority: https://linkedin.com/jobs/view/67890
-```
-
-#### Batch Add Jobs
-```
-Add jobs: https://url1.com, https://url2.com, https://url3.com
-```
-```
-Batch add:
-- https://linkedin.com/jobs/view/111
-- https://linkedin.com/jobs/view/222
-```
-
-#### Process Inbox
-```
-process inbox
-```
-Syncs from Apple Notes and processes jobs one by one.
-
-```
-process next
-```
-Process the next pending job from inbox.
-
-#### View Backlog
-```
-Show my backlog
-```
-```
-View backlog
-```
-```
-List pending jobs
-```
-
-#### Update Backlog
-```
-Set nvidia-tpm-job to high priority
-```
-```
-Remove job-id from backlog
-```
+| Backlog | `add to backlog`, `process inbox`, `show backlog` |
+| Tracking | `track LinkedIn`, `update status`, `show applications` |
+| Contacts | `add contact`, `show contacts`, `log interaction` |
+| Follow-ups | `show reminders`, `snooze`, `complete` |
 
 ---
 
@@ -112,224 +58,98 @@ Complete job analysis with 6-component scoring.
 ```
 Analyze job nvidia-senior-tpm-backlog-20251029
 ```
+
+### Backlog Management
+
+#### Add Single Job
 ```
-Analyze top 5 jobs from backlog
+Add to backlog: https://linkedin.com/jobs/view/12345
 ```
 
----
-
-### Setup & Configuration
-
-#### First-Time Setup
-When you first use the skill, a setup wizard guides you through configuration.
-
-#### Customize Scoring Weights
+#### Batch Add Jobs
 ```
-Customize my scoring weights
-```
-```
-Recustomize weights
-```
-Runs interactive questionnaire (6 questions, ~2 min).
-
-#### Use Preset Templates
-```
-Show presets
-```
-Options: balanced, money-focused, work-life-balance, career-growth, quick-switch.
-
-#### View Configuration
-```
-Show my configuration
-```
-```
-Show my scoring configuration
+Add jobs: https://url1.com, https://url2.com, https://url3.com
 ```
 
-#### Reset to Defaults
+#### Process Inbox
 ```
-Use default weights
+process inbox
+```
+Syncs from Apple Notes and processes jobs.
+
+#### View Backlog
+```
+show backlog
 ```
 
----
+### LinkedIn Application Tracking
 
-### Interview Preparation
-
-#### STAR Story Builder
+#### Track Application
 ```
-Help me build STAR stories
+Track LinkedIn: https://linkedin.com/jobs/view/12345
 ```
-```
-Let's work on STAR interview preparation
-```
-Interactive guided Q&A to create behavioral interview stories.
-
-#### STAR Library Management
-```
-Show my STAR library
-```
-```
-Review my stories
-```
-```
-Search stories about leadership
-```
-```
-Filter stories by quality
-```
-
-#### Story Refinement
-```
-Improve my story about [topic]
-```
-```
-Refine the conflict-resolution story
-```
-Systematically improve story quality scores.
-
-#### Practice Mode
-```
-Practice STAR stories
-```
-Options: Flash cards, Timed practice, Mock interview.
-
-#### Job-Specific Prep
-```
-Prepare for interview at [Company]
-```
-```
-Get interview recommendations for [job-id]
-```
-Matches your STAR stories to job requirements, identifies gaps.
-
----
-
-### Job Prep Planning
-
-#### Create Prep Plan
-```
-Create prep plan for nvidia-senior-tpm-20251120
-```
-```
-Generate study plan for [role]
-```
-```
-Show preparation timeline for [job]
-```
-
-Generates detailed week-by-week preparation plan with:
-- Hour breakdown by category
-- Study resources
-- Milestones and checkpoints
-
----
-
-### Market Investigation
-
-#### Company Comparison
-```
-Compare NVIDIA vs Intel
-```
-```
-Compare Google Israel vs Microsoft Israel vs Apple Israel
-```
-Side-by-side comparison across compensation, culture, growth.
-
-#### Salary Benchmarking
-```
-What's the market rate for Engineering Manager?
-```
-```
-Show salary ranges for TPM roles
-```
-```
-Compare PM salaries across companies
-```
-
-#### Trend Analysis
-```
-Show trends in my job search
-```
-```
-What companies am I targeting most?
-```
-```
-Analyze my backlog by role type
-```
-
-#### Filter Jobs
-```
-Show all NVIDIA jobs
-```
-```
-Show all Tier 1 companies
-```
-```
-Show jobs scoring above 70
-```
-```
-Show all TPM roles
-```
-
----
-
-### Statistics & Reports
-
-#### View Statistics
-```
-Show me my job statistics
-```
-Displays analysis stats, trends, score distributions.
 
 #### Update Status
 ```
-Mark nvidia-tpm-123 as Applied
+Update status nvidia-job: interviewed
+```
+Statuses: applied → viewed → in-review → interview → offer/rejected
+
+#### View Applications
+```
+Show applications
 ```
 ```
-Mark role-id-123 as Interviewing
+Show pending applications
 ```
 
-#### Rebuild Reports
-```
-Rebuild Excel from all roles
-```
-Regenerates Excel database from all analyzed jobs.
+### Recruiter & Contact Management
 
----
+#### Add Contact
+```
+Add contact: Sarah Cohen at NVIDIA
+```
 
-### Debug Mode
+#### Log Interaction
+```
+Log interaction: Sarah Cohen - discussed EM role via email
+```
 
+#### View Contacts
 ```
-/debug on
+Show contacts
 ```
-Enable verbose logging.
+```
+Show contacts at NVIDIA
+```
 
-```
-/debug off
-```
-Disable verbose logging.
+### Follow-up Reminders
 
+#### View Reminders
 ```
-/debug help
+Show reminders
 ```
-Show all debug commands.
+```
+Show reminders today
+```
 
+#### Manage Reminders
 ```
-/debug state
+Snooze nvidia-followup 3 days
 ```
-View current session state.
+```
+Complete nvidia-followup
+```
 
+#### Create Manual Reminder
 ```
-/debug prompt [module]
+Create reminder: Follow up with AWS recruiter in 5 days
 ```
-View system prompt for a module.
-
----
 
 ### Scoring Components
 
-| Component | Default Weight | Description |
-|-----------|----------------|-------------|
+| Component | Weight | Description |
+|-----------|--------|-------------|
 | Match | 35% | Skills alignment + role fit |
 | Income | 25% | Salary vs. requirements |
 | Growth | 20% | Career advancement opportunities |
@@ -338,140 +158,120 @@ View system prompt for a module.
 | Location | 5% | Commute + hybrid/remote policy |
 
 **Priority Thresholds:**
-- First Priority: 70+ (default)
+- First Priority: 70+
 - Second Priority: 50-69
 - Third Priority: <50
 
 ---
 
-### Example Sessions
+## 🎯 Interview Prep
 
-#### Quick Job Capture
-```
-User: Add to backlog: https://linkedin.com/jobs/view/3847592847
+**Purpose**: Prepare for interviews with STAR stories, company research, and salary negotiation.
 
-Claude: Saved to backlog:
-        Company: NVIDIA
-        Title: Senior TPM
-        Added: 2025-11-25
-        ID: nvidia-senior-tpm-backlog-20251125
-        Priority: medium
+### Command Categories
 
-        Next: "Analyze job nvidia-senior-tpm-backlog-20251125"
-```
-
-#### Full Job Analysis
-```
-User: Analyze job nvidia-senior-tpm-backlog-20251125
-
-Claude: ANALYSIS COMPLETE
-
-        Company: NVIDIA (Tier 1)
-        Position: Senior Technical Program Manager
-        Location: Santa Clara, Hybrid
-
-        SCORE: 82/100 (First Priority)
-        RANK: #3 of 47 analyzed jobs
-
-        Scores:
-        - Match: 31/35
-        - Income: 22/25
-        - Growth: 18/20
-        - LowPrep: 12/15
-        - Stress: 7/10
-        - Location: 3/5
-
-        NEXT STEPS:
-        1. Update cv-tpm.md CV
-        2. Start prep (8 hours estimated)
-        3. Research hiring manager
-```
-
-#### Company Comparison
-```
-User: Compare NVIDIA vs Intel vs Microsoft
-
-Claude: Company Comparison
-
-        | Metric | NVIDIA | Intel | Microsoft |
-        |--------|--------|-------|-----------|
-        | Tier | 1 | 1 | 1 |
-        | Employees (Israel) | 4,500 | 11,700 | 2,500 |
-        | Glassdoor | 4.3/5.0 | 3.7/5.0 | 4.2/5.0 |
-
-        Best for Compensation: NVIDIA (+33% premium)
-        Best for Work-Life Balance: Microsoft (4.0/5.0)
-        Best for Career Growth: NVIDIA
-```
-
-#### Interview Prep
-```
-User: Create prep plan for nvidia-senior-tpm-20251120
-
-Claude: Interview Preparation Plan
-
-        Company: NVIDIA
-        Role: Senior TPM
-        Total Hours: 85 hours
-        Timeline: 5 weeks
-
-        Week 1: Company Research + Behavioral Framework (17 hrs)
-        Week 2: Skills Deep Dive + Technical Prep (17 hrs)
-        Week 3: Practice + Company-Specific (17 hrs)
-        Week 4: Final Mock Interviews + Polish (17 hrs)
-```
+| Category | Example Commands |
+|----------|------------------|
+| STAR | `show my stories`, `add story`, `practice STAR` |
+| Research | `deep dive`, `quick brief`, `who will I meet` |
+| Negotiation | `prep negotiation`, `compare offers`, `draft counter` |
 
 ---
 
-## Reading List
+### STAR Story Management
+
+#### View Stories
+```
+Show my stories
+```
+
+#### Add New Story
+```
+Add story: Led migration of 50 microservices
+```
+
+#### Practice
+```
+Practice STAR
+```
+Options: Flash cards, Timed practice, Mock interview
+
+#### Match to Job
+```
+Match stories for NVIDIA
+```
+
+### Company Research
+
+#### Deep Dive
+```
+Deep dive: NVIDIA
+```
+Full research report with tech stack, culture, leadership, talking points.
+
+#### Quick Brief
+```
+Quick brief: AWS
+```
+5-minute overview before interview.
+
+#### Interview Panel
+```
+Who will I meet at Microsoft
+```
+
+### Salary Negotiation
+
+#### Prepare
+```
+Prep negotiation for NVIDIA
+```
+Research-backed strategy with market data.
+
+#### Compare Offers
+```
+Compare offers
+```
+Side-by-side matrix of all active offers.
+
+#### Counter-Offer
+```
+Draft counter for NVIDIA
+```
+Script for negotiation conversation.
+
+### STAR Framework
+
+| Element | Question |
+|---------|----------|
+| **S**ituation | What was the context? |
+| **T**ask | What was your responsibility? |
+| **A**ction | What did you do? |
+| **R**esult | What was the outcome? (quantify!) |
+
+### Story Categories
+- Leadership & influence
+- Technical problem-solving
+- Conflict resolution
+- Failure & learning
+- Cross-functional collaboration
+- Delivering under pressure
+
+---
+
+## 📚 Reading List
 
 **Purpose**: Capture articles via Apple Notes, auto-scrape, summarize, and organize.
 
 ### Commands
 
-#### Process Inbox
-```
-process reading list
-```
-Process all URLs from the Apple Notes inbox.
-
-#### View Articles
-```
-show unread
-```
-List all unread articles.
-
-```
-show reading list
-```
-Full list with status.
-
-```
-show ai articles
-```
-Filter by category.
-
-#### Search
-```
-search: machine learning
-```
-Find articles by keyword.
-
-```
-summarize ai
-```
-Get summaries by topic/category.
-
-#### Update Status
-```
-mark read: Building LLM Applications
-```
-Mark article as read.
-
-```
-archive: Old Article Title
-```
-Move to archived status.
+| Command | Action |
+|---------|--------|
+| `process reading list` | Process URLs from inbox |
+| `show unread` | List unread items |
+| `show [category]` | Filter by category |
+| `mark read: [title]` | Update status |
+| `search: [query]` | Find by keyword |
 
 ### Categories
 
@@ -482,8 +282,6 @@ Move to archived status.
 | business | Strategy, management, startups |
 | career | Job search, skills, growth |
 | finance | Investing, markets, economics |
-| science | Research, discoveries |
-| other | Everything else |
 
 ### Example Session
 
@@ -492,19 +290,7 @@ User: process reading list
 
 Claude: Processing Reading List Inbox...
         Found 5 new URLs
-
-        Processing: https://example.com/llm-apps-2024
-        - Title: Building LLM Applications in 2024
-        - Category: ai
-        - Read time: 12 min
-        - Summary: Comprehensive guide covering RAG implementation...
-
-        [Processing 4 more...]
-
-        Processed 5 articles:
-        - 3 AI articles
-        - 1 Career article
-        - 1 Tech article
+        Processed 5 articles (3 AI, 1 Career, 1 Tech)
 
 User: show unread
 
@@ -513,422 +299,151 @@ Claude: Reading List - 12 Unread
         AI (5)
         - Building LLM Applications (12 min)
         - RAG Best Practices (8 min)
-        - Claude 4 Features (6 min)
 
         Career (3)
         - Tech Interview Guide 2024 (15 min)
-        - Salary Negotiation Tips (10 min)
 ```
 
 ---
 
-## Ideas Capture
+## 💡 Ideas Capture
 
 **Purpose**: Capture fleeting ideas, expand with AI, evaluate potential, and organize.
 
 ### Commands
 
-#### Process Inbox
-```
-process ideas
-```
-Process all ideas from Apple Notes inbox.
-
-#### View Ideas
-```
-show ideas
-```
-List all ideas by type.
-
-```
-show startup ideas
-```
-Filter by type (patent/startup/business/project).
-
-```
-show hot ideas
-```
-Show high-scoring ideas (7+).
-
-#### Expand & Evaluate
-```
-expand: AI resume optimizer
-```
-Generate detailed expansion of an idea.
-
-```
-evaluate: AI resume optimizer
-```
-Score and analyze potential.
-
-#### Link Related Ideas
-```
-link ideas: Resume AI + Job Matching
-```
-Connect related ideas.
-
-#### Search
-```
-search ideas: automation
-```
-Find ideas by keyword.
+| Command | Action |
+|---------|--------|
+| `process ideas` | Process inbox |
+| `show ideas` | List all by type |
+| `show [type] ideas` | Filter by type |
+| `expand: [idea]` | Generate expansion |
+| `evaluate: [idea]` | Score potential |
+| `link ideas: A + B` | Connect related |
 
 ### Idea Types
 
 | Type | Tag | Description |
 |------|-----|-------------|
-| Patent | [Patent] | Novel inventions, technical innovations |
-| Startup | [Startup] | Business ventures, product ideas |
-| Business | [Business] | Process improvements, revenue ideas |
-| Project | [Project] | Personal/side projects, tools |
-| Other | [Other] | Miscellaneous ideas |
+| Patent | [Patent] | Novel inventions |
+| Startup | [Startup] | Business ventures |
+| Business | [Business] | Process improvements |
+| Project | [Project] | Side projects |
 
 ### Scoring Dimensions
 
-| Dimension | Description |
-|-----------|-------------|
-| Feasibility | How realistic to implement |
-| Impact | Potential value/change |
-| Effort | Resources required (low=good) |
-| Uniqueness | How novel/differentiated |
-| Timing | Market/tech readiness |
-| Personal Fit | Alignment with skills |
+| Dimension | Weight |
+|-----------|--------|
+| Feasibility | 20% |
+| Impact | 25% |
+| Effort (low=good) | 15% |
+| Uniqueness | 15% |
+| Timing | 15% |
+| Personal Fit | 10% |
 
-### Example Session
-
-```
-User: process ideas
-
-Claude: Processing Ideas Inbox...
-        Found 3 new ideas
-
-        [Startup] AI-powered resume optimizer
-        - Expanded: Full concept with market analysis
-        - Score: 8.2/10 (Hot)
-        - Tier: Hot
-
-        [Project] CLI tool for note organization
-        - Expanded: Features and tech stack
-        - Score: 6.5/10 (Warm)
-        - Tier: Warm
-
-        Processed 3 ideas (1 Hot, 1 Warm, 1 Cold)
-
-User: expand: AI resume optimizer
-
-Claude: AI-powered Resume Optimizer
-
-        Score: 8.2/10 (Hot)
-
-        Problem & Market Need:
-        Job seekers struggle to tailor resumes for ATS systems...
-
-        Solution Overview:
-        AI tool that analyzes job descriptions and automatically
-        customizes resumes for maximum compatibility...
-
-        Target Customers:
-        - Active job seekers
-        - Career changers
-        - Recruiting agencies
-
-        MVP Features:
-        1. Job description parser
-        2. Resume analyzer
-        3. Auto-tailor engine
-        4. ATS score predictor
-```
+**Tiers**: Hot (≥7), Warm (5-7), Cold (<5)
 
 ---
 
-## Voice Memos
+## 🎙️ Voice Memos
 
 **Purpose**: Process voice memos - transcribe, extract action items, and organize.
 
 ### Commands
 
-#### Process Inbox
-```
-process voice memos
-```
-Process all memos from Apple Notes inbox.
-
-#### Direct Transcription
-```
-transcribe [file]
-```
-Transcribe a single uploaded file.
-
-```
-transcribe and analyze this
-```
-Full transcription with analysis (for uploaded files).
-
-#### View Transcripts
-```
-show transcripts
-```
-List all transcripts.
-
-```
-show pending memos
-```
-List unprocessed memos.
-
-#### Search
-```
-search memos: project deadline
-```
-Find by keyword in transcripts.
+| Command | Action |
+|---------|--------|
+| `process voice memos` | Process inbox |
+| `transcribe [file]` | Single file |
+| `show transcripts` | List all |
+| `search memos: [query]` | Find by keyword |
 
 ### Supported Formats
-
-- `.m4a` (Voice Memos default)
-- `.mp3`
-- `.wav`
-- `.aac`
-- `.opus`
-- `.flac`
+m4a, mp3, wav, aac, opus, flac
 
 ### Analysis Output
-
-Each memo is analyzed for:
-- **Summary**: Brief overview
-- **Key Points**: Main topics (up to 7)
-- **Action Items**: Tasks with priorities (HIGH/MEDIUM/LOW)
-- **People Mentioned**: Names extracted
-- **Dates Mentioned**: Deadlines, events
-- **Category**: meeting, journal, task-list, brainstorm, etc.
-
-### Example Session
-
-```
-User: process voice memos
-
-Claude: Processing Voice Memos Inbox...
-        Found 2 memos to process
-
-        Processing: team-standup-2024-11-24.m4a
-        - Duration: 5:32
-        - Language: English
-        - Speakers: 3 detected
-
-        Summary:
-        Daily standup covering sprint progress. Team discussed
-        blockers on authentication feature.
-
-        Action Items:
-        - [HIGH] Fix auth API integration (@Dan) - Due: Nov 25
-        - [MEDIUM] Prepare onboarding for new designer (@Sarah)
-        - [LOW] Update sprint board (@Team)
-
-        Saved to: transcripts/2024-11-24-team-standup.md
-
-User: search memos: authentication
-
-Claude: Found 3 results:
-
-        1. team-standup-2024-11-24.m4a
-           "...authentication feature blocked by API changes..."
-
-        2. planning-session-2024-11-20.m4a
-           "...need to implement OAuth authentication..."
-```
+- Summary
+- Key Points (up to 7)
+- Action Items with priorities
+- People & Dates mentioned
+- Auto-categorization
 
 ---
 
-## Local RAG
+## 🔍 Local RAG
 
 **Purpose**: Index local folders and query them using semantic search.
 
 ### Commands
 
-#### Index Documents
+| Command | Action |
+|---------|--------|
+| `update rag from [path]` | Index folder |
+| `query rag [question]` | Search documents |
+
+### Supported Files
+- Documents: PDF, DOCX, PPTX, XLSX
+- Text: MD, TXT, JSON, YAML
+- Code: PY, JS, TS, HTML, CSS
+- Images (OCR): PNG, JPEG, TIFF
+
+### Example
 ```
-update rag from ~/Documents/research
-```
-Index files in the specified folder.
+User: update rag from ~/Documents/research
 
-```
-update rag from ~/Downloads/papers
-```
-Index a different folder.
+Claude: Found 47 PDF files, 12 markdown files
+        Processed 59 files (1,247 chunks)
 
-#### Search Documents
-```
-query rag what are the key findings about climate change?
-```
-Search indexed documents semantically.
-
-```
-search documents neural network training
-```
-Alternative search command.
-
-### Supported File Types
-
-**Documents:**
-- PDF (`.pdf`)
-- Word (`.docx`)
-- PowerPoint (`.pptx`)
-- Excel (`.xlsx`)
-
-**Text Files:**
-- Markdown (`.md`)
-- Plain text (`.txt`)
-- JSON/YAML (`.json`, `.yaml`)
-
-**Code Files:**
-- Python, JavaScript, TypeScript
-- HTML, CSS
-- C, C++, Shell
-
-**Images (with OCR):**
-- PNG, JPEG, TIFF, WebP
-
-### Example Session
-
-```
-User: update rag from ~/Documents/research-papers
-
-Claude: Scanning ~/Documents/research-papers...
-        Found 47 PDF files, 12 markdown files
-        Indexing complete. Processed 59 files (1,247 chunks).
-
-User: query rag neural network training techniques
+User: query rag neural network training
 
 Claude: Found 5 relevant results:
-
-        1. deep-learning-survey.pdf (score: 0.89)
-           "...backpropagation remains the primary training
-           algorithm for neural networks..."
-
-        2. optimization-methods.md (score: 0.84)
-           "...Adam optimizer combines momentum with
-           adaptive learning rates..."
-
-        3. transformer-architecture.pdf (score: 0.78)
-           "...attention mechanisms enable parallel training..."
-
-User: update rag from ~/Documents/research-papers
-
-Claude: Scanning for changes...
-        3 files modified since last index
-        Indexing complete. Processed 3 files.
+        1. deep-learning-survey.pdf (0.89)
+        2. optimization-methods.md (0.84)
 ```
 
 ---
 
-## Social Media Post
+## 📱 Social Media Post
 
-**Purpose**: Generate platform-optimized social media posts using algorithm insights and best practices.
+**Purpose**: Generate platform-optimized social media posts.
 
 ### Commands
 
-#### Create Posts
-```
-Create a Threads post about [topic]
-```
-Generate a Threads-optimized post.
-
-```
-Write X post for [feature]
-```
-Generate a Twitter-optimized tweet.
-
-```
-Create LinkedIn announcement for [release]
-```
-Generate a professional LinkedIn post.
-
-```
-Generate social media posts for [announcement]
-```
-Create posts for multiple platforms.
-
-#### Post Styles
-```
-Write Threads post like option 5
-```
-Short & punchy style (under 280 chars).
-
-```
-Create medium post about [topic]
-```
-Medium detailed (300-500 chars).
-
-```
-Write long-form LinkedIn post about [topic]
-```
-Long-form (800-1500 chars).
+| Command | Action |
+|---------|--------|
+| `Create Threads post about [topic]` | Threads post |
+| `Write X post for [topic]` | Twitter post |
+| `Create LinkedIn post about [topic]` | LinkedIn post |
 
 ### Platforms
 
-| Platform | Char Limit | Hashtags | Best For |
-|----------|------------|----------|----------|
-| Threads | 500 (10K extended) | None | Conversational, questions |
-| X (Twitter) | 280 (25K Blue) | 1-2 max | Concise announcements |
-| LinkedIn | 3,000 | 3-5 max | Professional deep-dives |
+| Platform | Char Limit | Best For |
+|----------|------------|----------|
+| Threads | 500 | Conversational |
+| X | 280 | Concise |
+| LinkedIn | 3,000 | Professional |
 
-### Algorithm Priorities (2025)
+---
 
-**Threads**: Engagement (40%) > Recency (30%) > Relevance (20%) > Profile (10%)
-**X**: Engagement rate > Recency > Media > Authenticity
-**LinkedIn**: Dwell time > Engagement > Relevance > Connections
+## 🍳 Recipe Manager
 
-### Output Format
+**Purpose**: Extract and organize family recipes from web, images, and notes.
 
-Each generated post includes:
-- **Platform**: Target platform
-- **Character Count**: Current/limit
-- **Engagement Hooks**: Questions, CTAs used
-- **Media Suggestion**: Recommended visuals
-- **Best Posting Time**: Optimal time for US audience
-- **Engagement Score**: 1-10 rating
+### Commands
 
-### Example Session
+| Command | Action |
+|---------|--------|
+| `add recipe from [URL]` | Extract from URL |
+| `process recipe inbox` | Import from Apple Notes |
+| `show recipes` | List all |
+| `show [type] recipes` | Filter by type |
+| `mark [recipe] tried` | Update status |
 
-```
-User: Create a Threads post about Navigator v3.3.1 release
+### Recipe Types
+Oven, Ninja, School Breakfast, Stovetop, Grill
 
-Claude: **Platform**: Threads
-        **Style**: Short & Punchy
-        **Character Count**: 274/500
-
-        ---
-
-        Teach Claude Code to automate like a Pro.
-
-        Navigator v3.3.1:
-        ✅ One-command updates
-        ✅ Figma MCP integration
-        ✅ Storybook + Chromatic automation
-        ✅ 18 skills total
-
-        "Update Navigator" → Done in 2 min
-
-        Install: /plugin marketplace add alekspetrov/navigator
-
-        What workflow would you automate next?
-
-        ---
-
-        **Metadata**:
-        - Engagement Hook: Opening statement + closing question
-        - Visual Suggestion: Terminal screenshot
-        - Best Time: Tuesday 10 AM ET
-        - Engagement Score: 8.5/10
-
-User: Now create an X thread for the same topic
-
-Claude: **Platform**: X (Twitter)
-        **Format**: Thread (4 tweets)
-
-        Tweet 1/4 (278/280 chars)
-        We just automated the complete design-to-production pipeline...
-
-        [Generates full thread with optimal character distribution]
-```
+### Status Flow
+`To try` → `Try next` → `Tried` → `Perfected`
 
 ---
 
@@ -936,10 +451,10 @@ Claude: **Platform**: X (Twitter)
 
 ### Creating Inbox Notes
 
-For each skill that uses Apple Notes, create a note with this structure:
+For each skill that uses Apple Notes, create a note:
 
 ```
-{Emoji} {Skill Name} Inbox
+{Skill Name} Inbox
 
 ADD BELOW
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -948,45 +463,17 @@ ADD BELOW
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 PROCESSED
-
-[Stats will appear here]
 ```
 
 ### Required Notes
 
 | Skill | Note Name |
 |-------|-----------|
-| Career Consultant | Job Links Inbox |
+| Job Analyzer | Job Links Inbox |
 | Reading List | Reading List Inbox |
 | Ideas Capture | Ideas Inbox |
 | Voice Memos | Voice Memos Inbox |
-
-### Adding Items
-
-**Job Links:**
-```
-https://linkedin.com/jobs/view/12345
-https://company.com/careers/position
-```
-
-**Reading List:**
-```
-https://example.com/article-1
-https://blog.com/interesting-post
-```
-
-**Ideas (with optional type tags):**
-```
-[Startup] App that tracks coffee consumption
-[Patent] Novel battery cooling mechanism
-Just a random thought (auto-classified)
-```
-
-**Voice Memos:**
-```
-meeting-2024-11-24.m4a
-brainstorm-session.mp3
-```
+| Recipe Manager | Recipe Inbox |
 
 ---
 
@@ -997,15 +484,16 @@ brainstorm-session.mp3
 All user data is stored separately from skill code:
 
 ```
-~/MyDrive/claude-skills-data/
-├── career-consultant/
-│   ├── profile/
-│   │   └── settings.yaml
-│   ├── companies/
-│   ├── jobs/
-│   │   ├── backlog.yaml
-│   │   └── analyzed/
-│   └── reports/
+~/exocortex-data/
+├── career/                    # Shared by job-analyzer & interview-prep
+│   ├── analyses/              # Job analysis YAML files
+│   ├── jobs.xlsx              # Master tracker
+│   ├── contacts.yaml          # Recruiter/network contacts
+│   ├── reminders.yaml         # Follow-up reminders
+│   ├── interview-prep/
+│   │   ├── star-stories.yaml
+│   │   └── negotiations/
+│   └── config.yaml
 ├── reading-list/
 │   ├── reading-list.yaml
 │   └── summaries/
@@ -1013,79 +501,38 @@ All user data is stored separately from skill code:
 │   ├── ideas.yaml
 │   └── expanded/
 ├── voice-memos/
+│   ├── index.yaml
 │   ├── transcripts/
 │   └── analyzed/
 ├── local-rag/
-│   ├── vectordb/
-│   │   ├── chroma.sqlite3
-│   │   └── [collection-uuid]/
-│   └── state/
-│       ├── ingest_state.json
-│       └── bm25_index.json
+│   └── vectordb/
+├── recipe-manager/
+│   └── recipes/
 └── social-media-post/
-    ├── posts/
-    ├── templates/
-    └── analytics/
+    └── posts/
 ```
 
 ### Database Format
 
-All databases use YAML format:
-
-```yaml
-# reading-list.yaml example
-stats:
-  total: 42
-  unread: 12
-
-items:
-  - id: building-llm-applications
-    title: "Building LLM Applications in 2024"
-    url: https://example.com/llm-apps
-    status: unread
-    category: ai
-    added_at: 2024-11-24T10:30:00Z
-```
+All databases use YAML format for human readability.
 
 ---
 
 ## Tips
 
 ### General
-
-- **Process regularly**: Batch process weekly for efficiency
-- **Use mobile**: Apple Notes syncs across devices for on-the-go capture
+- **Process regularly**: Batch process weekly
+- **Use mobile**: Apple Notes syncs for on-the-go capture
 - **Search often**: Find patterns in your data
-- **Review periodically**: Revisit old items - priorities change
 
-### Per Skill
-
-**Career Consultant:**
-- Start fresh conversation for each job analysis (token efficiency)
-- Use backlog mode for quick capture during job hunting
-- Review company research before full analysis
-
-**Reading List:**
-- One URL per line in inbox
-- Process once you have 5-10 articles
-- Use categories to find related content
-
-**Ideas Capture:**
-- Capture first, evaluate later
-- Use type tags for better organization
-- Link related ideas to find patterns
-
-**Voice Memos:**
-- Add speaker hints: "Speakers: John, Sarah"
-- Works with mixed languages (English + Hebrew)
-- Batch process weekly
-
-**Local RAG:**
-- Index important folders once
-- Incremental updates are fast
-- Semantic search finds related content
+### Job Search Workflow
+1. Use **Job Analyzer** to find and score opportunities
+2. Track applications with LinkedIn tracking
+3. When interview scheduled, switch to **Interview Prep**
+4. Use STAR stories and company deep-dive for prep
+5. Use salary negotiation module for offer stage
 
 ---
 
-**Version**: 1.0.0
-**Last Updated**: 2025-11-25
+**Version**: 1.2.0
+**Last Updated**: 2025-12-11

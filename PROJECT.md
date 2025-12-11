@@ -4,9 +4,9 @@ Architecture decisions, roadmap, and project management.
 
 ## 📊 Current State
 
-**Version**: Monorepo v1.1.0
-**Date**: 2025-12-01
-**Skills**: 8 (career-consultant, reading-list, ideas-capture, voice-memos, local-rag, recipe-manager, social-media-post, setup-manager)
+**Version**: Monorepo v1.2.0
+**Date**: 2025-12-11
+**Skills**: 9 (job-analyzer, interview-prep, reading-list, ideas-capture, voice-memos, local-rag, recipe-manager, social-media-post, setup-manager)
 
 ## 🏗️ Architecture Decisions
 
@@ -23,7 +23,7 @@ Architecture decisions, roadmap, and project management.
 
 ### ADR-002: Centralized User Data
 
-**Decision**: User data in configurable location outside repo (default: `~/Documents/claude-skills-data/`).
+**Decision**: User data in configurable location outside repo (default: `~/exocortex-data/`).
 Path configured in `shared/config/paths.py` - single source of truth.
 
 **Rationale**:
@@ -70,6 +70,42 @@ Path configured in `shared/config/paths.py` - single source of truth.
 - `.claude/commands/refactor.md` - Slash command
 - CI jobs in `validate.yml` and `release.yml`
 
+### ADR-006: Skill Structure Best Practices
+
+**Decision**: All skills follow a standardized structure with SKILL.md as orchestrator (<100 lines) and detailed workflows in `references/`.
+
+**Rationale**:
+- Reduces context loading overhead
+- Clear separation of concerns
+- Consistent developer experience
+- Easier maintenance and updates
+
+**Structure**:
+```
+skill-name/
+├── SKILL.md              # <100 lines, orchestrator
+├── references/           # Detailed workflows
+│   └── workflow.md
+├── modules/              # Feature modules
+├── scripts/              # Python utilities
+└── config/               # Configuration
+```
+
+### ADR-007: Career Skill Split
+
+**Decision**: Split career-consultant into two focused skills: job-analyzer and interview-prep.
+
+**Rationale**:
+- Natural workflow boundary (find jobs vs prepare for interviews)
+- Reduced context per skill
+- Clear handoff pattern via shared storage
+- Better single responsibility
+
+**Implementation**:
+- Both skills share `~/exocortex-data/career/`
+- job-analyzer writes analyses and tracking data
+- interview-prep reads from shared storage, writes prep materials
+
 ## 🗺️ Roadmap
 
 ### Phase 1: Foundation (Complete ✅)
@@ -80,12 +116,14 @@ Path configured in `shared/config/paths.py` - single source of truth.
 - [x] Root-level documentation
 - [x] Full cleanup (nested .git, legacy folders, unified paths)
 
-### Phase 2: Automation & Stability (In Progress)
+### Phase 2: Automation & Stability (Complete ✅)
 - [x] GitHub Actions for validation
 - [x] GitHub Actions for release
 - [x] Dependency tracking system
 - [x] Comprehensive Documentation Suite (Vision, FAQ, Contributing)
 - [x] CI Fixes (Local RAG stability)
+- [x] Skills refactoring (SKILL.md <100 lines)
+- [x] Career skill split (job-analyzer + interview-prep)
 - [ ] Automated changelog generation
 - [ ] Cross-skill tests
 
@@ -121,12 +159,32 @@ Track per skill:
 
 | Pattern | Skills Using |
 |---------|-------------|
-| inbox | All 8 |
-| database | All 8 |
-| scoring | career-consultant, ideas-capture |
-| scraping | career-consultant, reading-list |
+| inbox | All 9 |
+| database | All 9 |
+| scoring | job-analyzer, ideas-capture |
+| scraping | job-analyzer, reading-list |
 | transcription | voice-memos |
 | rag | local-rag |
+| shared-storage | job-analyzer, interview-prep |
+
+## 📁 Data Structure
+
+```
+~/exocortex-data/
+├── career/                    # Shared by job-analyzer & interview-prep
+│   ├── analyses/              # Job analysis YAML files
+│   ├── jobs.xlsx              # Master tracker
+│   ├── contacts.yaml          # Recruiter contacts
+│   ├── reminders.yaml         # Follow-up reminders
+│   ├── interview-prep/        # STAR stories, negotiations
+│   └── config.yaml            # Shared config
+├── reading-list/
+├── ideas-capture/
+├── voice-memos/
+├── local-rag/
+├── recipe-manager/
+└── social-media-post/
+```
 
 ## 📝 Notes
 
@@ -143,6 +201,10 @@ Track per skill:
 
 | Date | Change |
 |------|--------|
+| 2025-12-11 | Skills refactoring: All SKILL.md files <100 lines |
+| 2025-12-11 | Career split: job-analyzer + interview-prep |
+| 2025-12-11 | New modules: LinkedIn tracking, recruiter contacts, follow-up reminders, salary negotiation |
+| 2025-12-11 | Path standardization: ~/exocortex-data/ |
 | 2025-12-01 | CI Fixes: Local RAG stability & test coverage |
 | 2025-12-01 | Documentation Suite: Vision, FAQ, Issue Templates |
 | 2025-11-30 | Recipe Manager & Social Media Post skills added |

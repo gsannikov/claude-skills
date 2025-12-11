@@ -4,8 +4,22 @@ Triggers the **Cloud Release Workflow** via GitHub Actions.
 
 ## Arguments
 
-- `skill`: The name of the skill to release (e.g. `career-consultant`, `reading-list`) or `all`.
+- `skill`: The name of the skill to release (see list below) or `all`.
 - `bump`: The version bump type (`patch`, `minor`, `major`). Default: `patch`.
+
+## Available Skills (9)
+
+| Skill | Package | Description |
+|-------|---------|-------------|
+| `job-analyzer` | packages/job-analyzer | Job scoring, tracking, contacts |
+| `interview-prep` | packages/interview-prep | STAR stories, negotiation |
+| `reading-list` | packages/reading-list | Article capture & summaries |
+| `ideas-capture` | packages/ideas-capture | Idea expansion & scoring |
+| `voice-memos` | packages/voice-memos | Transcription & analysis |
+| `local-rag` | packages/local-rag | Semantic document search |
+| `social-media-post` | packages/social-media-post | Platform-optimized posts |
+| `recipe-manager` | packages/recipe-manager | Recipe extraction |
+| `setup-manager` | packages/setup-manager | Environment setup |
 
 ## Step 1: Confirm Status
 
@@ -31,7 +45,12 @@ fi
 SKILL="${1:-}"
 if [ -z "$SKILL" ]; then
     echo "⚠️  No skill specified."
-    echo "Available skills: career-consultant, reading-list, ideas-capture, voice-memos, local-rag, all"
+    echo ""
+    echo "Available skills:"
+    echo "  job-analyzer, interview-prep, reading-list, ideas-capture,"
+    echo "  voice-memos, local-rag, social-media-post, recipe-manager,"
+    echo "  setup-manager, all"
+    echo ""
     read -p "Enter skill to release: " SKILL
 fi
 
@@ -48,4 +67,17 @@ if [ $? -eq 0 ]; then
 else
     echo "❌ Failed to trigger workflow."
 fi
+```
+
+## Usage Examples
+
+```bash
+# Release single skill
+/release job-analyzer patch
+
+# Major version bump
+/release interview-prep major
+
+# Release all skills
+/release all patch
 ```

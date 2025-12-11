@@ -144,8 +144,9 @@ if __name__ == "__main__":
     print(f"Project Root: {get_project_root()}")
     print()
     print("Skill Data Directories:")
-    for skill in ["career-consultant", "reading-list", "ideas-capture", 
-                  "voice-memos", "local-rag", "social-media-post"]:
+    for skill in ["career", "reading-list", "ideas-capture", 
+                  "voice-memos", "local-rag", "social-media-post",
+                  "recipe-manager"]:
         print(f"  {skill}: {get_skill_data_dir(skill)}")
     print()
     try:

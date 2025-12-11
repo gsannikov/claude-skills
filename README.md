@@ -2,9 +2,9 @@
 > **Infrastructure for Augmenting the Human Mind**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Build Status](https://github.com/gsannikov/claude-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/gsannikov/claude-skills/actions/workflows/validate.yml)
-[![Skills](https://img.shields.io/badge/skills-8-blue.svg)](packages/)
-[![Version](https://img.shields.io/badge/monorepo-v1.1.0-green.svg)](PROJECT.md)
+[![Build Status](https://github.com/gsannikov/exocortex/actions/workflows/validate.yml/badge.svg)](https://github.com/gsannikov/exocortex/actions/workflows/validate.yml)
+[![Skills](https://img.shields.io/badge/skills-9-blue.svg)](packages/)
+[![Version](https://img.shields.io/badge/monorepo-v1.2.0-green.svg)](PROJECT.md)
 [![AlignTrue](https://img.shields.io/badge/AlignTrue-enabled-purple.svg)](.aligntrue/)
 [![Platform](https://img.shields.io/badge/AI-agnostic-orange.svg)](DEVELOPER_GUIDE.md#aligntrue-workflow)
 
@@ -36,7 +36,8 @@ curl -fsSL https://raw.githubusercontent.com/gsannikov/exocortex/main/install.sh
 
 | Skill | What It Does |
 |-------|--------------|
-| **💼 Career Consultant** | Analyzes job posts, scores them (Match/Income/Growth), and tracks your applications. |
+| **💼 Job Analyzer** | Analyzes job posts with 6-point scoring (Match/Income/Growth), tracks LinkedIn applications, manages recruiter contacts, and sends follow-up reminders. |
+| **🎯 Interview Prep** | STAR story builder, company deep-dives, practice mode, and salary negotiation preparation. |
 | **📚 Reading List** | Captures articles from your inbox, summarizes them, and tracks reading progress. |
 | **💡 Ideas Capture** | Turns fleeting thoughts into expanded project plans with feasibility scoring. |
 | **🎙️ Voice Memos** | Transcribes audio, extracts action items, and identifies speakers. |
@@ -52,6 +53,21 @@ curl -fsSL https://raw.githubusercontent.com/gsannikov/exocortex/main/install.sh
 1.  **Capture**: Save links, ideas, or voice memos to your **Inbox** (e.g., Apple Notes, Email, or File).
 2.  **Process**: Open Claude and say a command (e.g., `"process inbox"`).
 3.  **Done**: Claude analyzes, organizes, and saves everything to your local files.
+
+---
+
+## 🔄 Skill Workflow
+
+### Job Search Flow
+```
+Job Analyzer                    Interview Prep
+───────────────────────────────────────────────
+Analyze: [URL]          →       Prepare for [company]
+Track LinkedIn app      →       Practice STAR stories
+Show reminders          →       Prep negotiation
+```
+
+Both skills share data in `~/exocortex-data/career/` for seamless handoff.
 
 ---
 
@@ -74,4 +90,3 @@ curl -fsSL https://raw.githubusercontent.com/gsannikov/exocortex/main/install.sh
 - **Author**: [@gsannikov](https://github.com/gsannikov)
 
 > Built with Claude Skills SDK
-

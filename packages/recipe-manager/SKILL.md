@@ -1,311 +1,76 @@
 ---
 name: recipe-manager
-description: Extracts recipes from URLs/Images to local YAML files. Tracks family preferences and cooking history.
+description: Family recipe collection manager. Extracts recipes from URLs (Instagram, YouTube, websites), images, and Apple Notes. Tracks family preferences, cooking status (To try → Perfected), and syncs with Notion. Supports Hebrew and English. Triggers - "add recipe", "save recipe", "extract recipe", "show recipes", "process recipe inbox", "import from Apple Notes", "sync to Notion", "mark recipe tried", "family recipes", "ninja recipes", "oven recipes".
 ---
 
-# Recipe Manager Skill
+# Recipe Manager
 
-AI-powered recipe collection manager for extracting, organizing, and tracking family recipes.
+Extract, organize, and track family recipes.
 
-## 🌟 Key Capabilities
+## Storage
 
-1. **Recipe Extraction**: Extract recipes from any URL (websites, Instagram reels, YouTube)
-2. **Image Processing**: Parse recipe images and photos
-3.  **Inbox Import**: Import recipes saved in your bridge app (e.g., Apple Notes).g., Apple Notes)
-4. **Multi-language Support**: Hebrew and English recipes
-5. **Family Tracking**: Track which family members like each recipe
-6. **Status Management**: To try → Try next → Tried → Perfected workflow
-7. **Notion Sync**: Bi-directional sync with Notion database
-8. **Beautiful Preview**: Render recipe cards using shared-preview system
+Path: `~/exocortex-data/recipe-manager/`
 
-## ⚠️ CRITICAL: Storage Configuration
-
-**Primary Storage: LOCAL FILESYSTEM**
-All recipes are stored locally in YAML format for reliability and version control.
-
-- **User Data Location**: Configured in `config/paths.py`
-- **Path**: Configured in `shared/config/paths.py` (default: `~/Documents/claude-skills-data/recipe-manager`)
-- **Recipe Files**: YAML files in `recipes/`
-- **Configuration**: `config/settings.yaml`
-
-**Directory Structure**:
 ```
-~/Documents/claude-skills-data/recipe-manager/  # or as configured in shared/config/paths.py
-├── config/
-│   └── settings.yaml       # User preferences
-├── recipes/
-│   ├── to-try/            # Status-based organization
-│   │   └── *.yaml
+recipe-manager/
+├── config/settings.yaml   # Preferences
+├── recipes/               # YAML files by status
+│   ├── to-try/
 │   ├── tried/
-│   │   └── *.yaml
 │   └── perfected/
-│       └── *.yaml
 └── exports/
-    └── recipes.xlsx        # Optional Excel export
 ```
 
-**Secondary Storage: Notion** (optional sync)
-- Notion Database ID: `2461eaaa56f680c4a8d7f1df05616964`
-- Data Source ID: `2461eaaa-56f6-81cd-8003-000bfe08e51f`
-- Sync is manual via explicit commands
+## Commands
 
-## 📋 Recipe Data Structure
+| Command | Action |
+|---------|--------|
+| `add recipe from [URL]` | Extract from URL |
+| `extract recipe from image` | Parse attached image |
+| `process recipe inbox` | Import from Apple Notes |
+| `show recipes` | List all |
+| `show [type] recipes` | Filter by type |
+| `mark [recipe] tried` | Update status |
+| `rate [recipe] [1-5]` | Add rating |
+| `sync to Notion` | Push to Notion |
 
-```yaml
-# recipe-template.yaml
-id: "arais-tortilla"                    # Auto-generated slug
-name: "Arais Tortilla"                  # Recipe title
-icon: "🌮"                              # Emoji icon
+## Recipe Types
 
-# Classification
-type: "Ninja"                           # Oven | Ninja | School Breakfast | Stovetop | etc.
-status: "To try"                        # To try | Try next | Tried | Perfected
-rating: 5                               # 1-5 stars (null if not tried)
+Oven, Ninja, School Breakfast, Stovetop, Grill, No Cook, Instant Pot
 
-# Family preferences
-relevant:                               # Who likes this recipe
-  - "Jonathan"
-  - "Noga"  
-  - "Eitan"
+## Status Flow
 
-# Source information
-source:
-  url: "https://instagram.com/reel/..."
-  type: "video"                         # text | image | video
-  platform: "Instagram"                 # Instagram | YouTube | Website | Manual | Apple Notes
-  author: "שלומי סולומון"
-  date_added: "2025-09-27"
+`To try` → `Try next` → `Tried` → `Perfected`
 
-# Recipe content
-prep_time: "15 min"
-cook_time: "20 min"
-servings: 4
-difficulty: "Easy"                      # Easy | Medium | Hard
+## Source Support
 
-ingredients:
-  - "½ קילו בשר טחון (20% שומן מומלץ)"
-  - "1 בצל קצוץ דק"
-  - "..."
+| Source | Method |
+|--------|--------|
+| Instagram | Bright Data / Firecrawl |
+| YouTube | Video description |
+| Websites | Firecrawl scrape |
+| Images | Claude vision |
+| Apple Notes | Direct parse |
 
-instructions:
-  - "מערבבים את כל הירקות, התבלינים והבשר"
-  - "מחממים נינג'ה גריל לחום גבוה"
-  - "..."
+## Notion Sync
 
-# Optional sections
-notes: []                               # Tweaks and experiments
-tags:                                   # Custom tags
-  - "meat"
-  - "quick"
-  - "family-favorite"
+- Database ID: `2461eaaa56f680c4a8d7f1df05616964`
+- Manual sync via commands
+- Bi-directional support
 
-# Metadata
-created_at: "2025-09-27T09:35:00Z"
-updated_at: "2025-09-27T09:35:00Z"
-notion_page_id: "27b1eaaa-56f6-8086-8c76-f27141babc62"  # For sync
-```
+## Modules
 
-## 🚀 Quick Start Commands
+| Module | Purpose |
+|--------|---------|
+| `modules/recipe-extraction.md` | URL/image parsing |
+| `modules/notion-sync.md` | Notion operations |
+| `modules/apple-notes-import.md` | Notes import |
 
-### Add Recipe from URL
-```
-"Add recipe from https://instagram.com/reel/..."
-"Save recipe: [URL]"
-"Extract recipe from this link: [URL]"
-```
+For data schema and extraction workflow, see `references/workflow.md`.
 
-### Add Recipe from Image
-```
-"Extract recipe from this image" (with image attached)
-"Parse recipe from photo"
-```
+## Quick Start
 
-### Apple Notes Import
-```
-"Process recipe inbox"           # Primary - processes 🍳 Recipe Inbox note
-"Check recipe inbox"
-"Import recipes from Apple Notes"
-"Import recipe from note: [note name]"
-```
-
-### Manual Recipe Entry
-```
-"Add new recipe: Shakshuka"
-"Create recipe for [dish name]"
-```
-
-### View Recipes
-```
-"Show my recipes"
-"List recipes to try"
-"Show perfected recipes"
-"Find ninja recipes"
-"Show recipe arais-tortilla"
-```
-
-### Preview Recipes
-```
-"Preview arais-tortilla"         # Beautiful card view
-"Export arais-tortilla as HTML"  # Saveable file
-```
-
-### Update Recipe
-```
-"Rate arais-tortilla 5 stars"
-"Mark shakshuka as Tried"
-"Add note to arais-tortilla: less salt next time"
-```
-
-### Notion Sync
-```
-"Sync recipes to Notion"
-"Import recipes from Notion"
-"Pull latest from Notion"
-```
-
-## 🔄 Workflow
-
-### Adding a New Recipe
-
-1. **User provides URL/image/text**
-2. **Extract & Parse**:
-   - Scrape content using Firecrawl/Bright Data
-   - Parse ingredients and instructions
-   - Detect language (Hebrew/English)
-   - Identify cooking method (Oven/Ninja/etc.)
-3. **Create YAML file** in `recipes/`
-4. **Optionally sync to Notion**
-
-### Recipe Extraction Process
-
-```
-Input Source
-    │
-    ├── Instagram Reel/Post
-    │   └── Use Bright Data or Firecrawl
-    │       └── Extract caption + video description
-    │
-    ├── YouTube Video
-    │   └── Fetch video description
-    │       └── Parse ingredients/instructions
-    │
-    ├── Website
-    │   └── Use Firecrawl scrape
-    │       └── Parse structured recipe data
-    │
-    ├── Image
-    │   └── Use Claude vision
-    │       └── Extract text and structure
-    │
-    └── Apple Notes
-        └── Read note content
-            ├── URL found → Extract from source
-            └── Raw text → Parse directly
-```
-
-## ⚙️ Configuration
-
-### settings.yaml
-```yaml
-# User preferences
-family_members:
-  - id: "jonathan"
-    name: "Jonathan"
-  - id: "noga"
-    name: "Noga"
-  - id: "eitan"
-    name: "Eitan"
-
-# Cooking method categories
-types:
-  - "Oven"
-  - "Ninja"
-  - "School Breakfast"
-  - "Stovetop"
-  - "Grill"
-  - "No Cook"
-  - "Instant Pot"
-
-# Status workflow
-statuses:
-  - "To try"
-  - "Try next"
-  - "Tried"
-  - "Perfected"
-
-# Notion sync settings
-notion:
-  enabled: true
-  database_id: "2461eaaa56f680c4a8d7f1df05616964"
-  data_source_id: "2461eaaa-56f6-81cd-8003-000bfe08e51f"
-  auto_sync: false  # Manual sync by default
-
-# Language preferences
-default_language: "he"  # Hebrew
-```
-
-## 🛠️ MCP Tools Used
-
-### Required
-- **Filesystem MCP**: Local YAML storage
-  - `filesystem:read_text_file`
-  - `filesystem:write_file`
-  - `filesystem:list_directory`
-
-### For Web Extraction
-- **Firecrawl MCP**: Web scraping
-  - `firecrawl_scrape`
-  - `firecrawl_search`
-- **Bright Data MCP**: Instagram/LinkedIn
-  - `Bright Data:scrape_as_markdown`
-
-### For Notion Sync
-- **Notion MCP**: Database operations
-  - `Notion:notion-fetch`
-  - `Notion:notion-create-pages`
-  - `Notion:notion-update-page`
-  - `Notion:notion-search`
-
-### For Apple Notes Import
-- **Apple Notes MCP**: Note access
-  - `Read and Write Apple Notes:list_notes`
-  - `Read and Write Apple Notes:get_note_content`
-  - `Read and Write Apple Notes:update_note_content`
-
-## 📚 Module Reference
-
-| Module | Purpose | When Loaded |
-|--------|---------|-------------|
-| `recipe-extraction.md` | URL/image parsing | On add recipe |
-| `notion-sync.md` | Notion bi-directional sync | On sync commands |
-| `apple-notes-import.md` | Import from Apple Notes | On notes import commands |
-
-## 🎨 Preview System
-
-Uses **shared-preview** system for beautiful output:
-
-- **Theme**: `cooking` (orange/red warm colors)
-- **Mapping**: `templates/preview-mapping.yaml`
-- **Commands**:
-  - `"Preview [recipe]"` → React artifact
-  - `"Show [recipe]"` → Markdown
-  - `"Export [recipe] HTML"` → File
-
-## 🔧 Helper Scripts
-
-- `slug_utils.py` - Generate URL-safe recipe IDs with Hebrew transliteration
-- `yaml_utils.py` - YAML parsing/generation
-
-## ✅ Success Criteria
-
-Recipe addition is successful when:
-- ✅ Recipe extracted and parsed correctly
-- ✅ YAML file created with all fields
-- ✅ Recipe searchable by name/type/status
-- ✅ Notion sync completes (if enabled)
-
----
-
-**Version**: 1.0.0  
-**Last Updated**: 2025-12-01  
-**Status**: Initial Release
+1. Add URLs to "Recipe Inbox" Apple Note
+2. Say: `"process recipe inbox"`
+3. Or: `"add recipe from [URL]"`
+4. View: `"show recipes"` or `"show ninja recipes"`

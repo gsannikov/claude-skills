@@ -1,6 +1,6 @@
 # Developer Guide
 
-This guide covers how to create new skills, test them, and release them in the Claude Skills monorepo.
+This guide covers how to create new skills, test them, and release them in the Exocortex monorepo.
 
 ## Table of Contents
 
@@ -29,17 +29,14 @@ If you prefer not to use the one-line installer, you can set up the environment 
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/gsannikov/claude-skills.git ~/Projects/claude-skills
-cd ~/Projects/claude-skills
+git clone https://github.com/gsannikov/exocortex.git ~/Projects/exocortex
+cd ~/Projects/exocortex
 
 # 2. Run the interactive setup wizard
-# This handles virtualenv creation, dependency installation, and MCP config
 uv run packages/setup-manager/setup_manager/cli.py
 ```
 
 ### Setup Options
-
-The setup CLI supports several flags for automation and debugging:
 
 ```bash
 # Run interactive setup (default)
@@ -57,9 +54,10 @@ uv run packages/setup-manager/setup_manager/cli.py --no-color
 ## Repository Structure
 
 ```
-claude-skills/
-├── packages/                      # All skills
-│   ├── career-consultant/
+exocortex/
+├── packages/                      # All skills (9)
+│   ├── job-analyzer/              # Job scoring & tracking
+│   ├── interview-prep/            # STAR stories & negotiation
 │   ├── reading-list/
 │   ├── ideas-capture/
 │   ├── voice-memos/
@@ -69,19 +67,10 @@ claude-skills/
 │   └── setup-manager/
 ├── shared/
 │   ├── scripts/                   # Release, generator utilities
-│   │   ├── release.py
-│   │   ├── skill_generator.py
-│   │   ├── dependency_tracker.py
-│   │   ├── yaml_utils.py
-│   │   ├── slug_utils.py
-│   │   └── token_estimator.py
+│   ├── config/                    # paths.py (single source of truth)
 │   ├── templates/                 # Patterns, templates
-│   │   └── learned-patterns.yaml
-│   ├── marketing/                 # Blog posts, images
 │   └── workflows/                 # Troubleshooting guides
 ├── .github/workflows/             # CI/CD
-│   ├── validate.yml
-│   └── release.yml
 ├── CLAUDE.md                      # Global instructions
 ├── PROJECT.md                     # Architecture decisions
 └── DEVELOPER_GUIDE.md             # This file
@@ -94,14 +83,9 @@ claude-skills/
 ### Option 1: Using the Skill Generator (Recommended)
 
 ```bash
-cd ~/MyDrive/claude-skills
+cd ~/Projects/exocortex
 python shared/scripts/skill_generator.py --name "expense-tracker" --patterns inbox,database
 ```
-
-**Parameters:**
-- `--name`: Skill name in kebab-case (required)
-- `--patterns`: Comma-separated patterns to include (default: `inbox,database`)
-- `--description`: Skill description (optional)
 
 **Available Patterns:**
 | Pattern | Description |
@@ -112,125 +96,50 @@ python shared/scripts/skill_generator.py --name "expense-tracker" --patterns inb
 | `scraping` | Web scraping capabilities |
 | `output` | Report generation |
 
-**What Gets Created:**
-```
-packages/{skill-name}/
-├── skill-package/
-│   ├── SKILL.md              # Main skill documentation
-│   ├── version.yaml          # Version metadata
-│   └── modules/              # Module directory
-├── README.md                 # User-facing overview
-└── CHANGELOG.md              # Version history
-```
-
-The generator also creates the user data directory (configured in `shared/config/paths.py`):
-```
-~/Documents/claude-skills-data/{skill-name}/  # Default location
-```
-
-**Note**: User data location is configurable via `shared/config/paths.py` - this is the single source of truth for all user data paths.
-
 ### Option 2: Manual Creation
 
-1. Create the skill directory:
-   ```bash
-   mkdir -p packages/{skill-name}
-   ```
-
-2. Create required files:
-   - `SKILL.md` - Main skill documentation
-   - `README.md` - User overview
-   - `version.yaml` - Version info
-   - `CHANGELOG.md` - Version history
-
-3. Update `shared/scripts/release.py` to add the skill configuration.
+1. Create the skill directory in `packages/`
+2. Create required files: `SKILL.md`, `README.md`, `version.yaml`, `CHANGELOG.md`
+3. Update `shared/scripts/release.py`
 
 ---
 
 ## Skill Structure
 
-### Minimal Skill (e.g., ideas-capture)
+### Standard Structure (ADR-006)
+
+All skills follow this structure with SKILL.md as orchestrator (<100 lines):
 
 ```
 {skill}/
-├── SKILL.md              # Complete workflow documentation
-├── README.md             # Quick start guide
-├── AI_GUIDE.md           # AI-specific instructions
+├── SKILL.md              # <100 lines, orchestrator
+├── references/           # Detailed workflows
+│   └── workflow.md
+├── modules/              # Feature modules (loaded on-demand)
+├── scripts/              # Python utilities
+├── config/               # Configuration
+├── README.md             # User guide
 ├── CHANGELOG.md          # Version history
 └── version.yaml          # Version metadata
 ```
 
-### Complex Skill (e.g., career-consultant)
+### SKILL.md Best Practices
+
+- Keep under 100 lines
+- Focus on commands and when to load modules
+- Move detailed implementations to `references/`
+- Use tables for command references
+- No verbose explanations
+
+### Shared Storage Pattern (ADR-007)
+
+Skills can share storage for handoffs. Example: job-analyzer and interview-prep:
 
 ```
-{skill}/
-├── SKILL.md              # Orchestrator with workflow
-├── README.md             # User guide
-├── AI_GUIDE.md           # AI instructions
-├── CHANGELOG.md          # Version history
-├── version.yaml          # Version metadata
-├── config/               # Configuration files
-│   ├── paths.py
-│   └── settings.json
-├── modules/              # On-demand loaded modules
-│   ├── company-research.md
-│   ├── scoring-formulas.md
-│   └── database-operations.md
-├── scripts/              # Python utilities
-│   ├── storage_utils.py
-│   └── config_loader.py
-├── templates/            # User templates
-│   └── user-config-template.yaml
-└── tests/                # Test suite
-    ├── conftest.py
-    └── unit/
-```
-
-### Required Files
-
-#### version.yaml
-```yaml
-version: 1.0.0
-updated: 2025-11-25
-skill: skill-name
-codename: "Initial Release"
-status: stable
-```
-
-#### SKILL.md Structure
-```markdown
----
-name: skill-name
-description: One-line description of the skill
----
-
-# {Emoji} {Display Name}
-
-Brief description of what the skill does.
-
-## Key Capabilities
-1. **Feature 1**: Description
-2. **Feature 2**: Description
-
-## Storage Configuration
-
-**User Data Location**: `~/MyDrive/claude-skills-data/{skill}/`
-
-## Commands
-
-| Command | Action |
-|---------|--------|
-| `command` | Description |
-
-## Workflow: [Name]
-
-### Step 1: ...
-### Step 2: ...
-
----
-
-**Version**: X.Y.Z
-**Patterns**: inbox, database
+~/exocortex-data/career/           # Shared storage
+├── analyses/                      # job-analyzer writes
+├── contacts.yaml                  # job-analyzer writes, interview-prep reads
+└── interview-prep/                # interview-prep writes
 ```
 
 ---
@@ -239,79 +148,24 @@ Brief description of what the skill does.
 
 ### Learned Patterns Reference
 
-See `shared/templates/learned-patterns.yaml` for best practices:
+See `shared/templates/learned-patterns.yaml` for best practices.
 
-#### Inbox Pattern
-- Apple Note format: `{emoji} {Name} Inbox`
-- Sections: "ADD BELOW", separator, "PROCESSED"
-- Keep processed section minimal (stats only)
+### Key Patterns
 
-#### Database Pattern
-- Format: YAML
-- Required fields: `id`, `title`, `added_at`, `status`
-- Use slugs as unique identifiers
-
-#### Scoring Pattern (6 dimensions)
-```yaml
-dimensions:
-  - feasibility
-  - impact
-  - effort
-  - uniqueness
-  - timing
-  - personal_fit
-tiers:
-  hot: 7+
-  warm: 5-6
-  cold: 0-4
-```
-
-#### Naming Conventions
-- Skills: `kebab-case`
-- Files: `kebab-case.{yaml,md}`
-- Functions: `snake_case`
-- Constants: `UPPER_CASE`
+| Pattern | Description |
+|---------|-------------|
+| **Inbox** | Apple Notes with "ADD BELOW" / "PROCESSED" sections |
+| **Database** | YAML with id, title, added_at, status |
+| **Scoring** | 6 dimensions (feasibility, impact, effort, uniqueness, timing, fit) |
+| **Naming** | Skills: kebab-case, Functions: snake_case |
 
 ### Shared Utilities
 
 Located in `shared/scripts/`:
-
-**dependency_tracker.py**
-```python
-# CLI tool for managing file dependencies
-python shared/scripts/dependency_tracker.py status        # Show all file statuses
-python shared/scripts/dependency_tracker.py graph         # Display dependency tree
-python shared/scripts/dependency_tracker.py rebuild-order # Get rebuild order
-python shared/scripts/dependency_tracker.py affected FILE # Show dependents of a file
-```
-
-**yaml_utils.py**
-```python
-from yaml_utils import (
-    create_yaml_document,      # Create markdown with YAML frontmatter
-    parse_yaml_frontmatter,    # Extract YAML + content from markdown
-    validate_yaml_frontmatter  # Validate required fields
-)
-```
-
-**slug_utils.py**
-```python
-from slug_utils import (
-    normalize_slug,           # Create URL-safe slugs
-    create_role_id,           # Composite IDs
-    extract_company_from_url, # Parse URLs
-    sanitize_filename         # Filesystem-safe names
-)
-```
-
-**token_estimator.py**
-```python
-from token_estimator import (
-    estimate_tokens,          # ~4 chars per token
-    check_token_budget,       # Budget status
-    can_fit_in_budget         # Check if operation fits
-)
-```
+- `dependency_tracker.py` - File dependency management
+- `yaml_utils.py` - YAML/frontmatter utilities
+- `slug_utils.py` - URL-safe slug generation
+- `token_estimator.py` - Token budget management
 
 ---
 
@@ -323,75 +177,20 @@ from token_estimator import (
 tests/
 ├── conftest.py           # Shared fixtures
 ├── unit/                 # Unit tests
-│   ├── test_storage.py
-│   └── test_utils.py
 └── integration/          # Integration tests
-```
-
-### Writing Tests
-
-1. **Create conftest.py with fixtures:**
-```python
-import pytest
-from pathlib import Path
-
-@pytest.fixture
-def temp_user_data_dir(tmp_path):
-    """Create temporary user data structure."""
-    dirs = ['companies', 'jobs', 'profile']
-    for d in dirs:
-        (tmp_path / d).mkdir()
-    return tmp_path
-
-@pytest.fixture
-def sample_config():
-    """Sample user configuration."""
-    return {
-        'cv_variants': {'variants': []},
-        'scoring': {'weights': {'match': 35, 'income': 25}},
-        'preferences': {'min_salary': 450000}
-    }
-```
-
-2. **Write unit tests:**
-```python
-# tests/unit/test_utils.py
-import pytest
-from scripts.slug_utils import normalize_slug
-
-def test_normalize_slug():
-    assert normalize_slug("Hello World") == "hello-world"
-    assert normalize_slug("Test@#$String") == "test-string"
-    assert normalize_slug("Multiple   Spaces") == "multiple-spaces"
-
-def test_normalize_slug_max_length():
-    long_text = "a" * 100
-    result = normalize_slug(long_text, max_length=50)
-    assert len(result) == 50
 ```
 
 ### Running Tests
 
 ```bash
 # Run all tests for a skill
-pytest packages/career-consultant/tests/
-
-# Run specific test file
-pytest packages/career-consultant/tests/unit/test_storage.py
+pytest packages/job-analyzer/tests/
 
 # Run with verbose output
-pytest -v packages/career-consultant/tests/
+pytest -v packages/job-analyzer/tests/
 
 # Run with coverage
-pytest --cov=packages/career-consultant packages/career-consultant/tests/
-```
-
-### Test Requirements
-
-Create `requirements-test.txt` in skills with tests:
-```
-pytest>=7.0.0
-pytest-cov>=4.0.0
+pytest --cov=packages/job-analyzer packages/job-analyzer/tests/
 ```
 
 ---
@@ -400,125 +199,60 @@ pytest-cov>=4.0.0
 
 ### Option 1: Using Claude Command (Recommended)
 
-Simply type `/release` in the chat:
-
 ```bash
-/release                  # Interactive prompts
-/release career-consultant # Release specific skill
+/release                    # Interactive prompts
+/release job-analyzer patch # Release specific skill
 ```
 
-This triggers the **Cloud Release Workflow** (GitHub Actions), ensuring consistency and audit logs.
-
-### Option 2: Using the Release Script (Manual)
+### Option 2: Using the Release Script
 
 ```bash
-cd ~/Projects/claude-skills  # or wherever your repo is located
-
-# Release a single skill with patch bump (1.0.0 → 1.0.1)
-python shared/scripts/release.py career-consultant --patch
-
-# Release with minor bump (1.0.0 → 1.1.0)
-python shared/scripts/release.py reading-list --minor
-
-# Release with major bump (1.0.0 → 2.0.0)
-python shared/scripts/release.py local-rag --major
+# Release single skill
+python shared/scripts/release.py job-analyzer --patch
 
 # Release all skills
 python shared/scripts/release.py all --patch
 
-# Dry run (preview without making changes)
-python shared/scripts/release.py career-consultant --patch --dry-run
+# Dry run
+python shared/scripts/release.py job-analyzer --patch --dry-run
 ```
 
-### What the Release Script Does
+### Available Skills (9)
 
-1. **Gets current version** from `version.yaml`
-2. **Bumps version** according to semver (major/minor/patch)
-3. **Runs tests** if configured for the skill
-4. **Updates version.yaml** with new version and date
-5. **Updates CHANGELOG.md** with new version entry
-6. **Creates git tag** `{skill}-v{version}`
-7. **Commits changes** with message "Release {skill} v{version}"
-
-### Manual Steps After Release
-
-```bash
-# Push changes and tags to remote
-git push origin main --tags
-```
-
-### Adding a New Skill to Release Script
-
-Edit `shared/scripts/release.py`:
-
-```python
-SKILL_CONFIG = {
-    # ... existing skills ...
-    'new-skill': {
-        'has_host_scripts': False,  # True if skill has Python scripts to test
-        'has_tests': False,          # True if skill has pytest tests
-        'version_file': 'version.yaml',
-        'changelog': 'CHANGELOG.md',
-    },
-}
-```
+| Skill | Description |
+|-------|-------------|
+| `job-analyzer` | Job scoring, tracking, contacts |
+| `interview-prep` | STAR stories, negotiation |
+| `reading-list` | Article capture & summaries |
+| `ideas-capture` | Idea expansion & scoring |
+| `voice-memos` | Transcription & analysis |
+| `local-rag` | Semantic document search |
+| `social-media-post` | Platform-optimized posts |
+| `recipe-manager` | Recipe extraction |
+| `setup-manager` | Environment setup |
 
 ---
 
 ## CI/CD
 
-### Validation Workflow (.github/workflows/validate.yml)
+### Validation Workflow
 
 Runs on every push and PR:
-- Validates skill structure (SKILL.md, README.md required)
+- Validates skill structure
 - Validates YAML syntax
-- Validates version.yaml exists
-- Checks Python syntax for scripts
+- Checks Python syntax
 - Runs on matrix of all skills
 
-### Release Workflow (.github/workflows/release.yml)
+### Release Workflow
 
-Manual trigger (workflow_dispatch):
-
-**Inputs:**
+Manual trigger with inputs:
 - `skill`: Select skill or "all"
 - `bump`: patch/minor/major
 - `dry_run`: Preview mode
 
-**Process:**
-1. Checkout with full history
-2. Set up Python
-3. Run release script
-4. Push changes and tags (unless dry-run)
-5. Create GitHub Release
-
-### Running CI Locally
-
-```bash
-# Validate YAML files
-python -c "import yaml; yaml.safe_load(open('packages/skill/version.yaml'))"
-
-# Check Python syntax
-python -m py_compile packages/skill/scripts/*.py
-
-# Run tests
-pytest packages/skill/tests/
-```
-
 ---
 
 ## Dependency Management
-
-The repo uses a dependency tracking system to ensure documentation stays in sync with code.
-
-### Dependency Workflow
-
-| Stage | What Happens | Blocks? |
-|-------|--------------|---------|
-| **During Development** | Modify source files freely | No |
-| **PR Created** | CI checks dependencies, comments if out of sync | ⚠️ Warning |
-| **Pre-Merge** | Run `/refactor` if CI flagged issues | Manual |
-| **Release** | CI verifies all docs in sync | ❌ Blocks |
 
 ### Commands
 
@@ -529,11 +263,8 @@ python shared/scripts/dependency_tracker.py status
 # See dependency tree
 python shared/scripts/dependency_tracker.py graph
 
-# Get rebuild order
-python shared/scripts/dependency_tracker.py rebuild-order
-
 # What depends on a file?
-python shared/scripts/dependency_tracker.py affected packages/voice-memos/SKILL.md
+python shared/scripts/dependency_tracker.py affected packages/job-analyzer/SKILL.md
 ```
 
 ### Claude Code Commands
@@ -541,32 +272,8 @@ python shared/scripts/dependency_tracker.py affected packages/voice-memos/SKILL.
 | Command | Purpose |
 |---------|---------|
 | `/deps` | Quick dependency status check |
-| `/refactor` | Full dependency-aware update workflow |
+| `/refactor` | Full dependency-aware update |
 | `/release` | Trigger Cloud Release Workflow |
-
-### Adding New Dependencies
-
-Edit `dependencies.yaml` to add new files:
-
-```yaml
-nodes:
-  - path: packages/new-skill/README.md
-    type: derived
-    description: User documentation
-    depends_on:
-      - packages/new-skill/SKILL.md
-    rebuild_instructions: |
-      Sync commands and features from SKILL.md
-```
-
-### File Types
-
-| Type | Updates Triggered By | Example |
-|------|---------------------|---------|
-| `source` | Manual changes | `SKILL.md`, `PROJECT.md` |
-| `derived` | Source changes | Skill READMEs |
-| `documentation` | Multiple sources | `USER_GUIDE.md` |
-| `marketing` | Documentation changes | Blog articles |
 
 ---
 
@@ -574,37 +281,19 @@ nodes:
 
 ### Do's
 
-- **Separate user data from code**: User data in configurable location (default: `~/Documents/claude-skills-data/`)
-- **Use centralized path config**: All paths configured in `shared/config/paths.py` - single source of truth
-- **Use YAML for structured data**: Human-readable, git-friendly
-- **Deduplicate before adding**: Always check for existing items
-- **Track stats**: Update statistics after operations
-- **Use slugs as IDs**: URL-safe, unique identifiers
-- **Load modules on-demand**: Optimize token usage
-- **Write comprehensive SKILL.md**: Include full workflow documentation
+- **Keep SKILL.md under 100 lines** - Use references/ for details
+- **Separate user data from code** - Data in `~/exocortex-data/`
+- **Use centralized path config** - `shared/config/paths.py`
+- **Use YAML for structured data** - Human-readable, git-friendly
+- **Load modules on-demand** - Optimize token usage
+- **Use slugs as IDs** - URL-safe, unique identifiers
 
 ### Don'ts
 
-- **Don't store large content in Apple Notes**: Causes timeout
-- **Don't duplicate data**: Between skill-package and user-data
-- **Don't hardcode paths**: Use configuration
-- **Don't skip deduplication**: Prevents duplicates
-- **Don't ignore URL normalization**: Strip trailing slashes
-- **Don't commit user data**: It's in a separate gitignored folder
-
-### Anti-patterns to Avoid
-
-```yaml
-# BAD: Storing full content in database
-items:
-  - id: article-1
-    full_content: "10000 words of content..."  # DON'T
-
-# GOOD: Store reference only
-items:
-  - id: article-1
-    content_path: "summaries/article-1.md"     # DO
-```
+- **Don't store large content in Apple Notes** - Causes timeout
+- **Don't hardcode paths** - Use configuration
+- **Don't commit user data** - It's in a separate gitignored folder
+- **Don't make SKILL.md verbose** - Keep it concise
 
 ---
 
@@ -629,109 +318,12 @@ git push origin main --tags
 ### Key Files
 | File | Purpose |
 |------|---------|
-| `SKILL.md` | Main skill documentation |
+| `SKILL.md` | Main skill documentation (<100 lines) |
+| `references/workflow.md` | Detailed workflows |
 | `version.yaml` | Version metadata |
-| `CHANGELOG.md` | Version history |
-| `conftest.py` | Test fixtures |
-| `release.py` | Release automation |
-| `skill_generator.py` | Skill scaffolding |
-| `dependency_tracker.py` | File dependency management |
-| `dependencies.yaml` | Dependency graph definition |
+| `shared/config/paths.py` | User data path configuration |
 
 ---
 
-## AlignTrue Workflow
-
-This repository uses **AlignTrue** to maintain platform-agnostic AI instructions that work across Claude, OpenAI Codex, Cursor, and Google Antigravity.
-
-### Quick Reference
-
-```bash
-# Edit source rules (single source of truth)
-vim .aligntrue/rules/CLAUDE.md
-
-# Sync to all platforms
-aligntrue sync
-
-# Verify changes
-git diff CLAUDE.md      # Claude Desktop
-git diff AGENTS.md      # OpenAI Codex (if generated)
-git diff .cursorrules   # Cursor IDE (if generated)
-```
-
-### File Structure
-
-| File | Type | Purpose | Edit? |
-|------|------|---------|-------|
-| `.aligntrue/rules/CLAUDE.md` | Source | Single source of truth | ✅ YES |
-| `CLAUDE.md` | Generated | Auto-synced for Claude Desktop | ❌ NO |
-| `AGENTS.md` | Generated | Auto-synced for OpenAI Codex | ❌ NO |
-| `.cursorrules` | Generated | Auto-synced for Cursor IDE | ❌ NO |
-| `.aligntrue/config.yaml` | Config | Configure target platforms | ✅ YES |
-
-### Why AlignTrue?
-
-**Problem:** Different AI platforms use different instruction formats
-- Claude Desktop → `CLAUDE.md`
-- OpenAI Codex → `AGENTS.md` or `~/.codex/instructions.md`
-- Cursor → `.cursorrules`
-- Windsurf → Custom format
-
-**Solution:** AlignTrue maintains one source file and exports to all platforms
-
-**Benefits for Contributors:**
-- Use your preferred AI assistant (Claude, GPT-4, Cursor, Antigravity)
-- No manual format conversion
-- Guaranteed consistency across platforms
-- Easy onboarding for new developers
-
-### Configuration
-
-To add/remove platforms, edit `.aligntrue/config.yaml`:
-
-```yaml
-mode: solo
-sources:
-  - type: local
-    path: .aligntrue/rules
-exporters:
-  - claude        # Claude Desktop (CLAUDE.md)
-  - openai        # OpenAI Codex (AGENTS.md)
-  - cursor        # Cursor IDE (.cursorrules)
-```
-
-### Workflow Example
-
-```bash
-# 1. Make changes to source
-echo "New instruction" >> .aligntrue/rules/CLAUDE.md
-
-# 2. Sync to all platforms
-aligntrue sync
-
-# 3. Verify exports
-git status
-# Changes to:
-#   .aligntrue/rules/CLAUDE.md
-#   CLAUDE.md
-#   AGENTS.md
-#   .cursorrules
-
-# 4. Commit everything
-git add .
-git commit -m "docs: update AI instructions for X"
-```
-
-### For Contributors
-
-> [!WARNING]
-> **DO NOT** edit `CLAUDE.md`, `AGENTS.md`, or `.cursorrules` directly!
-> 
-> These files are auto-generated by AlignTrue and your changes will be overwritten.
-> 
-> Always edit `.aligntrue/rules/CLAUDE.md` instead.
-
----
-
-**Version**: 1.1.0
-**Last Updated**: 2025-12-01
+**Version**: 1.2.0
+**Last Updated**: 2025-12-11

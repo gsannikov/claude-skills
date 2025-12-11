@@ -1,9 +1,9 @@
 #!/bin/bash
 #
-# Claude Skills One-Line Installer
+# Exocortex One-Line Installer
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/gsannikov/claude-skills/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/gsannikov/exocortex/main/install.sh | bash
 #
 # Or download and run:
 #   chmod +x install.sh && ./install.sh
@@ -15,10 +15,11 @@ set -e
 # CONFIGURATION
 # ═══════════════════════════════════════════════════════════════════════════════
 
-REPO_URL="https://github.com/gsannikov/claude-skills.git"
-# Default install directory - can be overridden with CLAUDE_SKILLS_DIR env var
-INSTALL_DIR="${CLAUDE_SKILLS_DIR:-$HOME/Projects/exocortex}"
-BRANCH="${CLAUDE_SKILLS_BRANCH:-main}"
+REPO_URL="https://github.com/gsannikov/exocortex.git"
+# Default install directory - can be overridden with EXOCORTEX_DIR env var
+INSTALL_DIR="${EXOCORTEX_DIR:-$HOME/Projects/exocortex}"
+DATA_DIR="${EXOCORTEX_DATA:-$HOME/exocortex-data}"
+BRANCH="${EXOCORTEX_BRANCH:-main}"
 VENV_DIR=".venv"
 RUN_TESTS="${RUN_TESTS:-1}"  # Set RUN_TESTS=0 to skip pytest during install
 PY_VERSION_MIN="3.11"
@@ -189,20 +190,48 @@ run_tests() {
     print_success "Tests passed."
 }
 
+create_data_dirs() {
+    print_step "Creating data directory structure at ${DATA_DIR}..."
+    
+    mkdir -p "$DATA_DIR/career/analyses"
+    mkdir -p "$DATA_DIR/career/interview-prep/negotiations"
+    mkdir -p "$DATA_DIR/reading-list/summaries"
+    mkdir -p "$DATA_DIR/ideas-capture/expanded"
+    mkdir -p "$DATA_DIR/voice-memos/transcripts"
+    mkdir -p "$DATA_DIR/voice-memos/analyzed"
+    mkdir -p "$DATA_DIR/local-rag/vectordb"
+    mkdir -p "$DATA_DIR/recipe-manager/recipes"
+    mkdir -p "$DATA_DIR/social-media-post/posts"
+    
+    print_success "Data directories created at $DATA_DIR"
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # MAIN INSTALLATION
 # ═══════════════════════════════════════════════════════════════════════════════
 
 main() {
-    print_header "Claude Skills Installer"
+    print_header "Exocortex Installer"
 
     echo -e "This script will:"
     echo -e "  1. Check prerequisites (git, Python ${PY_VERSION_MIN}+ < ${PY_VERSION_MAX_EXCLUSIVE})"
-    echo -e "  2. Clone or update the Claude Skills repository"
+    echo -e "  2. Clone or update the Exocortex repository"
     echo -e "  3. Install system OCR dependencies (tesseract/qpdf/ghostscript/poppler/antiword)"
     echo -e "  4. Create a fresh virtualenv at ${VENV_DIR} and install Python deps"
-    echo -e "  5. Run Local RAG tests (set RUN_TESTS=0 to skip)"
-    echo -e "  6. Run the setup wizard"
+    echo -e "  5. Create data directories at ${DATA_DIR}"
+    echo -e "  6. Run Local RAG tests (set RUN_TESTS=0 to skip)"
+    echo -e "  7. Run the setup wizard"
+    echo ""
+    echo -e "${BOLD}Skills included (9):${NC}"
+    echo -e "  💼 Job Analyzer      - Job scoring & tracking"
+    echo -e "  🎯 Interview Prep    - STAR stories & negotiation"
+    echo -e "  📚 Reading List      - Article capture & summarization"
+    echo -e "  💡 Ideas Capture     - Idea expansion & scoring"
+    echo -e "  🎙️ Voice Memos       - Transcription & analysis"
+    echo -e "  🔍 Local RAG         - Semantic document search"
+    echo -e "  📱 Social Media      - Platform-optimized posts"
+    echo -e "  🍳 Recipe Manager    - Recipe extraction & tracking"
+    echo -e "  🔧 Setup Manager     - Environment management"
     echo ""
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -243,6 +272,7 @@ main() {
     print_step "Installation directory"
 
     echo -e "Skills will be installed to: ${CYAN}${INSTALL_DIR}${NC}"
+    echo -e "User data will be stored at: ${CYAN}${DATA_DIR}${NC}"
     echo ""
 
     # Check if directory exists
@@ -265,9 +295,9 @@ main() {
             git pull origin "$BRANCH"
             print_success "Updated to latest version"
         else
-            print_error "Directory exists but is not a Claude Skills repository"
-            echo "Please remove it or set CLAUDE_SKILLS_DIR to a different location:"
-            echo "  CLAUDE_SKILLS_DIR=~/other/path ./install.sh"
+            print_error "Directory exists but is not an Exocortex repository"
+            echo "Please remove it or set EXOCORTEX_DIR to a different location:"
+            echo "  EXOCORTEX_DIR=~/other/path ./install.sh"
             exit 1
         fi
     else
@@ -287,6 +317,7 @@ main() {
     install_system_deps "$SYSTEM"
     create_virtualenv
     install_python_deps
+    create_data_dirs
     run_tests
 
     # ─────────────────────────────────────────────────────────────────────────
@@ -318,6 +349,14 @@ main() {
     echo "  1) Activate the virtualenv: source ${INSTALL_DIR}/${VENV_DIR}/bin/activate"
     echo "  2) (Optional) Re-run tests anytime: LOCAL_RAG_REAL_OCR_DEPS=1 pytest packages/local-rag/tests -q"
     echo "  3) Start augmenting your mind with Exocortex!"
+    echo ""
+    echo "Data location: ${DATA_DIR}"
+    echo "  - career/          Job analysis & interview prep"
+    echo "  - reading-list/    Articles & summaries"
+    echo "  - ideas-capture/   Ideas & expansions"
+    echo "  - voice-memos/     Transcripts & analysis"
+    echo "  - local-rag/       Vector database"
+    echo "  - recipe-manager/  Recipes"
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

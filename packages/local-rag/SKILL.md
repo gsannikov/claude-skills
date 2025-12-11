@@ -1,220 +1,58 @@
 ---
 name: local-rag
-description: Index local folders and query them using RAG (Retrieval Augmented Generation). Supports PDF, DOCX, PPTX, XLSX, images with OCR, and text files.
+description: Index local folders and semantically search documents using RAG (Retrieval Augmented Generation). Supports PDF, DOCX, PPTX, XLSX, images with OCR, and text files. Uses ChromaDB for persistent vector storage. Triggers - "update rag", "index folder", "query rag", "search documents", "find in documents", "semantic search", "index my files", "rag search".
 ---
 
-# 🧠 Local RAG
+# Local RAG
 
-Index and semantically search your local documents using embeddings and ChromaDB.
+Index and semantically search local documents using embeddings and ChromaDB.
 
-## 🌟 Capabilities
+## Storage
 
-1. **Index Local Folders**: Scan and embed documents from any directory
-2. **Multi-Format Support**: PDF, DOCX, PPTX, XLSX, TXT, MD, code files, images
-3. **OCR Support**: Extract text from scanned PDFs and images
-4. **Semantic Search**: Find relevant content by meaning, not just keywords
-5. **Persistent Index**: Embeddings stored locally in ChromaDB
-6. **Incremental Updates**: Only re-index changed files
+Path: `~/exocortex-data/local-rag/`
 
-## 🚀 Commands
+## Commands
 
 | Command | Action |
 |---------|--------|
-| `update rag from [path]` | Index files in the specified folder |
-| `query rag [question]` | Search the indexed documents |
-| `search documents [query]` | Alternative search command |
+| `update rag from [path]` | Index folder |
+| `query rag [question]` | Search documents |
+| `search documents [query]` | Alternative search |
 
-## 📄 Supported File Types
+## Supported Formats
 
-### Documents
-- **PDF** (`.pdf`) - Native text extraction + OCR fallback
-- **Word** (`.docx`) - Full document text extraction
-- **PowerPoint** (`.pptx`) - Slide text extraction
-- **Excel** (`.xlsx`) - Cell content extraction
+| Type | Formats |
+|------|---------|
+| Documents | PDF, DOCX, PPTX, XLSX |
+| Text | MD, TXT, JSON, YAML |
+| Code | PY, JS, TS, HTML, CSS, SH |
+| Images (OCR) | PNG, JPEG, TIFF, WebP |
 
-### Text Files
-- **Markdown** (`.md`)
-- **Plain Text** (`.txt`)
-- **JSON/YAML** (`.json`, `.yaml`, `.yml`)
+## Features
 
-### Code Files
-- **Python** (`.py`)
-- **JavaScript** (`.js`)
-- **TypeScript** (`.ts`)
-- **HTML/CSS** (`.html`, `.css`)
-- **C/C++** (`.c`, `.cpp`, `.h`)
-- **Shell** (`.sh`)
+- **Semantic search**: Find by meaning, not keywords
+- **Multi-format**: Documents, code, images
+- **OCR support**: Scanned PDFs and images
+- **Incremental updates**: Only re-index changed files
+- **Persistent storage**: ChromaDB vector database
 
-### Images (with OCR)
-- **PNG** (`.png`)
-- **JPEG** (`.jpg`, `.jpeg`)
-- **TIFF** (`.tiff`)
-- **WebP** (`.webp`)
+## Example Usage
 
-## 🛠️ Tools
-
-### `update_rag`
-Index a directory of documents.
-
-**Parameters:**
-- `path`: Absolute path to the directory to index
-
-**Example:**
 ```
-update rag from ~/Documents/research
-```
+User: update rag from ~/Documents/research
+Claude: Found 47 PDF files, 12 markdown files
+        Processed 59 files (1,247 chunks)
 
-**Behavior:**
-- Scans directory recursively
-- Skips files larger than 10MB
-- Uses file hashing for change detection
-- Only re-indexes modified files
-
-### `query_rag`
-Search the indexed knowledge base.
-
-**Parameters:**
-- `query`: Natural language question or search terms
-- `k`: Number of results (default: 5)
-
-**Example:**
-```
-query rag what are the key findings about climate change?
-```
-
-**Output:**
-- Ranked list of relevant document chunks
-- File paths and names
-- Relevance scores (0-1)
-- Text previews
-
-## ⚙️ Configuration
-
-### User Data Location
-```
-~/MyDrive/claude-skills-data/local-rag/
-├── vectordb/           # Vector database storage
-│   ├── chroma.sqlite3  # ChromaDB database
-│   └── [uuid]/         # Collection data
-└── state/
-    ├── ingest_state.json  # File tracking state
-    └── bm25_index.json    # BM25 keyword index
-```
-
-### Environment Variables
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `OCR_ENABLED` | `true` | Enable OCR for images/scanned PDFs |
-| `OCR_MAX_PAGES` | `120` | Max pages to OCR per PDF |
-| `OCR_PAGE_DPI` | `200` | DPI for PDF-to-image conversion |
-
-### Embedding Model
-Uses `sentence-transformers/all-MiniLM-L6-v2` for:
-- Fast embedding generation
-- Good semantic similarity
-- Small memory footprint (~90MB)
-
-### Chunking Strategy
-- **Chunk Size**: 3000 characters
-- **Overlap**: 400 characters
-- Ensures context preservation across chunk boundaries
-
-## 📊 Example Workflows
-
-### Index a Research Folder
-```
-User: update rag from ~/Documents/research-papers
-Claude: Scanning ~/Documents/research-papers...
-        Found 47 PDF files, 12 markdown files
-        Indexing complete. Processed 59 files (1,247 chunks).
-```
-
-### Search for Information
-```
-User: query rag neural network training techniques
+User: query rag neural network training
 Claude: Found 5 relevant results:
-
-1. deep-learning-survey.pdf (score: 0.89)
-   "...backpropagation remains the primary training algorithm..."
-
-2. optimization-methods.md (score: 0.84)
-   "...Adam optimizer combines momentum with adaptive learning..."
+        1. deep-learning-survey.pdf (0.89)
+        2. optimization-methods.md (0.84)
 ```
 
-### Incremental Update
-```
-User: update rag from ~/Documents/research-papers
-Claude: Scanning for changes...
-        3 files modified since last index
-        Indexing complete. Processed 3 files.
-```
+## Technical Details
 
-## 🔧 Requirements
+- **Embedding model**: all-MiniLM-L6-v2 (~90MB)
+- **Chunk size**: 3000 chars, 400 overlap
+- **File limit**: 10MB max per file
 
-### Python Dependencies
-```
-chromadb>=0.4.0
-sentence-transformers>=2.2.0
-rapidfuzz>=3.0.0
-python-dotenv>=1.0.0
-pydantic-settings>=2.0.0
-pypdf>=3.0.0
-pdf2image>=1.16.0
-Pillow>=9.0.0
-python-docx>=0.8.11
-python-pptx>=0.6.21
-openpyxl>=3.0.0
-ocrmypdf>=15.0.0
-pytesseract>=0.3.10
-```
-
-### System Dependencies (for OCR)
-- **poppler-utils**: PDF to image conversion
-- **tesseract**: OCR engine
-- **tesseract-lang**: Language packs (e.g., Hebrew)
-- **qpdf**: Required by OCRmyPDF
-- **ghostscript**: Required by OCRmyPDF
-- **antiword**: Legacy .doc extraction (optional)
-
-Install on macOS:
-```bash
-brew install poppler tesseract tesseract-lang antiword
-```
-
-Install on Ubuntu:
-```bash
-sudo apt install poppler-utils tesseract-ocr tesseract-ocr-heb antiword
-```
-
-## 🚨 Limitations
-
-- Files larger than 10MB are skipped
-- OCR quality depends on document scan quality
-- Initial indexing of large directories may take several minutes
-- Embedding model download required on first run (~90MB)
-
-## 📁 Project Structure
-
-```
-local-rag/
-├── SKILL.md              # This file
-├── AI_GUIDE.md           # AI assistant guide
-├── README.md             # Quick intro
-├── CHANGELOG.md          # Version history
-├── version.yaml          # Version info
-├── pyproject.toml        # Installable package metadata
-├── local_rag/
-│   ├── cli.py            # Unified CLI entrypoint
-│   ├── indexer.py        # Document indexing
-│   ├── query.py          # Search functionality
-│   ├── visualize.py      # Chunk visualization
-│   ├── vectorstore.py    # Vector DB abstraction
-│   ├── search.py         # Hybrid search logic
-│   ├── chunking.py       # Chunking strategies
-│   └── ingest/
-│       ├── extractor.py  # File content extraction
-│       ├── ocr.py        # OCR processing
-│       └── utils.py      # Utilities
-├── tests/                # Test suite
-└── docs/                 # Additional documentation
-```
+For setup, dependencies, and configuration, see `references/setup.md`.

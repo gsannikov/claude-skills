@@ -1,6 +1,6 @@
 # Exocortex Vision: The Infrastructure for Human Augmentation
 
-**Last Updated**: 2025-12-10
+**Last Updated**: 2025-12-11
 
 ---
 
@@ -59,6 +59,7 @@ This is for the **Augmented Human**.
 - The **Engineer** who needs to recall every code snippet they've ever seen.
 - The **Writer** who captures fleeting ideas and needs them connected.
 - The **Strategist** who wants to simulate scenarios with an unbiased partner.
+- The **Job Seeker** who wants data-driven career decisions and interview mastery.
 
 If you are content with biological limits, use a notebook.
 If you want to transcend them, build your **Exocortex**.
@@ -67,16 +68,77 @@ If you want to transcend them, build your **Exocortex**.
 
 ## 🚀 The Architecture
 
-Exocortex is brought to life through a modular **Monorepo of Skills**:
+Exocortex is brought to life through a modular **Monorepo of 9 Skills**:
 
-| Extension | Skill Module | Function |
-| :--- | :--- | :--- |
-| **Memory** | `local-rag` | Index & Search all local documents semanticallly. |
-| **Memory** | `reading-list` | Ingest, summarize, and link articles from the web. |
-| **Mind** | `ideas-capture` | Expand raw thoughts into developed project plans. |
-| **Mind** | `career-consultant` | Analyze market data and optimize your professional positioning. |
-| **Mind** | `voice-memos` | Transcribe and extract structure from raw audio. |
-| **Agency** | `social-media` | Generate and optimize external communications. |
+### Memory Extension
+| Skill | Function |
+|-------|----------|
+| `local-rag` | Index & search all local documents semantically |
+| `reading-list` | Ingest, summarize, and link articles from the web |
+
+### Mind Extension
+| Skill | Function |
+|-------|----------|
+| `ideas-capture` | Expand raw thoughts into developed project plans |
+| `job-analyzer` | Analyze opportunities with 6-component scoring, track applications |
+| `interview-prep` | Build STAR stories, research companies, prep negotiations |
+| `voice-memos` | Transcribe and extract structure from raw audio |
+
+### Agency Extension
+| Skill | Function |
+|-------|----------|
+| `social-media` | Generate and optimize external communications |
+| `recipe-manager` | Extract and organize family recipes |
+| `setup-manager` | Automate environment setup and health checks |
+
+---
+
+## 🔄 The Career Workflow
+
+A complete job search system split into two focused skills:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      JOB ANALYZER                           │
+├─────────────────────────────────────────────────────────────┤
+│  "Analyze: [URL]"                                           │
+│  → 6-component scoring (Match/Income/Growth/LowPrep/Stress) │
+│  → LinkedIn application tracking                            │
+│  → Recruiter & contact management                           │
+│  → Follow-up reminders                                      │
+│  → Market intelligence                                      │
+└─────────────────────────┬───────────────────────────────────┘
+                          │ Shared Storage
+                          │ ~/exocortex-data/career/
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    INTERVIEW PREP                           │
+├─────────────────────────────────────────────────────────────┤
+│  "Prepare for [Company]"                                    │
+│  → STAR story builder with practice modes                   │
+│  → Company deep-dive research                               │
+│  → Interview panel analysis                                 │
+│  → Salary negotiation preparation                           │
+│  → Offer comparison matrix                                  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📊 The Scoring Philosophy
+
+Every decision is data-driven. The 6-component job scoring system:
+
+| Component | Weight | What It Measures |
+|-----------|--------|------------------|
+| **Match** | 35% | Skills alignment, role fit, seniority match |
+| **Income** | 25% | Salary vs. requirements, total compensation |
+| **Growth** | 20% | Career advancement, learning opportunities |
+| **LowPrep** | 15% | Interview readiness (less prep needed = higher) |
+| **Stress** | 10% | Work-life balance, on-call, complexity |
+| **Location** | 5% | Commute, hybrid/remote policy |
+
+**Priority Thresholds**: First (70+), Second (50-69), Third (<50)
 
 ---
 
@@ -85,4 +147,4 @@ Exocortex is brought to life through a modular **Monorepo of Skills**:
 We are building the operating system for the next stage of human capability.
 It is open source, local-first, and designed for you.
 
-**[Get Started](README.md)** | **[Contribute](CONTRIBUTING.md)**
+**[Get Started](README.md)** | **[User Guide](USER_GUIDE.md)** | **[Contribute](CONTRIBUTING.md)**
