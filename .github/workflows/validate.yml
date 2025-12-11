@@ -79,16 +79,16 @@ jobs:
       - name: Build skill matrix
         id: changes
         env:
-          SHARED: ${{ steps.filter.outputs.shared }}
-          SKILL_JOB_ANALYZER: ${{ steps.filter.outputs.skill_job_analyzer }}
-          SKILL_INTERVIEW_PREP: ${{ steps.filter.outputs.skill_interview_prep }}
-          SKILL_READING_LIST: ${{ steps.filter.outputs.skill_reading_list }}
-          SKILL_IDEAS_CAPTURE: ${{ steps.filter.outputs.skill_ideas_capture }}
-          SKILL_VOICE_MEMOS: ${{ steps.filter.outputs.skill_voice_memos }}
-          SKILL_LOCAL_RAG: ${{ steps.filter.outputs.skill_local_rag }}
-          SKILL_RECIPE_MANAGER: ${{ steps.filter.outputs.skill_recipe_manager }}
-          SKILL_SETUP_MANAGER: ${{ steps.filter.outputs.skill_setup_manager }}
-          SKILL_SOCIAL_MEDIA_POST: ${{ steps.filter.outputs.skill_social_media_post }}
+          SHARED: ${{ steps.filter.outputs.shared }} # actionlint-disable-line
+          SKILL_JOB_ANALYZER: ${{ steps.filter.outputs.skill_job_analyzer }} # actionlint-disable-line
+          SKILL_INTERVIEW_PREP: ${{ steps.filter.outputs.skill_interview_prep }} # actionlint-disable-line
+          SKILL_READING_LIST: ${{ steps.filter.outputs.skill_reading_list }} # actionlint-disable-line
+          SKILL_IDEAS_CAPTURE: ${{ steps.filter.outputs.skill_ideas_capture }} # actionlint-disable-line
+          SKILL_VOICE_MEMOS: ${{ steps.filter.outputs.skill_voice_memos }} # actionlint-disable-line
+          SKILL_LOCAL_RAG: ${{ steps.filter.outputs.skill_local_rag }} # actionlint-disable-line
+          SKILL_RECIPE_MANAGER: ${{ steps.filter.outputs.skill_recipe_manager }} # actionlint-disable-line
+          SKILL_SETUP_MANAGER: ${{ steps.filter.outputs.skill_setup_manager }} # actionlint-disable-line
+          SKILL_SOCIAL_MEDIA_POST: ${{ steps.filter.outputs.skill_social_media_post }} # actionlint-disable-line
         run: |
           set -euo pipefail
 
