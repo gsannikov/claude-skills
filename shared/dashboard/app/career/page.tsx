@@ -1,7 +1,5 @@
 import CareerTable from './CareerTable';
 import { getJobs } from '@/lib/api';
-// import { ExternalLink, FileText } from 'lucide-react'; // Unused
-// import Link from 'next/link'; // Unused
 
 export default async function CareerPage() {
   const jobs = await getJobs();
