@@ -1,8 +1,10 @@
----
 title: Scoring Formulas Module
 summary: Define weighted scoring logic for evaluating opportunities across multiple dimensions.
 last_updated: "2025-10-29"
+note: Last reviewed: December 2024
 ---
+
+# Last reviewed: December 2024
 
 # Scoring Formulas Module v9.1
 
