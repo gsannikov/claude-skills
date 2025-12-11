@@ -11,16 +11,20 @@ Find, analyze, and track job opportunities in the Israeli tech market.
 
 ## Storage
 
-Path: `~/exocortex-data/career/`
-
-```
-career/
-├── analyses/           # Job analysis YAML files
-├── jobs.xlsx           # Master tracker
-├── contacts.yaml       # Recruiter/network contacts
-├── reminders.yaml      # Follow-up reminders
-└── config.yaml         # Shared config
-```
+Path: `~/exocortex-data/job-analyzer/`
+ 
+ ```
+ job-analyzer/
+ ├── jobs/               # Job analysis and tracking
+ │   ├── analyses/       # Analyzed job files
+ │   └── BACKLOG.md      # Job backlog
+ ├── companies/          # Company research
+ ├── profile/            # User profile and CVs
+ ├── reports/            # Generated reports
+ ├── contacts.yaml       # Recruiter/network contacts
+ ├── reminders.yaml      # Follow-up reminders
+ └── config.yaml         # Shared config
+ ```
 
 ## Commands
 

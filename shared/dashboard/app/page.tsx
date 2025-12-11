@@ -1,5 +1,6 @@
 import { getJobs, getSystemStats } from '@/lib/api';
 import { Briefcase, Zap, Clock, ArrowUpRight } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function Dashboard() {
   const jobs = await getJobs();
@@ -19,13 +20,15 @@ export default async function Dashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <StatCard 
-            title="Jobs Pipeline" 
-            value={jobs.length} 
-            subtitle={`${interviewCount} interviewing`}
-            icon={Briefcase}
-            accent="cyan" 
-        />
+        <Link href="/career">
+            <StatCard 
+                title="Jobs Pipeline" 
+                value={jobs.length} 
+                subtitle={`${interviewCount} interviewing`}
+                icon={Briefcase}
+                accent="cyan" 
+            />
+        </Link>
         <StatCard 
             title="System Load" 
             value={`${system.cpu}%`} 
@@ -40,15 +43,15 @@ export default async function Dashboard() {
             icon={Clock}
             accent="green" 
         />
-        <div className="glass-panel p-6 flex flex-col justify-between items-start bg-gradient-to-br from-purple-900/40 to-black hover:border-purple-500/30 transition-all cursor-pointer group">
+        <Link href="/recipes" className="glass-panel p-6 flex flex-col justify-between items-start bg-gradient-to-br from-emerald-900/40 to-black hover:border-emerald-500/30 transition-all cursor-pointer group">
              <div>
-                <h3 className="text-neutral-400 text-sm font-medium mb-1">Quick Action</h3>
-                <div className="text-xl font-semibold text-white group-hover:text-purple-300 transition-colors">Capture Idea</div>
+                <h3 className="text-neutral-400 text-sm font-medium mb-1">Culinary</h3>
+                <div className="text-xl font-semibold text-white group-hover:text-emerald-300 transition-colors">Recipe DB</div>
              </div>
-             <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-purple-500 group-hover:text-white transition-all">
+             <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all">
                 <ArrowUpRight className="w-5 h-5" />
              </div>
-        </div>
+        </Link>
       </div>
 
       {/* Main Content Split */}

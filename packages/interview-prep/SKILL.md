@@ -11,17 +11,20 @@ Prepare for interviews with STAR stories, company research, and negotiation plan
 
 ## Storage
 
-Path: `~/exocortex-data/career/` (shared with job-analyzer)
-
-```
-career/
-├── interview-prep/
-│   ├── star-stories.yaml    # STAR story library
-│   ├── practice-log.yaml    # Practice sessions
-│   └── negotiations/        # Per-company negotiation files
-├── contacts.yaml            # Shared with job-analyzer
-└── config.yaml              # Shared config
-```
+Path: `~/exocortex-data/interview-prep/`
+ 
+ ```
+ interview-prep/
+ ├── interviews/          # Interview logs and notes
+ ├── profile/             # User profile (shared copy)
+ ├── star-stories.yaml    # STAR story library
+ ├── negotiations/        # Negotiation plans
+ └── config.yaml          # Config
+ ```
+ 
+ Shared with `job-analyzer`:
+ - `~/exocortex-data/job-analyzer/contacts.yaml`
+ - `~/exocortex-data/job-analyzer/companies/`
 
 ## Commands
 

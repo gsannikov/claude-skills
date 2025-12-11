@@ -597,7 +597,7 @@ def main():
     
     # Get paths from user config
     # For standalone script, use default paths
-    user_data_base = Path.home() / "MyDrive" / "career-consultant.skill" / "user-data"
+    user_data_base = Path.home() / "exocortex-data" / "job-analyzer"
     roles_dir = user_data_base / "jobs" / "analyzed"
     output_path = user_data_base / "reports" / "companies-db.html"
     

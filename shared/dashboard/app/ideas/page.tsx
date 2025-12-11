@@ -1,7 +1,11 @@
 import DashboardWidget from '../../components/DashboardWidget';
-import { Lightbulb, Plus, Star } from 'lucide-react';
+import ActionButtons from '../../components/ActionButtons';
+import { Lightbulb, Plus, Star, FileText } from 'lucide-react';
+import { getIdeas } from '../../lib/api';
 
-export default function IdeasPage() {
+export default async function IdeasPage() {
+  const ideas = await getIdeas();
+
   return (
     <div className="space-y-8">
       <header className="flex justify-between items-end mb-8">
@@ -15,30 +19,38 @@ export default function IdeasPage() {
         </button>
       </header>
 
-      {/* Masonry Grid (Mocked with columns for now) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[
-            { title: "AI-Powered Garden Monitor", tag: "Project", color: "purple" },
-            { title: "Recipe: Spicy Tuna Poke", tag: "Food", color: "orange" },
-            { title: "Book Idea: The Last Algorithm", tag: "Writing", color: "blue" },
-            { title: "Dashboard Architecture v2", tag: "Dev", color: "green" },
-            { title: "Gift Ideas for Mom", tag: "Personal", color: "pink" },
-            { title: "React Context Optimization", tag: "Dev", color: "green" },
-        ].map((idea, i) => (
-            <div key={i} className="glass-panel p-6 hover:border-purple-500/30 transition-colors group cursor-pointer h-min break-inside-avoid">
-                <div className="flex justify-between items-start mb-4">
-                    <span className={`px-2 py-1 rounded-md bg-${idea.color}-500/10 text-${idea.color}-400 text-xs font-medium border border-${idea.color}-500/20`}>
-                        {idea.tag}
-                    </span>
-                    <Star className="w-4 h-4 text-neutral-600 group-hover:text-yellow-400 transition-colors" />
+      {/* Masonry Grid */}
+      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+        {ideas.length === 0 && (
+            <div className="text-neutral-500 p-8 glass-panel text-center col-span-full">
+                No ideas found in ideas-capture/expanded
+            </div>
+        )}
+        {ideas.map((idea) => (
+            <div key={idea.id} className="glass-panel p-6 hover:border-purple-500/30 transition-colors group cursor-pointer break-inside-avoid relative mb-6">
+                <div className="absolute top-2 right-2">
+                    <ActionButtons filePath={idea.filePath} />
+                </div>
+                <div className="flex justify-between items-start mb-4 pr-8">
+                    <div className="flex gap-2 flex-wrap">
+                        {idea.tags && idea.tags.length > 0 ? idea.tags.map(tag => (
+                             <span key={tag} className="px-2 py-1 rounded-md bg-purple-500/10 text-purple-400 text-xs font-medium border border-purple-500/20">
+                                {tag}
+                            </span>
+                        )) : (
+                            <span className="px-2 py-1 rounded-md bg-neutral-500/10 text-neutral-400 text-xs font-medium border border-neutral-500/20">
+                                Note
+                            </span>
+                        )}
+                    </div>
                 </div>
                 <h3 className="text-lg font-semibold mb-2 group-hover:text-purple-300 transition-colors">{idea.title}</h3>
-                <p className="text-sm text-neutral-400 line-clamp-3">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                <p className="text-sm text-neutral-400 line-clamp-4 leading-relaxed">
+                    {idea.content || "No content preview available."}
                 </p>
-                <div className="mt-4 pt-4 border-t border-white/5 text-xs text-neutral-600 flex justify-between">
-                    <span>Oct {20 - i}</span>
-                    <span>12kb</span>
+                <div className="mt-4 pt-4 border-t border-white/5 text-xs text-neutral-600 flex justify-between items-center">
+                    <span>{new Date(idea.date).toLocaleDateString()}</span>
+                    <FileText className="w-3 h-3" />
                 </div>
             </div>
         ))}

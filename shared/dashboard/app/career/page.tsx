@@ -1,86 +1,90 @@
-import DashboardWidget from '../../components/DashboardWidget';
-import { Briefcase, Building, Clock, CheckCircle } from 'lucide-react';
+import { getJobs } from '@/lib/api';
+import { ExternalLink, FileText } from 'lucide-react';
+import Link from 'next/link';
 
-export default function CareerPage() {
+export default async function CareerPage() {
+  const jobs = await getJobs();
+
   return (
     <div className="space-y-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Job Search & Career</h1>
-        <p className="text-neutral-400">Track applications, analyze opportunities, and manage your pipeline.</p>
+      <header>
+        <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-400">
+          Career Database
+        </h1>
+        <p className="text-neutral-400 mt-1">{jobs.length} analyzed positions</p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px]">
-        {/* Applied Column */}
-        <DashboardWidget title="Applied" icon={Briefcase} className="border-l-4 border-l-blue-500">
-          <div className="space-y-4">
-            <JobCard 
-              company="Anthropic" 
-              role="Product Engineer" 
-              date="2d ago" 
-              status="Applied"
-            />
-            <JobCard 
-              company="OpenAI" 
-              role="Member of Technical Staff" 
-              date="3d ago" 
-              status="Applied"
-            />
-            <JobCard 
-              company="Google DeepMind" 
-              role="Research Engineer" 
-              date="5d ago" 
-              status="Applied"
-            />
-          </div>
-        </DashboardWidget>
-
-        {/* In Progress Column */}
-        <DashboardWidget title="In Progress" icon={Clock} className="border-l-4 border-l-yellow-500">
-          <div className="space-y-4">
-             <JobCard 
-              company="Linear" 
-              role="Senior Frontend Engineer" 
-              date="1w ago" 
-              status="Interviewing"
-              badge="Tech Round"
-              accent="yellow"
-            />
-          </div>
-        </DashboardWidget>
-
-        {/* Offers Column */}
-        <DashboardWidget title="Offers" icon={CheckCircle} className="border-l-4 border-l-green-500">
-          <div className="space-y-4">
-            <div className="p-4 rounded-lg bg-green-900/20 border border-green-500/30 text-center">
-              <Building className="w-8 h-8 text-green-400 mx-auto mb-2" />
-              <div className="font-bold text-green-400">Offer Received</div>
-              <div className="text-sm text-neutral-400">Vercel - Sr. Eng</div>
-            </div>
-          </div>
-        </DashboardWidget>
+      <div className="glass-panel overflow-hidden">
+        <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+                <thead>
+                    <tr className="border-b border-white/10 text-neutral-400 text-xs uppercase tracking-wider bg-white/5">
+                        <th className="p-4 font-medium">Role</th>
+                        <th className="p-4 font-medium">Company</th>
+                        <th className="p-4 font-medium text-center">Match</th>
+                        <th className="p-4 font-medium text-center">Score</th>
+                        <th className="p-4 font-medium">Status</th>
+                        <th className="p-4 font-medium text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                    {jobs.map(job => (
+                        <tr key={job.id} className="hover:bg-white/5 transition-colors group">
+                            <td className="p-4">
+                                <div className="font-semibold text-white">{job.title}</div>
+                                <div className="text-xs text-neutral-500">{new Date(job.added_at).toLocaleDateString()}</div>
+                            </td>
+                            <td className="p-4 text-neutral-300">{job.company}</td>
+                            <td className="p-4">
+                                <div className="flex items-center justify-center gap-2">
+                                    <div className="w-24 h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+                                        <div 
+                                            className="h-full bg-gradient-to-r from-red-500 via-yellow-500 to-green-500" 
+                                            style={{ width: `${job.match_score || 0}%` }}
+                                        />
+                                    </div>
+                                    <span className="text-xs font-mono text-neutral-500 w-8 text-right">{job.match_score}</span>
+                                </div>
+                            </td>
+                            <td className="p-4 text-center">
+                                {job.score && (
+                                    <span className={`text-lg font-bold ${
+                                        job.score >= 70 ? 'text-green-400' :
+                                        job.score >= 50 ? 'text-yellow-400' : 'text-red-400'
+                                    }`}>
+                                        {job.score}
+                                    </span>
+                                )}
+                            </td>
+                            <td className="p-4">
+                                <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${
+                                    job.status === 'interviewing' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+                                    job.status === 'offer' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                                    job.status === 'rejected' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                    'bg-neutral-800 text-neutral-400 border-white/5'
+                                }`}>
+                                    {job.status}
+                                </span>
+                            </td>
+                            <td className="p-4 text-right">
+                                <div className="flex justify-end gap-3 opacity-50 group-hover:opacity-100 transition-opacity">
+                                    {job.url && (
+                                        <a href={job.url} target="_blank" rel="noopener noreferrer" className="text-neutral-400 hover:text-cyan-400 transition-colors" title="View Job">
+                                            <ExternalLink className="w-4 h-4" />
+                                        </a>
+                                    )}
+                                    {/* Placeholder for local file link - potentially via a localized API route in future */}
+                                    <span className="text-neutral-600 cursor-not-allowed" title="Analysis View">
+                                        <FileText className="w-4 h-4" />
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
       </div>
     </div>
   );
-}
-
-function JobCard({ company, role, date, status, badge, accent = 'blue' }: any) {
-  return (
-    <div className="p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-      <div className="flex justify-between items-start mb-2">
-        <div className="font-medium">{company}</div>
-        <div className="text-xs text-neutral-500">{date}</div>
-      </div>
-      <div className="text-sm text-neutral-300 mb-3">{role}</div>
-      <div className="flex items-center gap-2">
-         {badge && (
-            <span className={`text-[10px] px-2 py-0.5 rounded-full bg-${accent}-500/20 text-${accent}-400 border border-${accent}-500/20`}>
-              {badge}
-            </span>
-         )}
-         <span className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400 border border-neutral-700">
-            {status}
-         </span>
-      </div>
-    </div>
-  )
 }

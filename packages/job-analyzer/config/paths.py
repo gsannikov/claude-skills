@@ -21,7 +21,7 @@ from shared.config.paths import get_skill_data_dir
 # This is the SINGLE SOURCE OF TRUTH for all user data paths.
 # To change your user data location, edit shared/config/paths.py
 
-USER_DATA_BASE = str(get_skill_data_dir("career"))
+USER_DATA_BASE = str(get_skill_data_dir("job-analyzer"))
 
 # Example paths:
 # macOS: "/Users/username/Documents/career-consultant/user-data"
