@@ -73,6 +73,12 @@ SKILL_CONFIG = {
         'version_file': 'version.yaml',
         'changelog': 'CHANGELOG.md',
     },
+    'exocortex-mcp': {
+        'has_host_scripts': False,
+        'has_tests': True,
+        'version_file': 'pyproject.toml',
+        'changelog': 'CHANGELOG.md',
+    },
 }
 
 REPO_ROOT = Path(__file__).parent.parent.parent
@@ -86,6 +92,12 @@ def get_current_version(skill_name: str) -> str:
     
     if not version_path.exists():
         return '0.0.0'
+        
+    if version_path.suffix == '.toml':
+        import re
+        content = version_path.read_text()
+        match = re.search(r'^version\s*=\s*"([^"]+)"', content, re.MULTILINE)
+        return match.group(1) if match else '0.0.0'
     
     with open(version_path) as f:
         data = yaml.safe_load(f)
@@ -110,6 +122,23 @@ def update_version_file(skill_name: str, new_version: str, dry_run: bool = False
     config = SKILL_CONFIG[skill_name]
     version_path = PACKAGES_DIR / skill_name / config['version_file']
     
+    if dry_run:
+        print(f"[DRY RUN] Would update {version_path} to {new_version}")
+        return
+
+    if version_path.suffix == '.toml':
+        import re
+        content = version_path.read_text()
+        new_content = re.sub(
+            r'^version\s*=\s*"[^"]+"', 
+            f'version = "{new_version}"', 
+            content, 
+            flags=re.MULTILINE
+        )
+        version_path.write_text(new_content)
+        print(f"✅ Updated {version_path}")
+        return
+    
     version_path.parent.mkdir(parents=True, exist_ok=True)
     
     data = {
@@ -118,13 +147,9 @@ def update_version_file(skill_name: str, new_version: str, dry_run: bool = False
         'skill': skill_name,
     }
     
-    if dry_run:
-        print(f"[DRY RUN] Would update {version_path}:")
-        print(yaml.dump(data))
-    else:
-        with open(version_path, 'w') as f:
-            yaml.dump(data, f, default_flow_style=False)
-        print(f"✅ Updated {version_path}")
+    with open(version_path, 'w') as f:
+        yaml.dump(data, f, default_flow_style=False)
+    print(f"✅ Updated {version_path}")
 
 
 def update_changelog(skill_name: str, new_version: str, dry_run: bool = False):
