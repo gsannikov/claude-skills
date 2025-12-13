@@ -113,4 +113,5 @@ Both skills share data in `~/exocortex-data/career/` for seamless handoff.
 - **Author**: [@gsannikov](https://github.com/gsannikov)
 
 > Built with Claude Skills SDK
+<!-- Updated: 2025-12-12 -->
  

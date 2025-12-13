@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Bathroom Fixture Templates - Scale 1:50 (40px = 1m) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+  <style>
+    .fixture-stroke { stroke: #333; stroke-width: 1; fill: #f5f5f5; }
+    .cabinet { fill: #e0d5c5; }
+    .water { fill: #e8f4f8; }
+    .glass { stroke: #0066cc; stroke-width: 3; }
+    .drain { fill: #999; }
+    .label { font: 10px Arial; fill: #333; }
+  </style>
+  
+  <defs>
+    <!-- Arrow markers -->
+    <marker id="arrow-start" viewBox="0 0 6 6" refX="0" refY="3" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M6,0 L0,3 L6,6 Z" fill="#333"/>
+    </marker>
+    <marker id="arrow-end" viewBox="0 0 6 6" refX="6" refY="3" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#333"/>
+    </marker>
+  </defs>
+  
+  <!-- Wall-Hung Toilet (360x550mm = 14.4x22px) -->
+  <g id="toilet-template" transform="translate(50, 50)">
+    <text class="label" y="-10">Wall-Hung Toilet</text>
+    <text class="label" y="0" font-size="8" fill="#666">360 × 550mm</text>
+    <!-- Tank -->
+    <rect x="-7" y="0" width="14" height="5.5" class="fixture-stroke"/>
+    <!-- Bowl -->
+    <ellipse cx="0" cy="13" rx="6" ry="7.5" class="fixture-stroke"/>
+    <!-- Seat line -->
+    <ellipse cx="0" cy="13" rx="4.5" ry="5.5" fill="none" stroke="#666" stroke-width="0.5"/>
+    <!-- Centerline -->
+    <line x1="0" y1="-5" x2="0" y2="25" stroke="#999" stroke-width="0.5" stroke-dasharray="2,2"/>
+  </g>
+  
+  <!-- Single Vanity (900x450mm = 36x18px) -->
+  <g id="vanity-template" transform="translate(150, 50)">
+    <text class="label" y="-10">Single Vanity</text>
+    <text class="label" y="0" font-size="8" fill="#666">900 × 450mm</text>
+    <!-- Cabinet -->
+    <rect x="0" y="10" width="36" height="18" class="fixture-stroke cabinet"/>
+    <!-- Sink basin -->
+    <ellipse cx="18" cy="19" rx="9" ry="6" class="fixture-stroke"/>
+    <!-- Drain -->
+    <circle cx="18" cy="19" r="2" fill="#333"/>
+  </g>
+  
+  <!-- Shower (1100x1200mm = 44x48px) -->
+  <g id="shower-template" transform="translate(250, 50)">
+    <text class="label" y="-10">Shower</text>
+    <text class="label" y="0" font-size="8" fill="#666">1100 × 1200mm</text>
+    <!-- Base -->
+    <rect x="0" y="10" width="44" height="48" class="fixture-stroke water"/>
+    <!-- Glass partition -->
+    <line x1="0" y1="10" x2="0" y2="58" class="glass"/>
+    <!-- Handle -->
+    <circle cx="0" cy="35" r="3" fill="none" stroke="#0066cc" stroke-width="1"/>
+    <!-- Linear drain -->
+    <rect x="4" y="52" width="36" height="3" class="drain" stroke="#666" stroke-width="0.5"/>
+    <!-- Shower head indicator -->
+    <circle cx="22" cy="18" r="4" fill="none" stroke="#666" stroke-width="1"/>
+  </g>
+  
+  <!-- Bathtub (700x1700mm = 28x68px) -->
+  <g id="bathtub-template" transform="translate(350, 50)">
+    <text class="label" y="-10">Bathtub</text>
+    <text class="label" y="0" font-size="8" fill="#666">700 × 1700mm</text>
+    <!-- Outer -->
+    <rect x="0" y="10" width="28" height="68" rx="4" class="fixture-stroke water" style="fill: #e0f0ff"/>
+    <!-- Inner basin -->
+    <rect x="3" y="13" width="22" height="62" rx="2" fill="#f0f8ff" stroke="#666" stroke-width="0.5"/>
+    <!-- Drain -->
+    <circle cx="22" cy="44" r="4" fill="#ccc" stroke="#333" stroke-width="0.5"/>
+    <circle cx="22" cy="44" r="1.5" fill="#666"/>
+  </g>
+  
+  <!-- Door (700mm = 28px) -->
+  <g id="door-template" transform="translate(50, 180)">
+    <text class="label" y="-10">Door with Swing</text>
+    <text class="label" y="0" font-size="8" fill="#666">700mm wide</text>
+    <!-- Opening gap -->
+    <rect x="-2" y="6" width="32" height="8" fill="white" stroke="none"/>
+    <!-- Frame ends -->
+    <line x1="0" y1="4" x2="0" y2="16" stroke="#333" stroke-width="2"/>
+    <line x1="28" y1="4" x2="28" y2="16" stroke="#333" stroke-width="2"/>
+    <!-- Door panel -->
+    <line x1="0" y1="10" x2="0" y2="38" stroke="#333" stroke-width="2"/>
+    <!-- Swing arc -->
+    <path d="M 28,10 A 28,28 0 0 0 0,38" fill="none" stroke="#666" stroke-width="0.5" stroke-dasharray="3,2"/>
+  </g>
+  
+  <!-- Window (1000mm = 40px) -->
+  <g id="window-template" transform="translate(150, 180)">
+    <text class="label" y="-10">Window</text>
+    <text class="label" y="0" font-size="8" fill="#666">1000mm wide</text>
+    <!-- Glass lines -->
+    <line x1="0" y1="8" x2="40" y2="8" stroke="#333" stroke-width="1"/>
+    <line x1="0" y1="12" x2="40" y2="12" stroke="#333" stroke-width="1"/>
+    <!-- Center mullion -->
+    <line x1="20" y1="8" x2="20" y2="12" stroke="#333" stroke-width="0.5"/>
+    <!-- Frame ends -->
+    <line x1="0" y1="6" x2="0" y2="14" stroke="#333" stroke-width="2"/>
+    <line x1="40" y1="6" x2="40" y2="14" stroke="#333" stroke-width="2"/>
+  </g>
+  
+  <!-- Floor Drain -->
+  <g id="drain-template" transform="translate(250, 180)">
+    <text class="label" y="-10">Floor Drain</text>
+    <circle cx="10" cy="20" r="8" fill="#f0f0f0" stroke="#333" stroke-width="1"/>
+    <line x1="4" y1="14" x2="16" y2="26" stroke="#666" stroke-width="0.5"/>
+    <line x1="4" y1="26" x2="16" y2="14" stroke="#666" stroke-width="0.5"/>
+  </g>
+  
+  <!-- Waste Point -->
+  <g id="waste-template" transform="translate(300, 180)">
+    <text class="label" y="-10">Waste Point</text>
+    <circle cx="10" cy="20" r="5" fill="#333"/>
+  </g>
+  
+  <!-- Dimension Line Example -->
+  <g id="dimension-template" transform="translate(50, 280)">
+    <text class="label" y="-10">Dimension Line</text>
+    <!-- Extension lines -->
+    <line x1="0" y1="30" x2="0" y2="10" stroke="#666" stroke-width="0.5"/>
+    <line x1="60" y1="30" x2="60" y2="10" stroke="#666" stroke-width="0.5"/>
+    <!-- Dimension line with arrows -->
+    <line x1="0" y1="15" x2="60" y2="15" stroke="#333" stroke-width="0.5" 
+          marker-start="url(#arrow-start)" marker-end="url(#arrow-end)"/>
+    <!-- Text -->
+    <rect x="22" y="7" width="16" height="10" fill="white"/>
+    <text x="30" y="15" class="label" text-anchor="middle">1500</text>
+  </g>
+  
+  <!-- Scale Bar -->
+  <g id="scale-template" transform="translate(150, 280)">
+    <text class="label" y="-10">Scale Bar (1m at 1:50)</text>
+    <rect x="0" y="10" width="20" height="4" fill="#333"/>
+    <rect x="20" y="10" width="20" height="4" fill="white" stroke="#333" stroke-width="0.5"/>
+    <text x="0" y="24" font-size="7" font-family="Arial" fill="#333">0</text>
+    <text x="20" y="24" font-size="7" font-family="Arial" fill="#333" text-anchor="middle">0.5m</text>
+    <text x="40" y="24" font-size="7" font-family="Arial" fill="#333" text-anchor="end">1m</text>
+  </g>
+  
+  <!-- Compass -->
+  <g id="compass-template" transform="translate(280, 300)">
+    <text class="label" x="-30" y="-30">Compass</text>
+    <circle cx="0" cy="0" r="15" fill="none" stroke="#333" stroke-width="1"/>
+    <polygon points="0,-13 -3,4 0,-2 3,4" fill="#333"/>
+    <text x="0" y="-20" font-size="8" font-family="Arial" font-weight="bold" text-anchor="middle" fill="#333">N</text>
+  </g>
+  
+  <!-- Legend example -->
+  <g transform="translate(450, 50)">
+    <text class="label" font-weight="bold">LEGEND</text>
+    <rect x="0" y="10" width="12" height="12" fill="#f5f5f5" stroke="#333" stroke-width="0.5"/>
+    <text x="18" y="20" font-size="8" font-family="Arial" fill="#333">Wall-hung WC</text>
+    <rect x="0" y="28" width="12" height="12" fill="#e0d5c5" stroke="#333" stroke-width="0.5"/>
+    <text x="18" y="38" font-size="8" font-family="Arial" fill="#333">Vanity</text>
+    <rect x="0" y="46" width="12" height="12" fill="#e8f4f8" stroke="#333" stroke-width="0.5"/>
+    <text x="18" y="56" font-size="8" font-family="Arial" fill="#333">Shower</text>
+  </g>
+</svg>

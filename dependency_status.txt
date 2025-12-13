@@ -1,0 +1,163 @@
+============================================================
+DEPENDENCY STATUS
+============================================================
+
+SOURCE FILES:
+----------------------------------------
+  docs/project-status.md
+    Status: [OK]
+    Last commit: 2caeec9
+  docs/vision.md
+    Status: [OK]
+    Last commit: 86be86c
+  install.sh
+    Status: [OK]
+    Last commit: 73c06ec
+  packages/ideas-capture/SKILL.md
+    Status: [OK]
+    Last commit: 4d6f087
+  packages/interview-prep/SKILL.md
+    Status: [OK]
+    Last commit: 6635296
+  packages/job-analyzer/SKILL.md
+    Status: [OK]
+    Last commit: 6635296
+  packages/job-analyzer/modules/database-operations-hybrid.md
+    Status: [OK]
+    Last commit: 73c06ec
+  packages/local-rag/SKILL.md
+    Status: [OK]
+    Last commit: 73c06ec
+  packages/local-rag/_dev/docs/architecture.md
+    Status: [OK]
+    Last commit: 73c06ec
+  packages/next-skill/SKILL.md
+    Status: [OK]
+    Last commit: f351e90
+  packages/next-skill/_dev/design.md
+    Status: [NEEDS UPDATE: packages/next-skill/SKILL.md]
+    Last commit: f23ffd2
+  packages/reading-list/SKILL.md
+    Status: [OK]
+    Last commit: 4d6f087
+  packages/recipe-manager/SKILL.md
+    Status: [OK]
+    Last commit: 4d6f087
+  packages/setup-manager/SKILL.md
+    Status: [OK]
+    Last commit: 4d6f087
+  packages/social-media-post/SKILL.md
+    Status: [OK]
+    Last commit: 73c06ec
+  packages/voice-memos/SKILL.md
+    Status: [OK]
+    Last commit: 4d6f087
+  shared/scripts/release.py
+    Status: [OK]
+    Last commit: 8cab625
+  shared/templates/learned-patterns.yaml
+    Status: [OK]
+    Last commit: bcde025
+
+DERIVED FILES:
+----------------------------------------
+  CLAUDE.md
+    Status: [OK]
+    Last commit: ed21d06
+  README.md
+    Status: [NEEDS UPDATE: docs/user-guide.md]
+    Last commit: 077fdfb
+  docs/developer-guide.md
+    Status: [OK]
+    Last commit: 86be86c
+  docs/user-guide.md
+    Status: [OK]
+    Last commit: 86be86c
+  packages/ideas-capture/_dev/README.md
+    Status: [OK]
+    Last commit: 4fed10d
+  packages/interview-prep/_dev/README.md
+    Status: [OK]
+    Last commit: 86be86c
+  packages/job-analyzer/_dev/README.md
+    Status: [OK]
+    Last commit: 86be86c
+  packages/local-rag/_dev/README.md
+    Status: [OK]
+    Last commit: 73c06ec
+  packages/reading-list/_dev/README.md
+    Status: [OK]
+    Last commit: 4fed10d
+  packages/recipe-manager/_dev/README.md
+    Status: [OK]
+    Last commit: 4fed10d
+  packages/setup-manager/_dev/README.md
+    Status: [OK]
+    Last commit: 4fed10d
+  packages/social-media-post/_dev/README.md
+    Status: [OK]
+    Last commit: 73c06ec
+  packages/voice-memos/_dev/README.md
+    Status: [OK]
+    Last commit: 4fed10d
+  packages/voice-memos/meeting-recorder/README.md
+    Status: [OK]
+    Last commit: 54e5329
+
+DOCUMENTATION FILES:
+----------------------------------------
+  .github/ISSUE_TEMPLATE/bug_report.md
+    Status: [OK]
+    Last commit: 86be86c
+  .github/ISSUE_TEMPLATE/documentation.md
+    Status: [OK]
+    Last commit: 1142360
+  .github/ISSUE_TEMPLATE/feature_request.md
+    Status: [OK]
+    Last commit: 86be86c
+  .github/ISSUE_TEMPLATE/performance_issue.md
+    Status: [OK]
+    Last commit: 86be86c
+  .github/ISSUE_TEMPLATE/question.md
+    Status: [OK]
+    Last commit: f9a2798
+  .github/ISSUE_TEMPLATE/security_vulnerability.md
+    Status: [OK]
+    Last commit: 1142360
+  AGENTS.md
+    Status: [OK]
+    Last commit: 2caeec9
+  CHANGELOG.md
+    Status: [OK]
+    Last commit: 2caeec9
+  CONTRIBUTING.md
+    Status: [OK]
+    Last commit: 2caeec9
+  SECURITY.md
+    Status: [OK]
+    Last commit: d1a5c4c
+  docs/automation-guide.md
+    Status: [OK]
+    Last commit: 2caeec9
+  docs/faq.md
+    Status: [OK]
+    Last commit: ?
+
+MARKETING FILES:
+----------------------------------------
+  shared/marketing/posts/article-1-building-production-grade-skills.md
+    Status: [NEEDS UPDATE: packages/job-analyzer/SKILL.md]
+    Last commit: 8cbadeb
+  shared/marketing/posts/article-2-skills-deep-dive.md
+    Status: [NEEDS UPDATE: docs/user-guide.md]
+    Last commit: 8cbadeb
+  shared/marketing/posts/article-3-monorepo.md
+    Status: [OK]
+    Last commit: 2caeec9
+  shared/marketing/posts/article-4-lessons-learned.md
+    Status: [OK]
+    Last commit: 8e36c9f
+
+============================================================
+SUMMARY: 4/48 files need attention
+============================================================
